@@ -1,0 +1,32 @@
+name: Deploy to server
+on:
+  push:
+    branches:
+      - main
+jobs:
+  build:
+    name: Build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v1
+      - name: Install Node.js
+        uses: actions/setup-node@v1
+        with:
+          node-version: "14.x"
+      - name: Install packages && run lint
+        run: yarn
+
+      - name: executing remote ssh commands using password
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.REMOTE_HOST  }}
+          username: ${{ secrets.REMOTE_USER }}
+          password: ${{ secrets.REMOTE_PASS }}
+          port: ${{ secrets.REMOTE_PORT }}
+          script: |
+            cd /var/www/html/server
+            git pull origin main 
+            export NVM_DIR=~/.nvm
+            source ~/.nvm/nvm.sh
+            yarn 
+            yarn production
