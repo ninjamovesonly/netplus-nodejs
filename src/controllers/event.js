@@ -1,18 +1,20 @@
 "use strict";
 
-const { Op, DataTypes } = require("sequelize");
+const { Op } = require("sequelize");
 const { Event } = require("../models");
 const logger = require("../util/log");
 
 const totalCount = async () => {
   let val = await Event.count({
     where: {
-      id: {
-        [Op.gt]: Date.now(),
+      start_date: {
+        [Op.lt]: new Date(),
       },
     },
   })
-    .then((data) => data.length)
+    .then((data) => {
+      return data;
+    })
     .catch((err) => logger(err));
   return val;
 };
@@ -27,13 +29,10 @@ const createEvent = async (req, res) => {
     #swagger.parameters['obj'] = {
                 in: 'body',
                 schema: {
-                      $event_id: "string",
                       $title: "string",
                       $description: "string",
-                      $start_date: "string",  
-                      $end_date: "string",  
-                      $created_at: "string",
-                      $updated_at: "string",
+                      $start_date: "datetime",  
+                      $end_date: "datetime",  
                 }
         }
   */
@@ -56,7 +55,7 @@ const updateEvent = async (req, res) => {
 
   await Event.update(req.body, {
     where: {
-      event_id: req.body.event_id,
+      id: req.body.id,
     },
   })
     .then((data) => {
@@ -68,7 +67,7 @@ const updateEvent = async (req, res) => {
     .catch((err) => logger(err));
 };
 
-const getEvents = (req, res) => {
+const getEvents = async (req, res) => {
   /*
     #swagger.tags = ["Event"]
     #swagger.description = 'Get Events'
@@ -84,8 +83,12 @@ const getEvents = (req, res) => {
     offset = offset - limit;
   }
 
-  totalCount()
-    .then((count) => {})
+  await totalCount()
+    .then(async (total) => {
+      await Event.findAll({ limit, offset }).then((data) => {
+        res.send({ success: true, data, total });
+      });
+    })
     .catch((err) => logger(err));
 };
 
@@ -98,9 +101,9 @@ const getEvent = (req, res) => {
         }]
   */
 
-  Event.findOne({ where: { event_id: req.params.id } })
+  Event.findOne({ where: { id: req.params.id } })
     .then((data) => {
-      if (data.id) {
+      if (data) {
         res.send({ success: true, data });
       } else {
         res.send({ success: false, message: "No data" });

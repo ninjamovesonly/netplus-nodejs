@@ -1,10 +1,17 @@
 "use strict";
 require("dotenv").config();
-const sequelize = require("./sequelize");
 
+const sequelize = require("./sequelize");
 const { DataTypes } = require("sequelize");
+const { guid } = require("../util");
 
 const Event = sequelize.define("event", {
+  id: {
+    type: DataTypes.STRING,
+    allowNull: false,
+    defaultValue: guid(),
+    primaryKey: true,
+  },
   title: {
     type: DataTypes.STRING,
     allowNull: false,
@@ -21,17 +28,23 @@ const Event = sequelize.define("event", {
     type: DataTypes.DATE,
     allowNull: false,
   },
-  created_at: {
-    type: DataTypes.DATE,
-    allowNull: false,
-  },
-  updated_at: {
-    type: DataTypes.DATE,
+  user_id: {
+    type: DataTypes.STRING,
     allowNull: false,
   },
 });
 
 const Price = sequelize.define("price", {
+  id: {
+    type: DataTypes.STRING,
+    allowNull: false,
+    defaultValue: guid(),
+    primaryKey: true,
+  },
+  event_id: {
+    type: DataTypes.STRING,
+    allowNull: false,
+  },
   title: {
     type: DataTypes.STRING,
     allowNull: false,
@@ -44,17 +57,19 @@ const Price = sequelize.define("price", {
     type: DataTypes.INTEGER,
     allowNull: false,
   },
-  created_at: {
-    type: DataTypes.DATE,
-    allowNull: false,
-  },
-  updated_at: {
-    type: DataTypes.DATE,
-    allowNull: false,
-  },
 });
 
 const Attendee = sequelize.define("attendee", {
+  id: {
+    type: DataTypes.STRING,
+    allowNull: false,
+    defaultValue: guid(),
+    primaryKey: true,
+  },
+  event_id: {
+    type: DataTypes.STRING,
+    allowNull: false,
+  },
   firstName: {
     type: DataTypes.STRING,
     allowNull: false,
@@ -71,19 +86,15 @@ const Attendee = sequelize.define("attendee", {
     type: DataTypes.STRING,
     allowNull: true,
   },
-  created_at: {
-    type: DataTypes.DATE,
-    allowNull: false,
-    defaultValue: DataTypes.NOW,
-  },
-  updated_at: {
-    type: DataTypes.DATE,
-    allowNull: false,
-    defaultValue: DataTypes.NOW,
-  },
 });
 
 const Upload = sequelize.define("upload", {
+  id: {
+    type: DataTypes.STRING,
+    allowNull: false,
+    defaultValue: guid(),
+    primaryKey: true,
+  },
   event_id: {
     type: DataTypes.STRING,
     allowNull: false,
@@ -96,15 +107,23 @@ const Upload = sequelize.define("upload", {
     type: DataTypes.TEXT,
     allowNull: true,
   },
-  created_at: {
-    type: DataTypes.DATE,
-    allowNull: false,
-    defaultValue: DataTypes.NOW,
+});
+
+Event.hasMany(Price, {
+  foreignKey: {
+    id: "event_id",
   },
-  updated_at: {
-    type: DataTypes.DATE,
-    allowNull: false,
-    defaultValue: DataTypes.NOW,
+});
+
+Event.hasMany(Upload, {
+  foreignKey: {
+    id: "event_id",
+  },
+});
+
+Event.hasMany(Attendee, {
+  foreignKey: {
+    id: "event_id",
   },
 });
 

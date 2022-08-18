@@ -38,10 +38,6 @@
             "schema": {
               "type": "object",
               "properties": {
-                "event_id": {
-                  "type": "string",
-                  "example": "string"
-                },
                 "title": {
                   "type": "string",
                   "example": "string"
@@ -52,29 +48,18 @@
                 },
                 "start_date": {
                   "type": "string",
-                  "example": "string"
+                  "example": "datetime"
                 },
                 "end_date": {
                   "type": "string",
-                  "example": "string"
-                },
-                "created_at": {
-                  "type": "string",
-                  "example": "string"
-                },
-                "updated_at": {
-                  "type": "string",
-                  "example": "string"
+                  "example": "datetime"
                 }
               },
               "required": [
-                "event_id",
                 "title",
                 "description",
                 "start_date",
-                "end_date",
-                "created_at",
-                "updated_at"
+                "end_date"
               ]
             }
           }
@@ -104,7 +89,7 @@
             "schema": {
               "type": "object",
               "properties": {
-                "event_id": {
+                "id": {
                   "example": "any"
                 }
               }
@@ -141,7 +126,11 @@
             "type": "string"
           }
         ],
-        "responses": {},
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        },
         "security": [
           {
             "apikey": []
@@ -155,6 +144,141 @@
           "Event"
         ],
         "description": "Get Event by id",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        },
+        "security": [
+          {
+            "apikey": []
+          }
+        ]
+      }
+    },
+    "/api/price/create": {
+      "post": {
+        "tags": [
+          "Price"
+        ],
+        "description": "Create Price",
+        "parameters": [
+          {
+            "name": "obj",
+            "in": "body",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "event_id": {
+                  "type": "string",
+                  "example": "string"
+                },
+                "title": {
+                  "type": "string",
+                  "example": "string"
+                },
+                "description": {
+                  "type": "string",
+                  "example": "string"
+                },
+                "amount": {
+                  "type": "string",
+                  "example": "string"
+                }
+              },
+              "required": [
+                "event_id",
+                "title",
+                "description",
+                "amount"
+              ]
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        },
+        "security": [
+          {
+            "apikey": []
+          }
+        ]
+      }
+    },
+    "/api/price/update": {
+      "post": {
+        "tags": [
+          "Price"
+        ],
+        "description": "Update Price",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "id": {
+                  "example": "any"
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        },
+        "security": [
+          {
+            "apikey": []
+          }
+        ]
+      }
+    },
+    "/api/prices/{id}": {
+      "get": {
+        "tags": [
+          "Price"
+        ],
+        "description": "Get Prices by event_id",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        },
+        "security": [
+          {
+            "apikey": []
+          }
+        ]
+      }
+    },
+    "/api/price/{id}": {
+      "get": {
+        "tags": [
+          "Price"
+        ],
+        "description": "Get single price by id",
         "parameters": [
           {
             "name": "id",

@@ -9,6 +9,12 @@ route.post("/api/event/update", controllers.updateEvent);
 route.get("/api/events", controllers.getEvents);
 route.get("/api/event/:id", controllers.getEvent);
 
+//Price routes
+route.post("/api/price/create", controllers.createPrice);
+route.post("/api/price/update", controllers.updatePrice);
+route.get("/api/prices/:id", controllers.getPrices);
+route.get("/api/price/:id", controllers.getPrice);
+
 //Upload routes
 route.post("/api/upload/image/:id", controllers.uploadImage);
 route.post("/api/upload/document/:id", controllers.uploadFile);
