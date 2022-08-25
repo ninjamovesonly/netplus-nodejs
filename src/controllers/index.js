@@ -1,5 +1,5 @@
 "use strict";
-const { createEvent, updateEvent, getEvents, getEvent } = require("./Event");
+const { createEvent, updateEvent, getEvents, getEvent } = require("./event");
 
 const { createPrice, updatePrice, getPrices, getPrice } = require("./price");
 
