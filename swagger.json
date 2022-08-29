@@ -5,6 +5,7 @@
     "title": "Events API",
     "description": "ISCE Events API"
   },
+  "host": "localhost:3000",
   "basePath": "/",
   "schemes": [
     "http",
@@ -75,38 +76,6 @@
         ]
       }
     },
-    "/api/event/update": {
-      "post": {
-        "tags": [
-          "Event"
-        ],
-        "description": "Update Event",
-        "parameters": [
-          {
-            "name": "body",
-            "in": "body",
-            "schema": {
-              "type": "object",
-              "properties": {
-                "id": {
-                  "example": "any"
-                }
-              }
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "OK"
-          }
-        },
-        "security": [
-          {
-            "apikey": []
-          }
-        ]
-      }
-    },
     "/api/events": {
       "get": {
         "tags": [
@@ -143,6 +112,54 @@
           "Event"
         ],
         "description": "Get Event by id",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        },
+        "security": [
+          {
+            "apikey": []
+          }
+        ]
+      },
+      "post": {
+        "tags": [
+          "Event"
+        ],
+        "description": "Update Event",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        },
+        "security": [
+          {
+            "apikey": []
+          }
+        ]
+      },
+      "delete": {
+        "tags": [
+          "Event"
+        ],
+        "description": "Delete event by id",
         "parameters": [
           {
             "name": "id",

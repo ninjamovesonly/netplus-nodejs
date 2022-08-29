@@ -20,6 +20,14 @@ const Event = sequelize.define("event", {
     type: DataTypes.TEXT,
     allowNull: true,
   },
+  image: {
+    type: DataTypes.TEXT,
+    allowNull: true,
+  },
+  location: {
+    type: DataTypes.TEXT,
+    allowNull: true,
+  },
   start_date: {
     type: DataTypes.DATE,
     allowNull: false,
@@ -70,11 +78,7 @@ const Attendee = sequelize.define("attendee", {
     type: DataTypes.STRING,
     allowNull: false,
   },
-  firstName: {
-    type: DataTypes.STRING,
-    allowNull: false,
-  },
-  lastName: {
+  name: {
     type: DataTypes.STRING,
     allowNull: false,
   },

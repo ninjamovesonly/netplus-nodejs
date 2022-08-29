@@ -1,5 +1,11 @@
 "use strict";
-const { createEvent, updateEvent, getEvents, getEvent } = require("./event");
+const {
+  createEvent,
+  updateEvent,
+  deleteEvent,
+  getEvents,
+  getEvent,
+} = require("./event");
 
 const { createPrice, updatePrice, getPrices, getPrice } = require("./price");
 
@@ -13,6 +19,7 @@ const {
 module.exports = {
   createEvent,
   updateEvent,
+  deleteEvent,
   getEvents,
   getEvent,
   createPrice,

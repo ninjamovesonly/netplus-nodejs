@@ -55,13 +55,36 @@ const updateEvent = async (req, res) => {
 
   await Event.update(req.body, {
     where: {
-      id: req.body.id,
+      id: req.params.id,
     },
   })
     .then((data) => {
       res.send({
         success: true,
         data,
+      });
+    })
+    .catch((err) => logger(err));
+};
+
+const deleteEvent = async (req, res) => {
+  /*
+    #swagger.tags = ["Event"]
+    #swagger.description = 'Delete event by id'
+     #swagger.security = [{
+               "apikey": []
+        }]
+  */
+
+  await Event.destroy({
+    where: {
+      id: req.params.id,
+    },
+  })
+    .then(() => {
+      res.send({
+        success: true,
+        message: "Event deleted",
       });
     })
     .catch((err) => logger(err));
@@ -76,8 +99,8 @@ const getEvents = async (req, res) => {
         }]
   */
   let offset = 0,
-    page = Number(req.query.page),
-    limit = Number(req.query.limit);
+    page = Number(req.query.page) || 1,
+    limit = Number(req.query.limit) || 100;
   if (page > 1) {
     offset = limit * page;
     offset = offset - limit;
@@ -115,6 +138,7 @@ const getEvent = (req, res) => {
 module.exports = {
   createEvent,
   updateEvent,
+  deleteEvent,
   getEvents,
   getEvent,
 };

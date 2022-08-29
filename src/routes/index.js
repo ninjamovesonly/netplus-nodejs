@@ -5,9 +5,10 @@ const route = Router();
 
 //Event routes
 route.post("/api/event/create", controllers.createEvent);
-route.post("/api/event/update", controllers.updateEvent);
 route.get("/api/events", controllers.getEvents);
 route.get("/api/event/:id", controllers.getEvent);
+route.post("/api/event/:id", controllers.updateEvent);
+route.delete("/api/event/:id", controllers.deleteEvent);
 
 //Price routes
 route.post("/api/price/create", controllers.createPrice);
