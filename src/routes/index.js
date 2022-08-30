@@ -1,11 +1,12 @@
 const { default: axios } = require("axios");
 const { Router } = require("express");
 const controllers = require("../controllers");
+const config = require("../config");
 const authenticate = (req, res, next) => {
     async function authenticateCheck(){
        const token = req.header('Authorization');
        try {
-           const { data: auth } = await axios.post('https://developer.isce.app/v1/auth/api/user-profile', {}, {
+           const { data: auth } = await axios.post(config.auth.url + '/api/user-profile', {}, {
                headers: {
                    'Content-type': 'application/json',
                    'Authorization': token

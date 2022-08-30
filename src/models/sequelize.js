@@ -5,13 +5,13 @@ const Sequelize = require("sequelize");
 const config = require("../config");
 
 const sequelize = new Sequelize(
-  process.env.DB_DATABASE,
-  process.env.DB_USERNAME,
-  process.env.DB_PASSWORD,
+  config.api.db,
+  config.api.user,
+  config.api.pass,
   {
-    host: process.env.DB_HOST,
+    host: config.api.host,
     dialect: "mysql",
-    port: process.env.DB_PORT
+    port: config.api.port,
   }
 );
 
