@@ -5,6 +5,7 @@
     "title": "Events API",
     "description": "ISCE Events API"
   },
+  "host": "http://localhost",
   "basePath": "/",
   "schemes": [
     "http",
