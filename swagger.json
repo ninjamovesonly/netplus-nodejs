@@ -5,6 +5,7 @@
     "title": "Events API",
     "description": "ISCE Events API"
   },
+  "host": "http://localhost",
   "basePath": "/",
   "schemes": [
     "http",
@@ -26,40 +27,29 @@
   "paths": {
     "/api/event/create": {
       "post": {
-        "tags": [
-          "Event"
-        ],
-        "description": "Create Event",
+        "description": "",
         "parameters": [
           {
-            "name": "obj",
+            "name": "Authorization",
+            "in": "header",
+            "type": "string"
+          },
+          {
+            "name": "body",
             "in": "body",
             "schema": {
               "type": "object",
               "properties": {
                 "title": {
-                  "type": "string",
-                  "example": "string"
+                  "example": "any"
                 },
                 "description": {
-                  "type": "string",
-                  "example": "string"
+                  "example": "any"
                 },
                 "start_date": {
-                  "type": "string",
-                  "example": "datetime"
-                },
-                "end_date": {
-                  "type": "string",
-                  "example": "datetime"
+                  "example": "any"
                 }
-              },
-              "required": [
-                "title",
-                "description",
-                "start_date",
-                "end_date"
-              ]
+              }
             }
           }
         ],
@@ -67,20 +57,12 @@
           "200": {
             "description": "OK"
           }
-        },
-        "security": [
-          {
-            "apikey": []
-          }
-        ]
+        }
       }
     },
     "/api/event/update": {
       "post": {
-        "tags": [
-          "Event"
-        ],
-        "description": "Update Event",
+        "description": "",
         "parameters": [
           {
             "name": "body",
@@ -99,12 +81,7 @@
           "200": {
             "description": "OK"
           }
-        },
-        "security": [
-          {
-            "apikey": []
-          }
-        ]
+        }
       }
     },
     "/api/events": {
