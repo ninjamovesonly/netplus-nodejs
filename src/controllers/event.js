@@ -20,18 +20,23 @@ const createEvent = async (req, res) => {
 };
 
 const updateEvent = async (req, res) => {
-  await Event.update(req.body, {
+  const data = await Event.update(req.body, {
     where: {
       id: req.body.id,
     },
-  })
-    .then((data) => {
-      res.send({
-        success: true,
-        data,
-      });
-    })
-    .catch((err) => logger(err));
+  });
+  if(!data){
+    res.json({
+      success: 'false',
+      message: 'Unable to update event'
+    });
+  }
+
+  res.json({
+    success: 'true',
+    message: 'Event updated successfully!',
+    data,
+  });
 };
 
 const getEvents = async (req, res) => {
@@ -65,7 +70,7 @@ const getEvents = async (req, res) => {
   })
 };
 
-const getEvent = (req, res) => {
+const getEvent = async (req, res) => {
   /*
     #swagger.tags = ["Event"]
     #swagger.description = 'Get Event by id'
@@ -74,15 +79,12 @@ const getEvent = (req, res) => {
         }]
   */
 
-  Event.findOne({ where: { id: req.params.id } })
-    .then((data) => {
-      if (data) {
-        res.send({ success: true, data });
-      } else {
-        res.send({ success: false, message: "No data" });
-      }
-    })
-    .catch((err) => logger(err));
+  const data = await Event.findOne({ where: { id: req.body.id } });
+  if (!data) {
+    res.json({ success: 'false', message: 'Unable to get event!' });
+  } 
+
+  res.json({ success: 'true', message: "Event retrieved successfully!" });
 };
 
 module.exports = {
