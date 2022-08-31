@@ -33,6 +33,72 @@
         "description": "Create Event",
         "parameters": [
           {
+            "name": "Authorization",
+            "in": "header",
+            "type": "string"
+          },
+          {
+            "name": "obj",
+            "in": "body",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "title": {
+                  "type": "string",
+                  "example": "string"
+                },
+                "description": {
+                  "type": "string",
+                  "example": "string"
+                },
+                "image": {
+                  "type": "string",
+                  "example": "string"
+                },
+                "location": {
+                  "type": "string",
+                  "example": "string"
+                },
+                "start_date": {
+                  "type": "string",
+                  "example": "datetime"
+                },
+                "end_date": {
+                  "type": "string",
+                  "example": "datetime"
+                }
+              },
+              "required": [
+                "title",
+                "description",
+                "image",
+                "location",
+                "start_date",
+                "end_date"
+              ]
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        },
+        "security": [
+          {
+            "apikey": []
+          }
+        ]
+      }
+    },
+    "/api/event/update": {
+      "post": {
+        "tags": [
+          "Event"
+        ],
+        "description": "Update Event",
+        "parameters": [
+          {
             "name": "obj",
             "in": "body",
             "schema": {
@@ -116,6 +182,71 @@
         ]
       }
     },
+    "/api/events/past": {
+      "get": {
+        "tags": [
+          "Event"
+        ],
+        "description": "Get past events",
+        "parameters": [
+          {
+            "name": "page",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        },
+        "security": [
+          {
+            "apikey": []
+          }
+        ]
+      }
+    },
+    "/api/events/search": {
+      "get": {
+        "tags": [
+          "Event"
+        ],
+        "description": "Search events using title or description",
+        "parameters": [
+          {
+            "name": "page",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "query",
+            "in": "query",
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        },
+        "security": [
+          {
+            "apikey": []
+          }
+        ]
+      }
+    },
     "/api/event/{id}": {
       "get": {
         "tags": [
@@ -152,6 +283,47 @@
             "in": "path",
             "required": true,
             "type": "string"
+          },
+          {
+            "name": "obj",
+            "in": "body",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "title": {
+                  "type": "string",
+                  "example": "string"
+                },
+                "description": {
+                  "type": "string",
+                  "example": "string"
+                },
+                "image": {
+                  "type": "string",
+                  "example": "string"
+                },
+                "location": {
+                  "type": "string",
+                  "example": "string"
+                },
+                "start_date": {
+                  "type": "string",
+                  "example": "datetime"
+                },
+                "end_date": {
+                  "type": "string",
+                  "example": "datetime"
+                }
+              },
+              "required": [
+                "title",
+                "description",
+                "image",
+                "location",
+                "start_date",
+                "end_date"
+              ]
+            }
           }
         ],
         "responses": {
@@ -247,20 +419,7 @@
           "Price"
         ],
         "description": "Update Price",
-        "parameters": [
-          {
-            "name": "body",
-            "in": "body",
-            "schema": {
-              "type": "object",
-              "properties": {
-                "id": {
-                  "example": "any"
-                }
-              }
-            }
-          }
-        ],
+        "parameters": [],
         "responses": {
           "200": {
             "description": "OK"
@@ -305,6 +464,180 @@
           "Price"
         ],
         "description": "Get single price by id",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        },
+        "security": [
+          {
+            "apikey": []
+          }
+        ]
+      }
+    },
+    "/api/attendee/create": {
+      "post": {
+        "tags": [
+          "Attendee"
+        ],
+        "description": "Create Attendee",
+        "parameters": [
+          {
+            "name": "obj",
+            "in": "body",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "event_id": {
+                  "type": "string",
+                  "example": "string"
+                },
+                "image": {
+                  "type": "string",
+                  "example": "string"
+                },
+                "name": {
+                  "type": "string",
+                  "example": "string"
+                },
+                "email": {
+                  "type": "string",
+                  "example": "string"
+                },
+                "phone": {
+                  "type": "string",
+                  "example": "string"
+                },
+                "price_category": {
+                  "type": "string",
+                  "example": "string"
+                }
+              },
+              "required": [
+                "event_id",
+                "image",
+                "name",
+                "email",
+                "phone",
+                "price_category"
+              ]
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        },
+        "security": [
+          {
+            "apikey": []
+          }
+        ]
+      }
+    },
+    "/api/attendee/update": {
+      "post": {
+        "tags": [
+          "Attendee"
+        ],
+        "description": "Update Attendee",
+        "parameters": [
+          {
+            "name": "obj",
+            "in": "body",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "event_id": {
+                  "type": "string",
+                  "example": "string"
+                },
+                "image": {
+                  "type": "string",
+                  "example": "string"
+                },
+                "name": {
+                  "type": "string",
+                  "example": "string"
+                },
+                "email": {
+                  "type": "string",
+                  "example": "string"
+                },
+                "phone": {
+                  "type": "string",
+                  "example": "string"
+                },
+                "price_category": {
+                  "type": "string",
+                  "example": "string"
+                }
+              },
+              "required": [
+                "event_id",
+                "image",
+                "name",
+                "email",
+                "phone",
+                "price_category"
+              ]
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        },
+        "security": [
+          {
+            "apikey": []
+          }
+        ]
+      }
+    },
+    "/api/attendees/{id}": {
+      "get": {
+        "tags": [
+          "Attendee"
+        ],
+        "description": "Get Attendees by event_id",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        },
+        "security": [
+          {
+            "apikey": []
+          }
+        ]
+      }
+    },
+    "/api/attendee/{id}": {
+      "get": {
+        "tags": [
+          "Attendee"
+        ],
+        "description": "Get single attendee by id",
         "parameters": [
           {
             "name": "id",

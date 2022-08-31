@@ -40,7 +40,7 @@ const updatePrice = async (req, res) => {
 
   await Price.update(req.body, {
     where: {
-      id: req.body.id,
+      id: req.params.id,
     },
   })
     .then((data) => {

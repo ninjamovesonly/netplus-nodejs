@@ -7,9 +7,13 @@
     "dev": "yarn docs && nodemon ./src/app.js",
     "docs": "node swagger.js",
     "init-seed": "bash init.sh",
-    "start": "yarn docs && pm2 start ./src/app.js -n 'ISCE_events API'",
+    "start": "yarn docs && pm2 start ./src/app.js -n 'ISCE_events API' --watch",
     "production": "yarn docs && pm2 reload ./src/app.js -n 'ISCE_events API'",
-    "fix-package": "yarn-audit-fix --force"
+    "fix-package": "yarn-audit-fix --force",
+    "pm2-kill": "pm2 kill",
+    "pm2-list": "pm2 list",
+    "pm2-show": "pm2 show 0",
+    "pm2-env": "pm2 env 0"
   },
   "author": "Olalekan Animashaun <kim.olalekan@gmail.com> (https://kimolalekan.github.io/)",
   "license": "ISC",
@@ -26,12 +30,14 @@
     "moment": "^2.29.3",
     "mysql2": "^2.3.3",
     "node-fetch": "^2.6.1",
+    "pm2": "^5.2.0",
     "sequelize": "^6.21.3",
     "serve-favicon": "^2.5.0",
     "signale": "^1.1.0",
     "swagger-ui-express": "^4.3.0"
   },
   "devDependencies": {
+    "nodemon": "^2.0.19",
     "swagger-autogen": "^2.21.1",
     "yarn-audit-fix": "^9.3.1"
   }

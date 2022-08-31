@@ -78,6 +78,10 @@ const Attendee = sequelize.define("attendee", {
     type: DataTypes.STRING,
     allowNull: false,
   },
+  image: {
+    type: DataTypes.STRING,
+    allowNull: false,
+  },
   name: {
     type: DataTypes.STRING,
     allowNull: false,
@@ -87,6 +91,10 @@ const Attendee = sequelize.define("attendee", {
     allowNull: true,
   },
   phone: {
+    type: DataTypes.STRING,
+    allowNull: true,
+  },
+  price_category: {
     type: DataTypes.STRING,
     allowNull: true,
   },
@@ -128,6 +136,12 @@ Event.hasMany(Upload, {
 Event.hasMany(Attendee, {
   foreignKey: {
     id: "event_id",
+  },
+});
+
+Attendee.hasOne(Price, {
+  foreignKey: {
+    id: "price_category",
   },
 });
 

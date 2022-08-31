@@ -53,6 +53,17 @@ const updateEvent = async (req, res) => {
      #swagger.security = [{
                "apikey": []
         }]
+     #swagger.parameters['obj'] = {
+                in: 'body',
+                schema: {
+                      $title: "string",
+                      $description: "string",
+                      $image: "string",
+                      $location: "string",
+                      $start_date: "datetime",  
+                      $end_date: "datetime",  
+                }
+        }
   */
 
   await Event.update(req.body, {
@@ -110,7 +121,88 @@ const getEvents = async (req, res) => {
 
   await totalCount()
     .then(async (total) => {
-      await Event.findAll({ limit, offset }).then((data) => {
+      await Event.findAll({
+        limit,
+        offset,
+        where: {
+          start_date: {
+            [Op.gte]: new Date(),
+          },
+        },
+      }).then((data) => {
+        res.send({ success: true, data, total });
+      });
+    })
+    .catch((err) => logger(err));
+};
+
+const getPastEvents = async (req, res) => {
+  /*
+    #swagger.tags = ["Event"]
+    #swagger.description = 'Get past events'
+     #swagger.security = [{
+               "apikey": []
+        }]
+  */
+  let offset = 0,
+    page = Number(req.query.page) || 1,
+    limit = Number(req.query.limit) || 100;
+  if (page > 1) {
+    offset = limit * page;
+    offset = offset - limit;
+  }
+
+  await totalCount()
+    .then(async (total) => {
+      await Event.findAll({
+        limit,
+        offset,
+        where: {
+          start_date: {
+            [Op.lt]: new Date(),
+          },
+        },
+      }).then((data) => {
+        res.send({ success: true, data, total });
+      });
+    })
+    .catch((err) => logger(err));
+};
+
+const searchEvents = async (req, res) => {
+  /*
+    #swagger.tags = ["Event"]
+    #swagger.description = 'Search events using title or description'
+     #swagger.security = [{
+               "apikey": []
+        }]
+  */
+  let offset = 0,
+    page = Number(req.query.page) || 1,
+    limit = Number(req.query.limit) || 100,
+    query = req.query.query;
+
+  if (page > 1) {
+    offset = limit * page;
+    offset = offset - limit;
+  }
+
+  await totalCount()
+    .then(async (total) => {
+      await Event.findAll({
+        limit,
+        offset,
+        where: {
+          [Op.or]: [
+            { title: { [Op.like]: query } },
+            { description: { [Op.like]: query } },
+          ],
+          title: { [Op.like]: query },
+          start_date: {
+            [Op.gte]: new Date(),
+          },
+        },
+      }).then((data) => {
         res.send({ success: true, data, total });
       });
     })
@@ -142,5 +234,7 @@ module.exports = {
   updateEvent,
   deleteEvent,
   getEvents,
+  getPastEvents,
+  searchEvents,
   getEvent,
 };
