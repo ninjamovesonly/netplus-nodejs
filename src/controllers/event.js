@@ -31,6 +31,8 @@ const createEvent = async (req, res) => {
                 schema: {
                       $title: "string",
                       $description: "string",
+                      $image: "string",
+                      $location: "string",
                       $start_date: "datetime",  
                       $end_date: "datetime",  
                 }

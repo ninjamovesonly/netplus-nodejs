@@ -46,6 +46,14 @@
                   "type": "string",
                   "example": "string"
                 },
+                "image": {
+                  "type": "string",
+                  "example": "string"
+                },
+                "location": {
+                  "type": "string",
+                  "example": "string"
+                },
                 "start_date": {
                   "type": "string",
                   "example": "datetime"
@@ -58,6 +66,8 @@
               "required": [
                 "title",
                 "description",
+                "image",
+                "location",
                 "start_date",
                 "end_date"
               ]
