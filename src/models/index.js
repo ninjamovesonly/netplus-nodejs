@@ -143,11 +143,11 @@ Event.hasMany(Attendee, {
   },
 });
 
-Attendee.hasOne(Price, {
-  foreignKey: {
-    id: "price_category",
-  },
-});
+// Attendee.hasOne(Price, {
+//   foreignKey: {
+//     id: "price_category",
+//   },
+// });
 
 const init = async () => {
   await Event.sync();
