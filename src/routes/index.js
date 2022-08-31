@@ -25,6 +25,7 @@ const authenticate = (req, res, next) => {
     }
     authenticateCheck();
   };
+
 const route = Router();
 
 //Event routes
