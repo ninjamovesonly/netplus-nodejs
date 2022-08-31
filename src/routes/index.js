@@ -2,6 +2,7 @@ const { default: axios } = require("axios");
 const { Router } = require("express");
 const controllers = require("../controllers");
 const config = require("../config");
+
 const authenticate = (req, res, next) => {
     async function authenticateCheck(){
        const token = req.header('Authorization');

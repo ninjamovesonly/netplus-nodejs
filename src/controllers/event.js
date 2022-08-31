@@ -4,24 +4,10 @@ const { Op } = require("sequelize");
 const { Event } = require("../models");
 const logger = require("../util/log");
 
-const totalCount = async () => {
-  let val = await Event.count({
-    where: {
-      start_date: {
-        [Op.lt]: new Date(),
-      },
-    },
-  })
-    .then((data) => {
-      return data;
-    })
-    .catch((err) => logger(err));
-  return val;
-};
-
 const createEvent = async (req, res) => {
   const data = await Event.create({
     user_id: req.isce_auth.user_id,
+    image: req.body.image,
     title: req.body.title,
     description: req.body.description,
     start_date: req.body.start_date,
