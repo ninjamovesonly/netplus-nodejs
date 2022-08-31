@@ -98,6 +98,10 @@ const Attendee = sequelize.define("attendee", {
     type: DataTypes.STRING,
     allowNull: true,
   },
+  user_id: {
+    type: DataTypes.STRING,
+    allowNull: false,
+  },
 });
 
 const Upload = sequelize.define("upload", {
