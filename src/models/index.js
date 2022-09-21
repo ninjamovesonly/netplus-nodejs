@@ -42,7 +42,7 @@ const Event = sequelize.define("event", {
   },
 });
 
-const Price = sequelize.define("price", {
+const Price = sequelize.define("event_price", {
   id: {
     type: DataTypes.STRING,
     allowNull: false,
@@ -67,7 +67,7 @@ const Price = sequelize.define("price", {
   },
 });
 
-const Attendee = sequelize.define("attendee", {
+const Attendee = sequelize.define("event_attendee", {
   id: {
     type: DataTypes.STRING,
     allowNull: false,
@@ -75,6 +75,10 @@ const Attendee = sequelize.define("attendee", {
     primaryKey: true,
   },
   event_id: {
+    type: DataTypes.STRING,
+    allowNull: false,
+  },
+  event_price_id: {
     type: DataTypes.STRING,
     allowNull: false,
   },
@@ -98,13 +102,35 @@ const Attendee = sequelize.define("attendee", {
     type: DataTypes.STRING,
     allowNull: true,
   },
-  user_id: {
+  link: {
+    type: DataTypes.STRING,
+    allowNull: false,
+  },
+  token: {
     type: DataTypes.STRING,
     allowNull: false,
   },
 });
 
-const Upload = sequelize.define("upload", {
+const Token = sequelize.define("event_token", {
+  id: {
+    type: DataTypes.STRING,
+    allowNull: false,
+    defaultValue: guid(),
+    primaryKey: true,
+  },
+  token: {
+    type: DataTypes.STRING,
+    allowNull: false,
+  },
+  used: {
+    type: DataTypes.BOOLEAN,
+    allowNull: false,
+    defaultValue: 0,
+  },
+});
+
+const Url = sequelize.define("event_url", {
   id: {
     type: DataTypes.STRING,
     allowNull: false,
@@ -115,23 +141,21 @@ const Upload = sequelize.define("upload", {
     type: DataTypes.STRING,
     allowNull: false,
   },
-  file: {
+  event_attendee_id: {
     type: DataTypes.STRING,
     allowNull: false,
   },
-  type: {
-    type: DataTypes.TEXT,
-    allowNull: true,
+  event_url: {
+    type: DataTypes.STRING,
+    allowNull: false,
+  },
+  device_type: {
+    type: DataTypes.STRING,
+    allowNull: false,
   },
 });
 
 Event.hasMany(Price, {
-  foreignKey: {
-    id: "event_id",
-  },
-});
-
-Event.hasMany(Upload, {
   foreignKey: {
     id: "event_id",
   },
@@ -143,19 +167,14 @@ Event.hasMany(Attendee, {
   },
 });
 
-// Attendee.hasOne(Price, {
-//   foreignKey: {
-//     id: "price_category",
-//   },
-// });
-
 const init = async () => {
   await Event.sync();
   await Price.sync();
   await Attendee.sync();
-  await Upload.sync();
+  await Token.sync();
+  await Url.sync();
 };
 
 init();
 
-module.exports = { Event, Price, Attendee, Upload };
+module.exports = { Event, Price, Attendee, Token, Url };
