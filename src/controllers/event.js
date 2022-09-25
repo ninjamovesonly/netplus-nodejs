@@ -19,6 +19,32 @@ const totalCount = async () => {
   return val;
 };
 
+const getPast = async () => {
+  return await Event.findAll({
+    limit: 20,
+    where: {
+      start_date: {
+        [Op.lt]: new Date(),
+      },
+    },
+  }).then((data) => {
+    return data;
+  });
+};
+
+const getFuture = async () => {
+  return await Event.findAll({
+    limit: 20,
+    where: {
+      start_date: {
+        [Op.gt]: new Date(),
+      },
+    },
+  }).then((data) => {
+    return data;
+  });
+};
+
 const createEvent = async (req, res) => {
   /*
     #swagger.tags = ["Event"]
@@ -129,8 +155,24 @@ const getEvents = async (req, res) => {
             [Op.gte]: new Date(),
           },
         },
-      }).then((data) => {
-        res.send({ success: true, data, total });
+      }).then(async (data) => {
+        let past_events, future_events;
+
+        await getPast().then((pe) => {
+          past_events = pe;
+        });
+
+        await getFuture().then((fe) => {
+          future_events = fe;
+        });
+
+        res.send({
+          success: true,
+          data,
+          total,
+          past_events,
+          future_events,
+        });
       });
     })
     .catch((err) => logger(err));

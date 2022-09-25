@@ -10,8 +10,6 @@ const signale = require("signale");
 const swaggerUi = require("swagger-ui-express");
 const swaggerFile = require("../swagger.json");
 const routes = require("./routes");
-const axios = require("axios");
-const authenticate = require("./util/auth");
 
 app.use(helmet());
 app.disable("x-powered-by");
@@ -43,30 +41,6 @@ app.use(
   })
 );
 
-app.use(async (req, res, next) => {
-  await axios
-    .post(
-      "https://developer.isce.app/v1/auth/api/user-profile",
-      {},
-      {
-        headers: {
-          "Content-type": "application/json",
-          Authorization: `${process.env.API_KEY}:${process.env.API_SECRET}`,
-        },
-      }
-    )
-    .then((response) => {
-      const auth = response.data;
-      req.isce_auth = auth?.data?.user;
-      next();
-    })
-    .catch((err) => {
-      res.json({
-        success: "false",
-        message: "Unauthorized",
-      });
-    });
-});
 app.use(routes);
 
 //Handle error
