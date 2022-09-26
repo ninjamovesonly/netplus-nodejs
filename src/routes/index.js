@@ -23,6 +23,7 @@ const authenticate = (req, res, next) => {
       }
     } catch (error) {
       res.json({
+        error,
         success: "false",
         message: "Unauthorized",
       });
