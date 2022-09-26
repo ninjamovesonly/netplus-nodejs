@@ -67,7 +67,9 @@ const createEvent = async (req, res) => {
 
   await Event.create(req.body)
     .then((data) => {
-      res.send({ success: true, data });
+      data.id
+        ? res.send({ success: true, data })
+        : res.send({ success: true, message: "Failed to create data" });
     })
     .catch((err) => logger(err));
 };
