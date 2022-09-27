@@ -17,9 +17,15 @@ const authenticate = (req, res, next) => {
           },
         }
       );
+
       if (auth.success === "true") {
         req.isce_auth = auth?.data?.user;
         next();
+      } else {
+        res.json({
+          success: "false",
+          message: "Unauthorized",
+        });
       }
     } catch (error) {
       res.json({
