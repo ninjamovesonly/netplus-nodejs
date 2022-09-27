@@ -59,6 +59,7 @@ const createEvent = async (req, res) => {
                       $description: "string",
                       $image: "string",
                       $location: "string",
+                      $user_id: "string",
                       $start_date: "datetime",  
                       $end_date: "datetime",  
                 }
