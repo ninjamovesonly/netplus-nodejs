@@ -1,5 +1,6 @@
 "use strict";
 
+const { response } = require("express");
 const { Op } = require("sequelize");
 const { Event } = require("../models");
 const logger = require("../util/log");
@@ -66,13 +67,28 @@ const createEvent = async (req, res) => {
         }
   */
 
-  await Event.create(req.body)
-    .then((data) => {
-      data.id
-        ? res.send({ success: true, data })
-        : res.send({ success: true, message: "Failed to create data" });
-    })
-    .catch((err) => logger(err));
+  try {
+    console.log(req.body);
+    const data = await Event.create({
+      user_id: req.isce_auth.user_id,
+      image: req.body.image,
+      title: req.body.title,
+      description: req.body.description,
+      start_date: req.body.start_date,
+      end_date: "2022-10-10"
+    });
+
+    let response;
+    if(data.id){
+      response = { success: 'true', message: 'Event created successfully', data: req.body };
+    }else{
+      response = { success: 'false', message: 'Unable to save event' };
+    }
+    res.send(response);
+  } catch (error) {
+    logger(error);
+    res.send({ success: 'false', message: 'Unable to save event' });
+  }
 };
 
 const updateEvent = async (req, res) => {
@@ -170,15 +186,22 @@ const getEvents = async (req, res) => {
         });
 
         res.send({
-          success: true,
-          data,
-          total,
-          past_events,
-          future_events,
+          success: 'true',
+          data: {
+            all: total,
+            past: past_events,
+            upcoming: future_events
+          }
         });
       });
     })
-    .catch((err) => logger(err));
+    .catch((err) => {
+      logger(err);
+      res.send({
+        success: 'false',
+        message: 'Unable to get events list'
+      });
+    });
 };
 
 const getPastEvents = async (req, res) => {
