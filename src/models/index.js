@@ -20,6 +20,10 @@ const Event = sequelize.define("event", {
     type: DataTypes.TEXT,
     allowNull: true,
   },
+  location: {
+    type: DataTypes.TEXT,
+    allowNull: true,
+  },
   image: {
     type: DataTypes.TEXT,
     allowNull: true,
@@ -65,6 +69,10 @@ const Price = sequelize.define("event_price", {
     type: DataTypes.INTEGER,
     allowNull: false,
   },
+  attendee: {
+    type: DataTypes.INTEGER,
+    allowNull: true
+  }
 });
 
 const Attendee = sequelize.define("event_attendee", {

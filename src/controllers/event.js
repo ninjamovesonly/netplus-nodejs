@@ -68,11 +68,11 @@ const createEvent = async (req, res) => {
   */
 
   try {
-    console.log(req.body);
     const data = await Event.create({
       user_id: req.isce_auth.user_id,
       image: req.body.image,
       title: req.body.title,
+      location: req.body.location,
       description: req.body.description,
       start_date: req.body.start_date,
       end_date: "2022-10-10"
@@ -80,14 +80,14 @@ const createEvent = async (req, res) => {
 
     let response;
     if(data.id){
-      response = { success: 'true', message: 'Event created successfully', data: req.body };
+      response = { success: 'true', message: 'Event created successfully', data };
     }else{
       response = { success: 'false', message: 'Unable to save event' };
     }
     res.send(response);
   } catch (error) {
     logger(error);
-    res.send({ success: 'false', message: 'Unable to save event' });
+    res.send({ success: 'false', message: error.message });
   }
 };
 
@@ -175,22 +175,23 @@ const getEvents = async (req, res) => {
           },
         },
       }).then(async (data) => {
-        let past_events, future_events;
+        let past, upcoming;
 
         await getPast().then((pe) => {
-          past_events = pe;
+          past = pe;
         });
 
         await getFuture().then((fe) => {
-          future_events = fe;
+          upcoming = fe;
         });
 
         res.send({
           success: 'true',
           data: {
-            all: total,
-            past: past_events,
-            upcoming: future_events
+            count: data.length,
+            all: data,
+            past,
+            upcoming
           }
         });
       });
