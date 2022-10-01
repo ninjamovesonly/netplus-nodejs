@@ -28,6 +28,10 @@ const Event = sequelize.define("event", {
     type: DataTypes.TEXT,
     allowNull: true,
   },
+  gallery: {
+    type: DataTypes.TEXT,
+    allowNull: true,
+  },
   location: {
     type: DataTypes.TEXT,
     allowNull: true,
@@ -71,8 +75,8 @@ const Price = sequelize.define("event_price", {
   },
   attendees: {
     type: DataTypes.INTEGER,
-    allowNull: true
-  }
+    allowNull: true,
+  },
 });
 
 const Attendee = sequelize.define("event_attendee", {
@@ -160,18 +164,6 @@ const Url = sequelize.define("event_url", {
   device_type: {
     type: DataTypes.STRING,
     allowNull: false,
-  },
-});
-
-Event.hasMany(Price, {
-  foreignKey: {
-    id: "event_id",
-  },
-});
-
-Event.hasMany(Attendee, {
-  foreignKey: {
-    id: "event_id",
   },
 });
 

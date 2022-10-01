@@ -3,6 +3,7 @@
 const { response } = require("express");
 const { Op } = require("sequelize");
 const { Event, Price } = require("../models");
+const { asyncForEach } = require("../util");
 const logger = require("../util/log");
 
 const totalCount = async () => {
@@ -20,29 +21,55 @@ const totalCount = async () => {
   return val;
 };
 
-const getPast = async () => {
-  return await Event.findAll({
-    limit: 20,
-    where: {
-      start_date: {
-        [Op.lt]: new Date(),
-      },
-    },
-  }).then((data) => {
+const getPrices = async (id) => {
+  return await Price.findAll({ where: { event_id: id } }).then((data) => {
+    data = data.length ? data : [];
     return data;
+  });
+  // .catch((err) => logger(err));
+};
+
+const getPast = async () => {
+  return new Promise(async (resolve) => {
+    await Event.findAll({
+      limit: 20,
+      where: {
+        start_date: {
+          [Op.lt]: new Date(),
+        },
+      },
+    }).then(async (data) => {
+      let events = [];
+      await asyncForEach(data, async (item) => {
+        await getPrices(item.id).then((prices) => {
+          events.push({ ...item, prices });
+        });
+      }).finally(() => {
+        resolve(events);
+      });
+    });
   });
 };
 
 const getFuture = async () => {
-  return await Event.findAll({
-    limit: 20,
-    where: {
-      start_date: {
-        [Op.gt]: new Date(),
+  return new Promise(async (resolve) => {
+    await Event.findAll({
+      limit: 20,
+      where: {
+        start_date: {
+          [Op.gt]: new Date(),
+        },
       },
-    },
-  }).then((data) => {
-    return data;
+    }).then(async (data) => {
+      let events = [];
+      await asyncForEach(data, async (item) => {
+        await getPrices(item.id).then((prices) => {
+          events.push({ ...item, prices });
+        });
+      }).finally(() => {
+        resolve(events);
+      });
+    });
   });
 };
 
@@ -75,19 +102,23 @@ const createEvent = async (req, res) => {
       location: req.body.location,
       description: req.body.description,
       start_date: req.body.start_date,
-      end_date: "2022-10-10"
+      end_date: "2022-10-10",
     });
 
     let response;
-    if(data.id){
-      response = { success: 'true', message: 'Event created successfully', data };
-    }else{
-      response = { success: 'false', message: 'Unable to save event' };
+    if (data.id) {
+      response = {
+        success: "true",
+        message: "Event created successfully",
+        data,
+      };
+    } else {
+      response = { success: "false", message: "Unable to save event" };
     }
     res.send(response);
   } catch (error) {
     logger(error);
-    res.send({ success: 'false', message: error.message });
+    res.send({ success: "false", message: error.message });
   }
 };
 
@@ -184,23 +215,30 @@ const getEvents = async (req, res) => {
         await getFuture().then((fe) => {
           upcoming = fe;
         });
-
-        res.send({
-          success: 'true',
-          data: {
-            count: data.length,
-            all: data,
-            past,
-            upcoming
-          }
+        let events = [];
+        await asyncForEach(data, async (item) => {
+          await getPrices(item.id).then((prices) => {
+            events.push({ ...item, prices });
+          });
+        }).finally(() => {
+          res.send({
+            success: "true",
+            data: {
+              count: data.length,
+              all: data,
+              past,
+              upcoming,
+              total,
+            },
+          });
         });
       });
     })
     .catch((err) => {
       logger(err);
       res.send({
-        success: 'false',
-        message: 'Unable to get events list'
+        success: "false",
+        message: "Unable to get events list",
       });
     });
 };
@@ -231,7 +269,22 @@ const getPastEvents = async (req, res) => {
             [Op.lt]: new Date(),
           },
         },
-      }).then((data) => {
+      }).then(async (data) => {
+        let events = [];
+        await asyncForEach(data, async (item) => {
+          await getPrices(item.id).then((prices) => {
+            events.push({ ...item, prices });
+          });
+        }).finally(() => {
+          res.send({
+            success: "true",
+            data: {
+              count: data.length,
+              all: data,
+              total,
+            },
+          });
+        });
         res.send({ success: true, data, total });
       });
     })
@@ -288,9 +341,12 @@ const getEvent = (req, res) => {
   */
 
   Event.findOne({ where: { id: req.params.id } })
-    .then((data) => {
+    .then(async (data) => {
       if (data) {
-        res.send({ success: true, data });
+        await getPrices(data.id).then((prices) => {
+          data.prices = prices;
+          res.send({ success: true, data });
+        });
       } else {
         res.send({ success: false, message: "No data" });
       }
