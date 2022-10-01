@@ -2,7 +2,7 @@
 
 const { response } = require("express");
 const { Op } = require("sequelize");
-const { Event } = require("../models");
+const { Event, Price } = require("../models");
 const logger = require("../util/log");
 
 const totalCount = async () => {

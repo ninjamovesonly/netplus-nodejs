@@ -69,7 +69,7 @@ const Price = sequelize.define("event_price", {
     type: DataTypes.INTEGER,
     allowNull: false,
   },
-  attendee: {
+  attendees: {
     type: DataTypes.INTEGER,
     allowNull: true
   }
