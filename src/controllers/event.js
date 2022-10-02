@@ -153,7 +153,10 @@ const updateEvent = async (req, res) => {
         data,
       });
     })
-    .catch((err) => logger(err));
+    .catch((err) => {
+      logger(err)
+      res.send({ success: "false", message: error.message });
+    });
 };
 
 const deleteEvent = async (req, res) => {
@@ -176,7 +179,10 @@ const deleteEvent = async (req, res) => {
         message: "Event deleted",
       });
     })
-    .catch((err) => logger(err));
+    .catch((err) => {
+      logger(err)
+      res.send({ success: "false", message: error.message });
+    });
 };
 
 const getEvents = async (req, res) => {
@@ -220,12 +226,13 @@ const getEvents = async (req, res) => {
           await getPrices(item.id).then((prices) => {
             events.push({ ...item, prices });
           });
+
         }).finally(() => {
           res.send({
             success: "true",
             data: {
-              count: data.length,
-              all: data,
+              count: events.length,
+              all: events,
               past,
               upcoming,
               total,
@@ -238,7 +245,7 @@ const getEvents = async (req, res) => {
       logger(err);
       res.send({
         success: "false",
-        message: "Unable to get events list",
+        message: err.message,
       });
     });
 };

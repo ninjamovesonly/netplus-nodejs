@@ -5,7 +5,7 @@
     "title": "Events API",
     "description": "ISCE Events API"
   },
-  "host": "localhost:3000",
+  "host": "http://localhost",
   "basePath": "/",
   "schemes": [
     "http",
@@ -32,11 +32,6 @@
         ],
         "description": "Create Event",
         "parameters": [
-          {
-            "name": "Authorization",
-            "in": "header",
-            "type": "string"
-          },
           {
             "name": "obj",
             "in": "body",
