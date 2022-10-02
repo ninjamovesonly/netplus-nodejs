@@ -33,11 +33,6 @@
         "description": "Create Event",
         "parameters": [
           {
-            "name": "Authorization",
-            "in": "header",
-            "type": "string"
-          },
-          {
             "name": "obj",
             "in": "body",
             "schema": {

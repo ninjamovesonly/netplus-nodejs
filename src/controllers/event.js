@@ -1,6 +1,5 @@
 "use strict";
 
-const { response } = require("express");
 const { Op } = require("sequelize");
 const { Event, Price } = require("../models");
 const { asyncForEach } = require("../util");
@@ -22,11 +21,12 @@ const totalCount = async () => {
 };
 
 const getPrices = async (id) => {
-  return await Price.findAll({ where: { event_id: id } }).then((data) => {
-    data = data.length ? data : [];
-    return data;
-  });
-  // .catch((err) => logger(err));
+  return await Price.findAll({ where: { event_id: id } })
+    .then((data) => {
+      data = data.length ? data : [];
+      return data;
+    })
+    .catch((err) => logger(err));
 };
 
 const getPast = async () => {
@@ -40,9 +40,10 @@ const getPast = async () => {
       },
     }).then(async (data) => {
       let events = [];
-      await asyncForEach(data, async (item) => {
+      asyncForEach(data, async (item) => {
+        let gallery = item.gallery ? JSON.parse(item.gallery) : [];
         await getPrices(item.id).then((prices) => {
-          events.push({ ...item, prices });
+          events.push({ ...item.dataValues, prices, gallery });
         });
       }).finally(() => {
         resolve(events);
@@ -63,8 +64,9 @@ const getFuture = async () => {
     }).then(async (data) => {
       let events = [];
       await asyncForEach(data, async (item) => {
+        let gallery = item.gallery ? JSON.parse(item.gallery) : [];
         await getPrices(item.id).then((prices) => {
-          events.push({ ...item, prices });
+          events.push({ ...item.dataValues, prices, gallery });
         });
       }).finally(() => {
         resolve(events);
@@ -102,7 +104,7 @@ const createEvent = async (req, res) => {
       location: req.body.location,
       description: req.body.description,
       start_date: req.body.start_date,
-      end_date: "2022-10-10",
+      end_date: req.body.end_date,
     });
 
     let response;
@@ -217,15 +219,17 @@ const getEvents = async (req, res) => {
         });
         let events = [];
         await asyncForEach(data, async (item) => {
+          let gallery = item.gallery ? JSON.parse(item.gallery) : [];
           await getPrices(item.id).then((prices) => {
-            events.push({ ...item, prices });
+            prices = prices.length ? prices : [];
+            events.push({ ...item.dataValues, prices, gallery });
           });
         }).finally(() => {
           res.send({
             success: "true",
             data: {
               count: data.length,
-              all: data,
+              all: events,
               past,
               upcoming,
               total,
