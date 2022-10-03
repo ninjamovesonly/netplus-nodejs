@@ -28,6 +28,10 @@ const Event = sequelize.define("event", {
     type: DataTypes.TEXT,
     allowNull: true,
   },
+  gallery: {
+    type: DataTypes.TEXT,
+    allowNull: true,
+  },
   location: {
     type: DataTypes.TEXT,
     allowNull: true,
@@ -72,27 +76,6 @@ const Price = sequelize.define("event_price", {
   attendees: {
     type: DataTypes.INTEGER,
     allowNull: true,
-  },
-});
-
-const Gallery = sequelize.define("event_gallery", {
-  id: {
-    type: DataTypes.STRING,
-    allowNull: false,
-    defaultValue: guid(),
-    primaryKey: true,
-  },
-  event_id: {
-    type: DataTypes.STRING,
-    allowNull: false,
-  },
-  name: {
-    type: DataTypes.STRING,
-    allowNull: true,
-  },
-  image: {
-    type: DataTypes.TEXT,
-    allowNull: false,
   },
 });
 
@@ -187,7 +170,6 @@ const Url = sequelize.define("event_url", {
 const init = async () => {
   await Event.sync();
   await Price.sync();
-  await Gallery.sync();
   await Attendee.sync();
   await Token.sync();
   await Url.sync();

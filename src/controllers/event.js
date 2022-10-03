@@ -227,7 +227,7 @@ const getEvents = async (req, res) => {
         await asyncForEach(data, async (item) => {
           let gallery = item.gallery ? JSON.parse(item.gallery) : [];
           await getPrices(item.id).then((prices) => {
-            prices = prices.length ? prices : [];
+            prices = prices && prices?.length > 0 ? prices : [];
             events.push({ ...item.dataValues, prices, gallery });
           });
 
