@@ -12,18 +12,19 @@ const {
 const { createPrice, updatePrice, getPrices, getPrice } = require("./price");
 
 const {
+  createGallery,
+  updateGallery,
+  deleteGallery,
+  getGalleries,
+  getGallery,
+} = require("./gallery");
+
+const {
   createAttendee,
   updateAttendee,
   getAttendees,
   getAttendee,
 } = require("./attendee");
-
-const {
-  uploadImage,
-  uploadFile,
-  getFileById,
-  getFileByRelative,
-} = require("./upload");
 
 module.exports = {
   createEvent,
@@ -37,10 +38,11 @@ module.exports = {
   updatePrice,
   getPrices,
   getPrice,
-  uploadImage,
-  getFileById,
-  getFileByRelative,
-  uploadFile,
+  createGallery,
+  updateGallery,
+  deleteGallery,
+  getGalleries,
+  getGallery,
   createAttendee,
   updateAttendee,
   getAttendees,

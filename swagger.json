@@ -499,6 +499,174 @@
         ]
       }
     },
+    "/api/gallery/create": {
+      "post": {
+        "tags": [
+          "Gallery"
+        ],
+        "description": "Create Gallery",
+        "parameters": [
+          {
+            "name": "obj",
+            "in": "body",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "event_id": {
+                  "type": "string",
+                  "example": "string"
+                },
+                "name": {
+                  "type": "string",
+                  "example": "string"
+                },
+                "image": {
+                  "type": "string",
+                  "example": "string"
+                }
+              },
+              "required": [
+                "event_id",
+                "name",
+                "image"
+              ]
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        },
+        "security": [
+          {
+            "apikey": []
+          }
+        ]
+      }
+    },
+    "/api/gallery/update": {
+      "post": {
+        "tags": [
+          "Gallery"
+        ],
+        "description": "Update Gallery",
+        "parameters": [
+          {
+            "name": "obj",
+            "in": "body",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "event_id": {
+                  "type": "string",
+                  "example": "string"
+                },
+                "name": {
+                  "type": "string",
+                  "example": "string"
+                },
+                "image": {
+                  "type": "string",
+                  "example": "string"
+                }
+              },
+              "required": [
+                "event_id",
+                "name",
+                "image"
+              ]
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        },
+        "security": [
+          {
+            "apikey": []
+          }
+        ]
+      }
+    },
+    "/api/galleries/{id}": {
+      "get": {
+        "tags": [
+          "Gallery"
+        ],
+        "description": "Get Galleries by event_id",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        },
+        "security": [
+          {
+            "apikey": []
+          }
+        ]
+      }
+    },
+    "/api/gallery/{id}": {
+      "get": {
+        "tags": [
+          "Gallery"
+        ],
+        "description": "Get single gallery by id",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        },
+        "security": [
+          {
+            "apikey": []
+          }
+        ]
+      },
+      "delete": {
+        "tags": [
+          "Gallery"
+        ],
+        "description": "Delete gallery by id",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        },
+        "security": [
+          {
+            "apikey": []
+          }
+        ]
+      }
+    },
     "/api/attendee/create": {
       "post": {
         "tags": [
@@ -653,128 +821,6 @@
           "Attendee"
         ],
         "description": "Get single attendee by id",
-        "parameters": [
-          {
-            "name": "id",
-            "in": "path",
-            "required": true,
-            "type": "string"
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "OK"
-          }
-        },
-        "security": [
-          {
-            "apikey": []
-          }
-        ]
-      }
-    },
-    "/api/upload/image/{id}": {
-      "post": {
-        "tags": [
-          "Upload"
-        ],
-        "description": "Upload image",
-        "consumes": [
-          "multipart/form-data"
-        ],
-        "parameters": [
-          {
-            "name": "id",
-            "in": "path",
-            "required": true,
-            "type": "string"
-          },
-          {
-            "name": "singleFile",
-            "in": "formData",
-            "type": "file",
-            "required": true
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "OK"
-          }
-        },
-        "security": [
-          {
-            "apikey": []
-          }
-        ]
-      }
-    },
-    "/api/upload/document/{id}": {
-      "post": {
-        "tags": [
-          "Upload"
-        ],
-        "description": "Upload document",
-        "consumes": [
-          "multipart/form-data"
-        ],
-        "parameters": [
-          {
-            "name": "id",
-            "in": "path",
-            "required": true,
-            "type": "string"
-          },
-          {
-            "name": "singleFile",
-            "in": "formData",
-            "type": "file",
-            "required": true
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "OK"
-          }
-        },
-        "security": [
-          {
-            "apikey": []
-          }
-        ]
-      }
-    },
-    "/api/upload/relative/{id}": {
-      "get": {
-        "tags": [
-          "Upload"
-        ],
-        "description": "Get upload by id",
-        "parameters": [
-          {
-            "name": "id",
-            "in": "path",
-            "required": true,
-            "type": "string"
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "OK"
-          }
-        },
-        "security": [
-          {
-            "apikey": []
-          }
-        ]
-      }
-    },
-    "/api/upload/{id}": {
-      "get": {
-        "tags": [
-          "Upload"
-        ],
-        "description": "Get a file by event id",
         "parameters": [
           {
             "name": "id",

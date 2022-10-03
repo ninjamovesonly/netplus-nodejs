@@ -57,16 +57,17 @@ route.post("/api/price/update", controllers.updatePrice);
 route.get("/api/prices/:id", controllers.getPrices);
 route.get("/api/price/:id", controllers.getPrice);
 
+//Gallery routes
+route.post("/api/gallery/create", controllers.createGallery);
+route.post("/api/gallery/update", controllers.updateGallery);
+route.get("/api/galleries/:id", controllers.getGalleries);
+route.get("/api/gallery/:id", controllers.getGallery);
+route.delete("/api/gallery/:id", controllers.deleteGallery);
+
 //Attendee routes
 route.post("/api/attendee/create", controllers.createAttendee);
 route.post("/api/attendee/update", controllers.updateAttendee);
 route.get("/api/attendees/:id", controllers.getAttendees);
 route.get("/api/attendee/:id", controllers.getAttendee);
-
-//Upload routes
-route.post("/api/upload/image/:id", controllers.uploadImage);
-route.post("/api/upload/document/:id", controllers.uploadFile);
-route.get("/api/upload/relative/:id", controllers.getFileByRelative);
-route.get("/api/upload/:id", controllers.getFileById);
 
 module.exports = route;
