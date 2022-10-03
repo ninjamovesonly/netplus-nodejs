@@ -77,6 +77,10 @@ const Price = sequelize.define("event_price", {
     type: DataTypes.INTEGER,
     allowNull: true,
   },
+  order_amount: {
+    type: DataTypes.INTEGER,
+    allowNull: false,
+  },
 });
 
 const Attendee = sequelize.define("event_attendee", {
