@@ -1,7 +1,7 @@
 "use strict";
 
 const { Op } = require("sequelize");
-const { Event, Price } = require("../models");
+const { Event, Price, Gallery } = require("../models");
 const { asyncForEach } = require("../util");
 const logger = require("../util/log");
 
@@ -29,6 +29,15 @@ const getPrices = async (id) => {
     .catch((err) => logger(err));
 };
 
+const getGallery = async (id) => {
+  return await Gallery.findAll({ where: { event_id: id } })
+    .then((data) => {
+      data = data.length ? data : [];
+      return data;
+    })
+    .catch((err) => logger(err));
+};
+
 const getPast = async () => {
   return new Promise(async (resolve) => {
     await Event.findAll({
@@ -41,9 +50,10 @@ const getPast = async () => {
     }).then(async (data) => {
       let events = [];
       asyncForEach(data, async (item) => {
-        let gallery = item.gallery ? JSON.parse(item.gallery) : [];
-        await getPrices(item.id).then((prices) => {
-          events.push({ ...item.dataValues, prices, gallery });
+        await getPrices(item.id).then(async (prices) => {
+          await getGallery(item.id).then((gallery) => {
+            events.push({ ...item.dataValues, prices, gallery });
+          });
         });
       }).finally(() => {
         resolve(events);
@@ -64,9 +74,10 @@ const getFuture = async () => {
     }).then(async (data) => {
       let events = [];
       await asyncForEach(data, async (item) => {
-        let gallery = item.gallery ? JSON.parse(item.gallery) : [];
-        await getPrices(item.id).then((prices) => {
-          events.push({ ...item.dataValues, prices, gallery });
+        await getPrices(item.id).then(async (prices) => {
+          await getGallery(item.id).then((gallery) => {
+            events.push({ ...item.dataValues, prices, gallery });
+          });
         });
       }).finally(() => {
         resolve(events);
@@ -219,10 +230,11 @@ const getEvents = async (req, res) => {
         });
         let events = [];
         await asyncForEach(data, async (item) => {
-          let gallery = item.gallery ? JSON.parse(item.gallery) : [];
-          await getPrices(item.id).then((prices) => {
+          await getPrices(item.id).then(async (prices) => {
             prices = prices.length ? prices : [];
-            events.push({ ...item.dataValues, prices, gallery });
+            await getGallery(item.id).then((gallery) => {
+              events.push({ ...item.dataValues, prices, gallery });
+            });
           });
         }).finally(() => {
           res.send({
@@ -346,10 +358,12 @@ const getEvent = (req, res) => {
 
   Event.findOne({ where: { id: req.params.id } })
     .then(async (data) => {
-      if (data) {
-        await getPrices(data.id).then((prices) => {
-          data.prices = prices;
-          res.send({ success: true, data });
+      if (data.id) {
+        await getPrices(data.id).then(async (prices) => {
+          await getGallery(data.id).then((gallery) => {
+            data = { ...data.dataValues, gallery, prices };
+            res.send({ success: true, data });
+          });
         });
       } else {
         res.send({ success: false, message: "No data" });

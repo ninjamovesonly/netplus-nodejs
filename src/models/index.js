@@ -83,6 +83,27 @@ const Price = sequelize.define("event_price", {
   },
 });
 
+const Gallery = sequelize.define("event_gallerie", {
+  id: {
+    type: DataTypes.STRING,
+    allowNull: false,
+    defaultValue: guid(),
+    primaryKey: true,
+  },
+  event_id: {
+    type: DataTypes.STRING,
+    allowNull: false,
+  },
+  name: {
+    type: DataTypes.STRING,
+    allowNull: false,
+  },
+  image: {
+    type: DataTypes.TEXT,
+    allowNull: true,
+  },
+});
+
 const Attendee = sequelize.define("event_attendee", {
   id: {
     type: DataTypes.STRING,
@@ -174,6 +195,7 @@ const Url = sequelize.define("event_url", {
 const init = async () => {
   await Event.sync();
   await Price.sync();
+  await Gallery.sync();
   await Attendee.sync();
   await Token.sync();
   await Url.sync();
@@ -181,4 +203,4 @@ const init = async () => {
 
 init();
 
-module.exports = { Event, Price, Attendee, Token, Url };
+module.exports = { Event, Price, Gallery, Attendee, Token, Url };
