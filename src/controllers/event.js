@@ -190,16 +190,16 @@ const deleteEvent = async (req, res) => {
         },
       }).then(async () => {
         await Gallery.destroy({
-        where: {
-          event_id: req.params.id,
-        },
-      }).then(() => {
-        res.send({
-        success: true,
-        message: "Event deleted",
+          where: {
+            event_id: req.params.id,
+          },
+        }).then(() => {
+          res.send({
+            success: true,
+            message: "Event deleted",
+          });
+        });
       });
-      });
-      
     })
     .catch((err) => logger(err));
 };
