@@ -5,7 +5,7 @@
     "title": "Events API",
     "description": "ISCE Events API"
   },
-  "host": "localhost:3000",
+  "host": "http://localhost",
   "basePath": "/",
   "schemes": [
     "http",
@@ -104,6 +104,11 @@
         "description": "Update Event",
         "parameters": [
           {
+            "name": "Authorization",
+            "in": "header",
+            "type": "string"
+          },
+          {
             "name": "obj",
             "in": "body",
             "schema": {
@@ -194,6 +199,11 @@
         ],
         "description": "Get past events",
         "parameters": [
+          {
+            "name": "Authorization",
+            "in": "header",
+            "type": "string"
+          },
           {
             "name": "page",
             "in": "query",

@@ -42,7 +42,7 @@ const Event = sequelize.define("event", {
   },
   end_date: {
     type: DataTypes.DATE,
-    allowNull: false,
+    allowNull: true,
   },
   user_id: {
     type: DataTypes.STRING,

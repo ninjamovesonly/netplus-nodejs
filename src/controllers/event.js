@@ -108,7 +108,7 @@ const createEvent = async (req, res) => {
   */
 
   try {
-    const data = await Event.create({
+    const event = await Event.create({
       user_id: req.isce_auth.user_id,
       image: req.body.image,
       title: req.body.title,
@@ -116,14 +116,27 @@ const createEvent = async (req, res) => {
       description: req.body.description,
       start_date: req.body.start_date,
       end_date: req.body.end_date,
+      gallery: "",
     });
 
     let response;
-    if (data.id) {
+    if (event.id) {
+      const prices = req.body?.prices;
+      if (prices?.length > 0)
+        prices.forEach(async (price) => {
+          await Price.create({ event_id: event?.id, ...price });
+        });
+
+      const gallery = req.body?.gallery;
+      if (gallery?.length > 0)
+        gallery.forEach(async (item) => {
+          await Gallery.create({ event_id: event?.id, ...item });
+        });
+
       response = {
         success: "true",
         message: "Event created successfully",
-        data,
+        data: event,
       };
     } else {
       response = { success: "false", message: "Unable to save event" };
@@ -166,7 +179,10 @@ const updateEvent = async (req, res) => {
         data,
       });
     })
-    .catch((err) => logger(err));
+    .catch((err) => {
+      logger(err);
+      res.send({ success: "false", message: error.message });
+    });
 };
 
 const deleteEvent = async (req, res) => {
@@ -183,25 +199,16 @@ const deleteEvent = async (req, res) => {
       id: req.params.id,
     },
   })
-    .then(async () => {
-      await Price.destroy({
-        where: {
-          event_id: req.params.id,
-        },
-      }).then(async () => {
-        await Gallery.destroy({
-          where: {
-            event_id: req.params.id,
-          },
-        }).then(() => {
-          res.send({
-            success: true,
-            message: "Event deleted",
-          });
-        });
+    .then(() => {
+      res.send({
+        success: true,
+        message: "Event deleted",
       });
     })
-    .catch((err) => logger(err));
+    .catch((err) => {
+      logger(err);
+      res.send({ success: "false", message: error.message });
+    });
 };
 
 const getEvents = async (req, res) => {
@@ -266,7 +273,7 @@ const getEvents = async (req, res) => {
       logger(err);
       res.send({
         success: "false",
-        message: "Unable to get events list",
+        message: err.message,
       });
     });
 };
