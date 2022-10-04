@@ -195,7 +195,7 @@ const deleteEvent = async (req, res) => {
       id: req.params.id,
     },
   })
-    .then(async () => {
+  .then(async () => {
       await Price.destroy({
         where: {
           event_id: req.params.id,
@@ -210,14 +210,14 @@ const deleteEvent = async (req, res) => {
         success: true,
         message: "Event deleted",
       });
-      });
-      
-    })
-    .catch((err) => {
-      logger(err)
-      res.send({ success: "false", message: error.message });
     });
-};
+    
+  })
+  .catch((err) => {
+    logger(err)
+    res.send({ success: "false", message: error.message });
+  })
+});
 
 const getEvents = async (req, res) => {
   /*
