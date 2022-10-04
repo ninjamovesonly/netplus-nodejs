@@ -121,11 +121,13 @@ const createEvent = async (req, res) => {
 
     let response;
     if (event.id) {
-      prices.forEach(async (price) => {
+      const prices = req.body?.prices;
+      if(prices?.length > 0) prices.forEach(async (price) => {
         await Price.create({ event_id: event?.id, ...price })
       });
 
-      gallery.forEach(async (item) => {
+      const gallery = req.body?.gallery;
+      if(gallery?.length > 0) gallery.forEach(async (item) => {
         await Gallery.create({ event_id: event?.id, ...item })
       });
 
@@ -195,29 +197,17 @@ const deleteEvent = async (req, res) => {
       id: req.params.id,
     },
   })
-  .then(async () => {
-      await Price.destroy({
-        where: {
-          event_id: req.params.id,
-        },
-      }).then(async () => {
-        await Gallery.destroy({
-        where: {
-          event_id: req.params.id,
-        },
-      }).then(() => {
-        res.send({
+    .then(() => {
+      res.send({
         success: true,
         message: "Event deleted",
       });
+    })
+    .catch((err) => {
+      logger(err)
+      res.send({ success: "false", message: error.message });
     });
-    
-  })
-  .catch((err) => {
-    logger(err)
-    res.send({ success: "false", message: error.message });
-  })
-});
+};
 
 const getEvents = async (req, res) => {
   /*
