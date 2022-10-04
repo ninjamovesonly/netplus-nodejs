@@ -108,7 +108,7 @@ const createEvent = async (req, res) => {
   */
 
   try {
-    const data = await Event.create({
+    const event = await Event.create({
       user_id: req.isce_auth.user_id,
       image: req.body.image,
       title: req.body.title,
@@ -116,14 +116,23 @@ const createEvent = async (req, res) => {
       description: req.body.description,
       start_date: req.body.start_date,
       end_date: req.body.end_date,
+      gallery: ""
     });
 
     let response;
-    if (data.id) {
+    if (event.id) {
+      prices.forEach(async (price) => {
+        await Price.create({ event_id: event?.id, ...price })
+      });
+
+      gallery.forEach(async (item) => {
+        await Gallery.create({ event_id: event?.id, ...item })
+      });
+
       response = {
         success: "true",
         message: "Event created successfully",
-        data,
+        data: event,
       };
     } else {
       response = { success: "false", message: "Unable to save event" };
