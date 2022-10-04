@@ -183,11 +183,23 @@ const deleteEvent = async (req, res) => {
       id: req.params.id,
     },
   })
-    .then(() => {
-      res.send({
+    .then(async () => {
+      await Price.destroy({
+        where: {
+          event_id: req.params.id,
+        },
+      }).then(async () => {
+        await Gallery.destroy({
+        where: {
+          event_id: req.params.id,
+        },
+      }).then(() => {
+        res.send({
         success: true,
         message: "Event deleted",
       });
+      });
+      
     })
     .catch((err) => logger(err));
 };
