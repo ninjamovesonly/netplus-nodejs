@@ -80,6 +80,7 @@ const Price = sequelize.define("event_price", {
   order_amount: {
     type: DataTypes.INTEGER,
     allowNull: false,
+    defaultValue: 0
   },
 });
 

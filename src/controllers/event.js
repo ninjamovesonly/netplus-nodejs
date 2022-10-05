@@ -123,7 +123,7 @@ const createEvent = async (req, res) => {
     if (event.id) {
       const prices = req.body?.prices;
       if(prices?.length > 0) prices.forEach(async (price) => {
-        await Price.create({ event_id: event?.id, ...price })
+        await Price.create({ event_id: event?.id, ...price, order_amount: 0 })
       });
 
       const gallery = req.body?.gallery;
