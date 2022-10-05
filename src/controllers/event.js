@@ -238,6 +238,9 @@ const getEvents = async (req, res) => {
           start_date: {
             [Op.gte]: new Date(),
           },
+          user_id: {
+            [Op.eq]: req.isce_auth?.user_id
+          }
         },
       }).then(async (data) => {
         let past, upcoming;

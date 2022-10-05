@@ -44,7 +44,7 @@ const route = Router();
 
 route.post("/api/event/create", authenticate, controllers.createEvent);
 route.post("/api/event/update", authenticate, controllers.updateEvent);
-route.get("/api/events", controllers.getEvents);
+route.get("/api/events", authenticate, controllers.getEvents);
 route.get("/api/events/past", authenticate, controllers.getPastEvents);
 route.get("/api/events/search", controllers.searchEvents);
 route.get("/api/event/:id", controllers.getEvent);
