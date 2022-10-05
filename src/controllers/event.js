@@ -120,18 +120,18 @@ const createEvent = async (req, res) => {
     });
 
     let response;
-    if (event.id) {
+    if (event?.id) {
       const prices = req.body?.prices;
       if(prices?.length > 0){
         prices.forEach(async (price) => {
-          await Price.create({ event_id: event?.id, ...price, order_amount: 0 })
+          await Price.create({ event_id: event.id, ...price, order_amount: 0 })
         });
       }
 
       const gallery = req.body?.gallery;
       if (gallery?.length > 0){
         gallery.forEach(async (item) => {
-          await Gallery.create({ event_id: event?.id, ...item });
+          await Gallery.create({ event_id: event.id, ...item });
         });
       }
 
