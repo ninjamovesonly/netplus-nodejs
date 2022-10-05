@@ -116,20 +116,24 @@ const createEvent = async (req, res) => {
       description: req.body.description,
       start_date: req.body.start_date,
       end_date: req.body.end_date,
-      gallery: ""
+      gallery: "",
     });
 
     let response;
     if (event.id) {
       const prices = req.body?.prices;
-      if(prices?.length > 0) prices.forEach(async (price) => {
-        await Price.create({ event_id: event?.id, ...price, order_amount: 0 })
-      });
+      if(prices?.length > 0){
+        prices.forEach(async (price) => {
+          await Price.create({ event_id: event?.id, ...price, order_amount: 0 })
+        });
+      }
 
       const gallery = req.body?.gallery;
-      if(gallery?.length > 0) gallery.forEach(async (item) => {
-        await Gallery.create({ event_id: event?.id, ...item })
-      });
+      if (gallery?.length > 0){
+        gallery.forEach(async (item) => {
+          await Gallery.create({ event_id: event?.id, ...item });
+        });
+      }
 
       response = {
         success: "true",
@@ -178,7 +182,7 @@ const updateEvent = async (req, res) => {
       });
     })
     .catch((err) => {
-      logger(err)
+      logger(err);
       res.send({ success: "false", message: error.message });
     });
 };
@@ -204,7 +208,7 @@ const deleteEvent = async (req, res) => {
       });
     })
     .catch((err) => {
-      logger(err)
+      logger(err);
       res.send({ success: "false", message: error.message });
     });
 };
@@ -253,7 +257,6 @@ const getEvents = async (req, res) => {
               events.push({ ...item.dataValues, prices, gallery });
             });
           });
-
         }).finally(() => {
           res.send({
             success: "true",
