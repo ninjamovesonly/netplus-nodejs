@@ -170,6 +170,11 @@
         "description": "Get Events",
         "parameters": [
           {
+            "name": "Authorization",
+            "in": "header",
+            "type": "string"
+          },
+          {
             "name": "page",
             "in": "query",
             "type": "string"

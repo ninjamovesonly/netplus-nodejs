@@ -2,7 +2,7 @@
 
 const { Op } = require("sequelize");
 const { Event, Price, Gallery } = require("../models");
-const { asyncForEach } = require("../util");
+const { asyncForEach, guid } = require("../util");
 const logger = require("../util/log");
 
 const totalCount = async () => {
@@ -96,6 +96,7 @@ const createEvent = async (req, res) => {
     #swagger.parameters['obj'] = {
                 in: 'body',
                 schema: {
+                      $image: "string",
                       $title: "string",
                       $description: "string",
                       $image: "string",
@@ -103,6 +104,8 @@ const createEvent = async (req, res) => {
                       $user_id: "string",
                       $start_date: "datetime",  
                       $end_date: "datetime",  
+                      $gallery: "array",
+                      $prices: "array"
                 }
         }
   */
@@ -121,17 +124,22 @@ const createEvent = async (req, res) => {
 
     let response;
     if (event?.id) {
+
       const prices = req.body?.prices;
       if(prices?.length > 0){
         prices.forEach(async (price) => {
-          await Price.create({ event_id: event.id, ...price, order_amount: 0 })
+          await Price.create({ 
+            id: guid(), event_id: event.id, ...price, order_amount: 0 
+          });
         });
       }
 
       const gallery = req.body?.gallery;
       if (gallery?.length > 0){
         gallery.forEach(async (item) => {
-          await Gallery.create({ event_id: event.id, ...item });
+          await Gallery.create({ 
+            id: guid(), event_id: event.id, ...item 
+          });
         });
       }
 
@@ -143,10 +151,11 @@ const createEvent = async (req, res) => {
     } else {
       response = { success: "false", message: "Unable to save event" };
     }
+
     res.send(response);
   } catch (error) {
     logger(error);
-    res.send({ success: "false", message: error.message });
+    res.send({ success: "false", message: error?.message });
   }
 };
 
@@ -239,7 +248,7 @@ const getEvents = async (req, res) => {
             [Op.gte]: new Date(),
           },
           user_id: {
-            [Op.eq]: req.isce_auth?.user_id
+            [Op.eq]: req.isce_auth.user_id
           }
         },
       }).then(async (data) => {
