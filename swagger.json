@@ -43,15 +43,15 @@
             "schema": {
               "type": "object",
               "properties": {
+                "image": {
+                  "type": "string",
+                  "example": "string"
+                },
                 "title": {
                   "type": "string",
                   "example": "string"
                 },
                 "description": {
-                  "type": "string",
-                  "example": "string"
-                },
-                "image": {
                   "type": "string",
                   "example": "string"
                 },
@@ -70,16 +70,26 @@
                 "end_date": {
                   "type": "string",
                   "example": "datetime"
+                },
+                "gallery": {
+                  "type": "string",
+                  "example": "array"
+                },
+                "prices": {
+                  "type": "string",
+                  "example": "array"
                 }
               },
               "required": [
+                "image",
                 "title",
                 "description",
-                "image",
                 "location",
                 "user_id",
                 "start_date",
-                "end_date"
+                "end_date",
+                "gallery",
+                "prices"
               ]
             }
           }

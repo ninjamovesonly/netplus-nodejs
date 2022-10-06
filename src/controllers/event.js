@@ -122,7 +122,7 @@ const createEvent = async (req, res) => {
       gallery: "",
     });
 
-    let response;
+    let response, status;
     if (event?.id) {
 
       const prices = req.body?.prices;
@@ -143,19 +143,21 @@ const createEvent = async (req, res) => {
         });
       }
 
+      status = 200;
       response = {
         success: "true",
         message: "Event created successfully",
         data: event,
       };
     } else {
+      status = 404;
       response = { success: "false", message: "Unable to save event" };
     }
 
-    res.send(response);
+    res.status(status).send(response);
   } catch (error) {
     logger(error);
-    res.send({ success: "false", message: error?.message });
+    res.status(500).send({ success: "false", message: error?.message });
   }
 };
 

@@ -22,13 +22,13 @@ const authenticate = (req, res, next) => {
         req.isce_auth = auth?.data?.user;
         next();
       } else {
-        res.json({
+        res.status(401).send({
           success: "false",
           message: "Unauthorized",
         });
       }
     } catch (error) {
-      res.json({
+      res.status(500).send({
         error,
         success: "false",
         message: "Unauthorized",
