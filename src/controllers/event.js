@@ -102,21 +102,43 @@ const updateEvent = async (req, res) => {
         }
   */
 
-  await Event.update(req.body, {
-    where: {
-      id: req.params.id,
-    },
-  })
-    .then((data) => {
-      res.send({
-        success: true,
-        data,
-      });
-    })
-    .catch((err) => {
-      logger(err);
-      res.send({ success: "false", message: error.message });
+  try {
+    const event = await Event.update(req.body, {
+      where: {
+        id: req.params.id,
+      },
     });
+
+    const prices = req.body?.prices;
+    if(prices?.length > 0){
+      prices.forEach(async (price) => {
+        await Price.update(price, { 
+          where: {
+            id: price?.id
+          }
+        });
+      });
+    }
+
+    const gallery = req.body?.gallery;
+    if (gallery?.length > 0){
+      gallery.forEach(async (item) => {
+        await Gallery.update(item, { 
+          where: {
+            id: item?.id
+          }
+        });
+      });
+    }
+
+    res.send({
+      success: "true",
+      data: { event },
+    });
+  } catch (error) {
+    logger(err);
+    res.send({ success: "false", message: "An error has occurred" });
+  }
 };
 
 const deleteEvent = async (req, res) => {
@@ -128,21 +150,35 @@ const deleteEvent = async (req, res) => {
         }]
   */
 
-  await Event.destroy({
-    where: {
-      id: req.params.id,
-    },
-  })
-    .then(() => {
-      res.send({
-        success: true,
-        message: "Event deleted",
+  try {
+    if(!req?.params?.id){
+      res.status(404).send({
+        success: "false",
+        message: "Invalid event id",
       });
-    })
-    .catch((err) => {
-      logger(err);
-      res.send({ success: "false", message: error.message });
+    }
+
+    const event = await Event.destroy({
+      where: {
+        id: req.params.id,
+      },
     });
+
+    if(!event){
+      res.status(404).send({
+        success: "false",
+        message: "Event not available",
+      });
+    }
+  
+    res.status(200).send({
+      success: "true",
+      message: "Event deleted",
+    });
+  } catch (error) {
+    logger(err);
+    res.status(500).send({ success: "false", message: "An error occurred" });
+  }
 };
 
 const getEvents = async (req, res) => {
@@ -200,36 +236,38 @@ const searchEvents = async (req, res) => {
                "apikey": []
         }]
   */
-  let offset = 0,
+  
+  try {
+    let offset = 0,
     page = Number(req.query.page) || 1,
     limit = Number(req.query.limit) || 100,
     query = req.query.query;
 
-  if (page > 1) {
-    offset = limit * page;
-    offset = offset - limit;
-  }
+    if (page > 1) {
+      offset = limit * page;
+      offset = offset - limit;
+    }
 
-  /* await totalCount()
-    .then(async (total) => {
-      await Event.findAll({
-        limit,
-        offset,
-        where: {
-          [Op.or]: [
-            { title: { [Op.like]: query } },
-            { description: { [Op.like]: query } },
-          ],
-          title: { [Op.like]: query },
-          start_date: {
-            [Op.gte]: new Date(),
-          },
+    const events = await Event.findAll({
+      limit,
+      offset,
+      where: {
+        [Op.or]: [
+          { title: { [Op.like]: query } },
+          { description: { [Op.like]: query } },
+        ],
+        title: { [Op.like]: query },
+        start_date: {
+          [Op.gte]: new Date(),
         },
-      }).then((data) => {
-        res.send({ success: true, data, total });
-      });
-    })
-    .catch((err) => logger(err)); */
+      },
+    });
+
+    res.status(200).send({ success: "true", data: { events } });
+  } catch (error) {
+    logger(error);
+    res.status(500).send({ success: "false", message: "an error occurred" })
+  }
 };
 
 const getEvent = async (req, res) => {
@@ -242,7 +280,12 @@ const getEvent = async (req, res) => {
   */
 
   try {
-    const event = await Event.findOne({ where: { id: req.params.id } });
+    const event = await Event.findOne({ 
+      where: { 
+        id: req.params.id,
+        user_id: req?.isce_auth?.user_id 
+      } 
+    });
     if(!event?.id){
       res.status(404).send({ success: "false", message: "No data found" });
     }
