@@ -42,27 +42,13 @@ const route = Router();
 
 //Event routes
 
-route.post("/api/event/create", authenticate, controllers.createEvent);
-route.post("/api/event/update", authenticate, controllers.updateEvent);
-route.get("/api/events", authenticate, controllers.getEvents);
-route.get("/api/events/past", authenticate, controllers.getPastEvents);
-route.get("/api/events/search", controllers.searchEvents);
-route.get("/api/event/:id", controllers.getEvent);
-route.post("/api/event/:id", controllers.updateEvent);
-route.delete("/api/event/:id", controllers.deleteEvent);
+route.post("/api/events/create", authenticate, controllers.createEvent);
+route.get("/api/events", controllers.getEvents);
+route.get("/api/events/search", authenticate, controllers.searchEvents);
 
-//Price routes
-route.post("/api/price/create", controllers.createPrice);
-route.post("/api/price/update", controllers.updatePrice);
-route.get("/api/prices/:id", controllers.getPrices);
-route.get("/api/price/:id", controllers.getPrice);
-
-//Gallery routes
-route.post("/api/gallery/create", controllers.createGallery);
-route.post("/api/gallery/update", controllers.updateGallery);
-route.get("/api/galleries/:id", controllers.getGalleries);
-route.get("/api/gallery/:id", controllers.getGallery);
-route.delete("/api/gallery/:id", controllers.deleteGallery);
+route.get("/api/events/:id", controllers.getEvent);
+route.post("/api/events/:id", authenticate, controllers.updateEvent);
+route.delete("/api/events/:id", authenticate, controllers.deleteEvent);
 
 //Attendee routes
 route.post("/api/attendee/create", controllers.createAttendee);

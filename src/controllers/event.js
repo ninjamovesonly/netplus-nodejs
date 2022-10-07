@@ -33,7 +33,7 @@ const createEvent = async (req, res) => {
 
   try {
     const event = await Event.create({
-      user_id: req.isce_auth.user_id,
+      user_id: req?.isce_auth?.user_id,
       image: req.body.image,
       title: req.body.title,
       location: req.body.location,
@@ -165,8 +165,8 @@ const getEvents = async (req, res) => {
     limit,
     offset,
     where: {
-      start_date: {
-        [Op.gte]: new Date(),
+      user_id: {
+        [Op.eq]: req?.isce_auth?.user_id,
       }
     }
   });
@@ -232,7 +232,7 @@ const searchEvents = async (req, res) => {
     .catch((err) => logger(err)); */
 };
 
-const getEvent = (req, res) => {
+const getEvent = async (req, res) => {
   /*
     #swagger.tags = ["Event"]
     #swagger.description = 'Get Event by id'
@@ -241,20 +241,20 @@ const getEvent = (req, res) => {
         }]
   */
 
-  Event.findOne({ where: { id: req.params.id } })
-    .then(async (data) => {
-      if (data.id) {
-        await getPrices(data.id).then(async (prices) => {
-          await getGallery(data.id).then((gallery) => {
-            data = { ...data.dataValues, gallery, prices };
-            res.send({ success: true, data });
-          });
-        });
-      } else {
-        res.send({ success: false, message: "No data" });
-      }
-    })
-    .catch((err) => logger(err));
+  try {
+    const event = await Event.findOne({ where: { id: req.params.id } });
+    if(!event?.id){
+      res.status(404).send({ success: "false", message: "No data found" });
+    }
+
+    const prices = await getPrices(event.id);
+    const gallery = await getGallery(event.id);
+    const data = { ...event.dataValues, gallery, prices };
+    res.status(200).send({ success: "true", data });
+  } catch (error) {
+    logger(error);
+    res.status(500).send({ success: "false", message: "An error occurred" });
+  }
 };
 
 module.exports = {

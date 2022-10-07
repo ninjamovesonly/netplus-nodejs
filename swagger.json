@@ -25,7 +25,7 @@
     "application/json"
   ],
   "paths": {
-    "/api/event/create": {
+    "/api/events/create": {
       "post": {
         "tags": [
           "Event"
@@ -109,78 +109,6 @@
         ]
       }
     },
-    "/api/event/update": {
-      "post": {
-        "tags": [
-          "Event"
-        ],
-        "description": "Update Event",
-        "parameters": [
-          {
-            "name": "Authorization",
-            "in": "header",
-            "type": "string"
-          },
-          {
-            "name": "obj",
-            "in": "body",
-            "schema": {
-              "type": "object",
-              "properties": {
-                "title": {
-                  "type": "string",
-                  "example": "string"
-                },
-                "description": {
-                  "type": "string",
-                  "example": "string"
-                },
-                "image": {
-                  "type": "string",
-                  "example": "string"
-                },
-                "location": {
-                  "type": "string",
-                  "example": "string"
-                },
-                "start_date": {
-                  "type": "string",
-                  "example": "datetime"
-                },
-                "end_date": {
-                  "type": "string",
-                  "example": "datetime"
-                }
-              },
-              "required": [
-                "title",
-                "description",
-                "image",
-                "location",
-                "start_date",
-                "end_date"
-              ]
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "OK"
-          },
-          "401": {
-            "description": "Unauthorized"
-          },
-          "500": {
-            "description": "Internal Server Error"
-          }
-        },
-        "security": [
-          {
-            "apikey": []
-          }
-        ]
-      }
-    },
     "/api/events": {
       "get": {
         "tags": [
@@ -188,11 +116,6 @@
         ],
         "description": "Get Events",
         "parameters": [
-          {
-            "name": "Authorization",
-            "in": "header",
-            "type": "string"
-          },
           {
             "name": "page",
             "in": "query",
@@ -207,12 +130,6 @@
         "responses": {
           "200": {
             "description": "OK"
-          },
-          "401": {
-            "description": "Unauthorized"
-          },
-          "500": {
-            "description": "Internal Server Error"
           }
         },
         "security": [
@@ -222,26 +139,6 @@
         ]
       }
     },
-    "/api/events/past": {
-      "get": {
-        "description": "",
-        "parameters": [
-          {
-            "name": "Authorization",
-            "in": "header",
-            "type": "string"
-          }
-        ],
-        "responses": {
-          "401": {
-            "description": "Unauthorized"
-          },
-          "500": {
-            "description": "Internal Server Error"
-          }
-        }
-      }
-    },
     "/api/events/search": {
       "get": {
         "tags": [
@@ -249,6 +146,11 @@
         ],
         "description": "Search events using title or description",
         "parameters": [
+          {
+            "name": "Authorization",
+            "in": "header",
+            "type": "string"
+          },
           {
             "name": "page",
             "in": "query",
@@ -265,7 +167,14 @@
             "type": "string"
           }
         ],
-        "responses": {},
+        "responses": {
+          "401": {
+            "description": "Unauthorized"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        },
         "security": [
           {
             "apikey": []
@@ -273,7 +182,7 @@
         ]
       }
     },
-    "/api/event/{id}": {
+    "/api/events/{id}": {
       "get": {
         "tags": [
           "Event"
@@ -290,6 +199,12 @@
         "responses": {
           "200": {
             "description": "OK"
+          },
+          "404": {
+            "description": "Not Found"
+          },
+          "500": {
+            "description": "Internal Server Error"
           }
         },
         "security": [
@@ -311,6 +226,11 @@
             "type": "string"
           },
           {
+            "name": "Authorization",
+            "in": "header",
+            "type": "string"
+          },
+          {
             "name": "obj",
             "in": "body",
             "schema": {
@@ -355,6 +275,12 @@
         "responses": {
           "200": {
             "description": "OK"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "500": {
+            "description": "Internal Server Error"
           }
         },
         "security": [
@@ -374,301 +300,22 @@
             "in": "path",
             "required": true,
             "type": "string"
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "OK"
-          }
-        },
-        "security": [
+          },
           {
-            "apikey": []
-          }
-        ]
-      }
-    },
-    "/api/price/create": {
-      "post": {
-        "tags": [
-          "Price"
-        ],
-        "description": "Create Price",
-        "parameters": [
-          {
-            "name": "obj",
-            "in": "body",
-            "schema": {
-              "type": "object",
-              "properties": {
-                "event_id": {
-                  "type": "string",
-                  "example": "string"
-                },
-                "title": {
-                  "type": "string",
-                  "example": "string"
-                },
-                "description": {
-                  "type": "string",
-                  "example": "string"
-                },
-                "amount": {
-                  "type": "string",
-                  "example": "string"
-                }
-              },
-              "required": [
-                "event_id",
-                "title",
-                "description",
-                "amount"
-              ]
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "OK"
-          }
-        },
-        "security": [
-          {
-            "apikey": []
-          }
-        ]
-      }
-    },
-    "/api/price/update": {
-      "post": {
-        "tags": [
-          "Price"
-        ],
-        "description": "Update Price",
-        "parameters": [],
-        "responses": {
-          "200": {
-            "description": "OK"
-          }
-        },
-        "security": [
-          {
-            "apikey": []
-          }
-        ]
-      }
-    },
-    "/api/prices/{id}": {
-      "get": {
-        "tags": [
-          "Price"
-        ],
-        "description": "Get Prices by event_id",
-        "parameters": [
-          {
-            "name": "id",
-            "in": "path",
-            "required": true,
+            "name": "Authorization",
+            "in": "header",
             "type": "string"
           }
         ],
         "responses": {
           "200": {
             "description": "OK"
-          }
-        },
-        "security": [
-          {
-            "apikey": []
-          }
-        ]
-      }
-    },
-    "/api/price/{id}": {
-      "get": {
-        "tags": [
-          "Price"
-        ],
-        "description": "Get single price by id",
-        "parameters": [
-          {
-            "name": "id",
-            "in": "path",
-            "required": true,
-            "type": "string"
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "OK"
-          }
-        },
-        "security": [
-          {
-            "apikey": []
-          }
-        ]
-      }
-    },
-    "/api/gallery/create": {
-      "post": {
-        "tags": [
-          "Gallery"
-        ],
-        "description": "Create Gallery",
-        "parameters": [
-          {
-            "name": "obj",
-            "in": "body",
-            "schema": {
-              "type": "object",
-              "properties": {
-                "event_id": {
-                  "type": "string",
-                  "example": "string"
-                },
-                "name": {
-                  "type": "string",
-                  "example": "string"
-                },
-                "image": {
-                  "type": "string",
-                  "example": "string"
-                }
-              },
-              "required": [
-                "event_id",
-                "name",
-                "image"
-              ]
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "OK"
-          }
-        },
-        "security": [
-          {
-            "apikey": []
-          }
-        ]
-      }
-    },
-    "/api/gallery/update": {
-      "post": {
-        "tags": [
-          "Gallery"
-        ],
-        "description": "Update Gallery",
-        "parameters": [
-          {
-            "name": "obj",
-            "in": "body",
-            "schema": {
-              "type": "object",
-              "properties": {
-                "event_id": {
-                  "type": "string",
-                  "example": "string"
-                },
-                "name": {
-                  "type": "string",
-                  "example": "string"
-                },
-                "image": {
-                  "type": "string",
-                  "example": "string"
-                }
-              },
-              "required": [
-                "event_id",
-                "name",
-                "image"
-              ]
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "OK"
-          }
-        },
-        "security": [
-          {
-            "apikey": []
-          }
-        ]
-      }
-    },
-    "/api/galleries/{id}": {
-      "get": {
-        "tags": [
-          "Gallery"
-        ],
-        "description": "Get Galleries by event_id",
-        "parameters": [
-          {
-            "name": "id",
-            "in": "path",
-            "required": true,
-            "type": "string"
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "OK"
-          }
-        },
-        "security": [
-          {
-            "apikey": []
-          }
-        ]
-      }
-    },
-    "/api/gallery/{id}": {
-      "get": {
-        "tags": [
-          "Gallery"
-        ],
-        "description": "Get single gallery by id",
-        "parameters": [
-          {
-            "name": "id",
-            "in": "path",
-            "required": true,
-            "type": "string"
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "OK"
-          }
-        },
-        "security": [
-          {
-            "apikey": []
-          }
-        ]
-      },
-      "delete": {
-        "tags": [
-          "Gallery"
-        ],
-        "description": "Delete gallery by id",
-        "parameters": [
-          {
-            "name": "id",
-            "in": "path",
-            "required": true,
-            "type": "string"
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "OK"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "500": {
+            "description": "Internal Server Error"
           }
         },
         "security": [
