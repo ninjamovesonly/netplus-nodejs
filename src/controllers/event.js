@@ -2,92 +2,10 @@
 
 const { Op } = require("sequelize");
 const { Event, Price, Gallery } = require("../models");
-const { asyncForEach, guid } = require("../util");
+const { guid } = require("../util");
+const { getPrices } = require("../models/price");
+const { getGallery } = require("../models/gallery");
 const logger = require("../util/log");
-
-const totalCount = async () => {
-  try {
-    let val = await Event.count({
-      where: {
-        start_date: {
-          [Op.lt]: new Date(),
-        },
-      },
-    });
-    return val;
-  } catch (error) {
-    logger(error);
-    return 0;
-  }
-};
-
-const getPrices = async (id) => {
-  try {
-    const data = await Price.findAll({ where: { event_id: id } });
-    return data;
-  } catch (error) {
-    logger(err);
-    return [];
-  }
-};
-
-const getGallery = async (id) => {
-  try {
-    const data = await Gallery.findAll({ where: { event_id: id } });
-    return data;
-  } catch (error) {
-    logger(err);
-    return [];
-  }
-};
-
-const getPast = async () => {
-  return new Promise(async (resolve) => {
-    await Event.findAll({
-      limit: 20,
-      where: {
-        start_date: {
-          [Op.lt]: new Date(),
-        },
-      },
-    }).then(async (data) => {
-      let events = [];
-      asyncForEach(data, async (item) => {
-        await getPrices(item.id).then(async (prices) => {
-          await getGallery(item.id).then((gallery) => {
-            events.push({ ...item.dataValues, prices, gallery });
-          });
-        });
-      }).finally(() => {
-        resolve(events);
-      });
-    });
-  });
-};
-
-const getFuture = async () => {
-  return new Promise(async (resolve) => {
-    await Event.findAll({
-      limit: 20,
-      where: {
-        start_date: {
-          [Op.gt]: new Date(),
-        },
-      },
-    }).then(async (data) => {
-      let events = [];
-      await asyncForEach(data, async (item) => {
-        await getPrices(item.id).then(async (prices) => {
-          await getGallery(item.id).then((gallery) => {
-            events.push({ ...item.dataValues, prices, gallery });
-          });
-        });
-      }).finally(() => {
-        resolve(events);
-      });
-    });
-  });
-};
 
 const createEvent = async (req, res) => {
   /*
@@ -274,54 +192,6 @@ const getEvents = async (req, res) => {
   });
 };
 
-const getPastEvents = async (req, res) => {
-  /*
-    #swagger.tags = ["Event"]
-    #swagger.description = 'Get past events'
-     #swagger.security = [{
-               "apikey": []
-        }]
-  */
-  let offset = 0,
-    page = Number(req.query.page) || 1,
-    limit = Number(req.query.limit) || 100;
-  if (page > 1) {
-    offset = limit * page;
-    offset = offset - limit;
-  }
-
-  /* await totalCount()
-    .then(async (total) => {
-      await Event.findAll({
-        limit,
-        offset,
-        where: {
-          start_date: {
-            [Op.lt]: new Date(),
-          },
-        },
-      }).then(async (data) => {
-        let events = [];
-        await asyncForEach(data, async (item) => {
-          await getPrices(item.id).then((prices) => {
-            events.push({ ...item, prices });
-          });
-        }).finally(() => {
-          res.send({
-            success: "true",
-            data: {
-              count: data.length,
-              all: data,
-              total,
-            },
-          });
-        });
-        res.send({ success: true, data, total });
-      });
-    })
-    .catch((err) => logger(err)); */
-};
-
 const searchEvents = async (req, res) => {
   /*
     #swagger.tags = ["Event"]
@@ -392,7 +262,6 @@ module.exports = {
   updateEvent,
   deleteEvent,
   getEvents,
-  getPastEvents,
   searchEvents,
   getEvent,
 };

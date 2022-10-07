@@ -189,36 +189,6 @@
         "description": "Get Events",
         "parameters": [
           {
-            "name": "page",
-            "in": "query",
-            "type": "string"
-          },
-          {
-            "name": "limit",
-            "in": "query",
-            "type": "string"
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "OK"
-          }
-        },
-        "security": [
-          {
-            "apikey": []
-          }
-        ]
-      }
-    },
-    "/api/events/past": {
-      "get": {
-        "tags": [
-          "Event"
-        ],
-        "description": "Get past events",
-        "parameters": [
-          {
             "name": "Authorization",
             "in": "header",
             "type": "string"
@@ -235,6 +205,9 @@
           }
         ],
         "responses": {
+          "200": {
+            "description": "OK"
+          },
           "401": {
             "description": "Unauthorized"
           },
@@ -247,6 +220,26 @@
             "apikey": []
           }
         ]
+      }
+    },
+    "/api/events/past": {
+      "get": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "Authorization",
+            "in": "header",
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "401": {
+            "description": "Unauthorized"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
       }
     },
     "/api/events/search": {
