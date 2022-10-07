@@ -6,36 +6,39 @@ const { asyncForEach, guid } = require("../util");
 const logger = require("../util/log");
 
 const totalCount = async () => {
-  let val = await Event.count({
-    where: {
-      start_date: {
-        [Op.lt]: new Date(),
+  try {
+    let val = await Event.count({
+      where: {
+        start_date: {
+          [Op.lt]: new Date(),
+        },
       },
-    },
-  })
-    .then((data) => {
-      return data;
-    })
-    .catch((err) => logger(err));
-  return val;
+    });
+    return val;
+  } catch (error) {
+    logger(error);
+    return 0;
+  }
 };
 
 const getPrices = async (id) => {
-  return await Price.findAll({ where: { event_id: id } })
-    .then((data) => {
-      data = data.length ? data : [];
-      return data;
-    })
-    .catch((err) => logger(err));
+  try {
+    const data = await Price.findAll({ where: { event_id: id } });
+    return data;
+  } catch (error) {
+    logger(err);
+    return [];
+  }
 };
 
 const getGallery = async (id) => {
-  return await Gallery.findAll({ where: { event_id: id } })
-    .then((data) => {
-      data = data.length ? data : [];
-      return data;
-    })
-    .catch((err) => logger(err));
+  try {
+    const data = await Gallery.findAll({ where: { event_id: id } });
+    return data;
+  } catch (error) {
+    logger(err);
+    return [];
+  }
 };
 
 const getPast = async () => {
@@ -240,58 +243,35 @@ const getEvents = async (req, res) => {
     offset = offset - limit;
   }
 
-  await totalCount()
-    .then(async (total) => {
-      await Event.findAll({
-        limit,
-        offset,
-        where: {
-          start_date: {
-            [Op.gte]: new Date(),
-          },
-          user_id: {
-            [Op.eq]: req.isce_auth.user_id
-          }
-        },
-      }).then(async (data) => {
-        let past, upcoming;
+  const events = await Event.findAll({
+    limit,
+    offset,
+    where: {
+      start_date: {
+        [Op.gte]: new Date(),
+      }
+    }
+  });
 
-        await getPast().then((pe) => {
-          past = pe;
-        });
+  const updatedEvents = await Promise.all(events?.map(async (event) => {
+    const item = event.dataValues;
+    const prices = await getPrices(item.id);
+    const gallery = await getGallery(item.id);
+    return { ...item, prices, gallery };
+  })); 
 
-        await getFuture().then((fe) => {
-          upcoming = fe;
-        });
-        let events = [];
-        await asyncForEach(data, async (item) => {
-          await getPrices(item.id).then(async (prices) => {
-            prices = prices.length ? prices : [];
-            await getGallery(item.id).then((gallery) => {
-              events.push({ ...item.dataValues, prices, gallery });
-            });
-          });
-        }).finally(() => {
-          res.send({
-            success: "true",
-            data: {
-              count: data.length,
-              all: events,
-              past,
-              upcoming,
-              total,
-            },
-          });
-        });
-      });
-    })
-    .catch((err) => {
-      logger(err);
-      res.send({
-        success: "false",
-        message: err.message,
-      });
-    });
+  const past = updatedEvents.filter(({ start_date }) => new Date(start_date) < new Date());
+  const upcoming = updatedEvents.filter(({ start_date }) => new Date(start_date) >= new Date());
+
+  res.json({
+    success: "true",
+    data: {
+      count: updatedEvents?.length,
+      all: updatedEvents,
+      upcoming,
+      past
+    },
+  });
 };
 
 const getPastEvents = async (req, res) => {
@@ -310,7 +290,7 @@ const getPastEvents = async (req, res) => {
     offset = offset - limit;
   }
 
-  await totalCount()
+  /* await totalCount()
     .then(async (total) => {
       await Event.findAll({
         limit,
@@ -339,7 +319,7 @@ const getPastEvents = async (req, res) => {
         res.send({ success: true, data, total });
       });
     })
-    .catch((err) => logger(err));
+    .catch((err) => logger(err)); */
 };
 
 const searchEvents = async (req, res) => {
@@ -360,7 +340,7 @@ const searchEvents = async (req, res) => {
     offset = offset - limit;
   }
 
-  await totalCount()
+  /* await totalCount()
     .then(async (total) => {
       await Event.findAll({
         limit,
@@ -379,7 +359,7 @@ const searchEvents = async (req, res) => {
         res.send({ success: true, data, total });
       });
     })
-    .catch((err) => logger(err));
+    .catch((err) => logger(err)); */
 };
 
 const getEvent = (req, res) => {

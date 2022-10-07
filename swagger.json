@@ -33,6 +33,11 @@
         "description": "Create Event",
         "parameters": [
           {
+            "name": "Authorization",
+            "in": "header",
+            "type": "string"
+          },
+          {
             "name": "obj",
             "in": "body",
             "schema": {
@@ -90,6 +95,9 @@
           }
         ],
         "responses": {
+          "401": {
+            "description": "Unauthorized"
+          },
           "500": {
             "description": "Internal Server Error"
           }
@@ -108,6 +116,11 @@
         ],
         "description": "Update Event",
         "parameters": [
+          {
+            "name": "Authorization",
+            "in": "header",
+            "type": "string"
+          },
           {
             "name": "obj",
             "in": "body",
@@ -153,6 +166,12 @@
         "responses": {
           "200": {
             "description": "OK"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "500": {
+            "description": "Internal Server Error"
           }
         },
         "security": [
@@ -200,6 +219,11 @@
         "description": "Get past events",
         "parameters": [
           {
+            "name": "Authorization",
+            "in": "header",
+            "type": "string"
+          },
+          {
             "name": "page",
             "in": "query",
             "type": "string"
@@ -211,8 +235,11 @@
           }
         ],
         "responses": {
-          "200": {
-            "description": "OK"
+          "401": {
+            "description": "Unauthorized"
+          },
+          "500": {
+            "description": "Internal Server Error"
           }
         },
         "security": [
@@ -245,11 +272,7 @@
             "type": "string"
           }
         ],
-        "responses": {
-          "200": {
-            "description": "OK"
-          }
-        },
+        "responses": {},
         "security": [
           {
             "apikey": []
