@@ -20,13 +20,29 @@ const Event = sequelize.define("event", {
     type: DataTypes.TEXT,
     allowNull: true,
   },
+  location: {
+    type: DataTypes.TEXT,
+    allowNull: true,
+  },
+  image: {
+    type: DataTypes.TEXT,
+    allowNull: true,
+  },
+  gallery: {
+    type: DataTypes.TEXT,
+    allowNull: true,
+  },
+  location: {
+    type: DataTypes.TEXT,
+    allowNull: true,
+  },
   start_date: {
     type: DataTypes.DATE,
     allowNull: false,
   },
   end_date: {
     type: DataTypes.DATE,
-    allowNull: false,
+    allowNull: true,
   },
   user_id: {
     type: DataTypes.STRING,
@@ -34,7 +50,7 @@ const Event = sequelize.define("event", {
   },
 });
 
-const Price = sequelize.define("price", {
+const Price = sequelize.define("event_price", {
   id: {
     type: DataTypes.STRING,
     allowNull: false,
@@ -57,9 +73,18 @@ const Price = sequelize.define("price", {
     type: DataTypes.INTEGER,
     allowNull: false,
   },
+  attendees: {
+    type: DataTypes.INTEGER,
+    allowNull: true,
+  },
+  order_amount: {
+    type: DataTypes.INTEGER,
+    allowNull: false,
+    defaultValue: 0
+  },
 });
 
-const Attendee = sequelize.define("attendee", {
+const Gallery = sequelize.define("event_gallerie", {
   id: {
     type: DataTypes.STRING,
     allowNull: false,
@@ -70,11 +95,36 @@ const Attendee = sequelize.define("attendee", {
     type: DataTypes.STRING,
     allowNull: false,
   },
-  firstName: {
+  name: {
     type: DataTypes.STRING,
     allowNull: false,
   },
-  lastName: {
+  image: {
+    type: DataTypes.TEXT,
+    allowNull: true,
+  },
+});
+
+const Attendee = sequelize.define("event_attendee", {
+  id: {
+    type: DataTypes.STRING,
+    allowNull: false,
+    defaultValue: guid(),
+    primaryKey: true,
+  },
+  event_id: {
+    type: DataTypes.STRING,
+    allowNull: false,
+  },
+  event_price_id: {
+    type: DataTypes.STRING,
+    allowNull: false,
+  },
+  image: {
+    type: DataTypes.STRING,
+    allowNull: false,
+  },
+  name: {
     type: DataTypes.STRING,
     allowNull: false,
   },
@@ -86,9 +136,39 @@ const Attendee = sequelize.define("attendee", {
     type: DataTypes.STRING,
     allowNull: true,
   },
+  price_category: {
+    type: DataTypes.STRING,
+    allowNull: true,
+  },
+  link: {
+    type: DataTypes.STRING,
+    allowNull: false,
+  },
+  token: {
+    type: DataTypes.STRING,
+    allowNull: false,
+  },
 });
 
-const Upload = sequelize.define("upload", {
+const Token = sequelize.define("event_token", {
+  id: {
+    type: DataTypes.STRING,
+    allowNull: false,
+    defaultValue: guid(),
+    primaryKey: true,
+  },
+  token: {
+    type: DataTypes.STRING,
+    allowNull: false,
+  },
+  used: {
+    type: DataTypes.BOOLEAN,
+    allowNull: false,
+    defaultValue: 0,
+  },
+});
+
+const Url = sequelize.define("event_url", {
   id: {
     type: DataTypes.STRING,
     allowNull: false,
@@ -99,41 +179,29 @@ const Upload = sequelize.define("upload", {
     type: DataTypes.STRING,
     allowNull: false,
   },
-  file: {
+  event_attendee_id: {
     type: DataTypes.STRING,
     allowNull: false,
   },
-  type: {
-    type: DataTypes.TEXT,
-    allowNull: true,
+  event_url: {
+    type: DataTypes.STRING,
+    allowNull: false,
   },
-});
-
-Event.hasMany(Price, {
-  foreignKey: {
-    id: "event_id",
-  },
-});
-
-Event.hasMany(Upload, {
-  foreignKey: {
-    id: "event_id",
-  },
-});
-
-Event.hasMany(Attendee, {
-  foreignKey: {
-    id: "event_id",
+  device_type: {
+    type: DataTypes.STRING,
+    allowNull: false,
   },
 });
 
 const init = async () => {
   await Event.sync();
   await Price.sync();
+  await Gallery.sync();
   await Attendee.sync();
-  await Upload.sync();
+  await Token.sync();
+  await Url.sync();
 };
 
 init();
 
-module.exports = { Event, Price, Attendee, Upload };
+module.exports = { Event, Price, Gallery, Attendee, Token, Url };

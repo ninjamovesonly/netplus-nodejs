@@ -13,4 +13,7 @@ module.exports = {
   server: {
     port: process.env.PORT,
   },
+  auth: {
+    url: process.env.AUTH_URL
+  }
 };
