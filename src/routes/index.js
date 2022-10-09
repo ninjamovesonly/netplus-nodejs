@@ -43,17 +43,24 @@ const route = Router();
 //Event routes
 
 route.post("/api/events/create", authenticate, controllers.createEvent);
-route.get("/api/events", controllers.getEvents);
+route.get("/api/events", authenticate, controllers.getEvents);
 route.get("/api/events/search", authenticate, controllers.searchEvents);
 
-route.get("/api/events/:id", controllers.getEvent);
+route.get("/api/events/:id", authenticate, controllers.getEvent);
 route.post("/api/events/:id", authenticate, controllers.updateEvent);
 route.delete("/api/events/:id", authenticate, controllers.deleteEvent);
+route.post("/api/events/:id/get-cards", controllers.getRequestedCards);
+
+//route.post("/api/events/:id/card", authenticate, controllers.get);
+
+
+//Card Event Routes
+//route.get("/api/card/events", controllers.getPastEvents);
+//route.get("/api/card/events/:id", controllers.getEvents);
 
 //Attendee routes
 route.post("/api/attendee/create", controllers.createAttendee);
-route.post("/api/attendee/update", controllers.updateAttendee);
+//route.post("/api/attendee/update", controllers.updateAttendee);
 route.get("/api/attendees/:id", controllers.getAttendees);
-route.get("/api/attendee/:id", controllers.getAttendee);
 
 module.exports = route;

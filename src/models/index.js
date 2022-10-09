@@ -28,10 +28,6 @@ const Event = sequelize.define("event", {
     type: DataTypes.TEXT,
     allowNull: true,
   },
-  gallery: {
-    type: DataTypes.TEXT,
-    allowNull: true,
-  },
   location: {
     type: DataTypes.TEXT,
     allowNull: true,

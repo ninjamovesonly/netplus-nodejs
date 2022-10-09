@@ -4,7 +4,7 @@ const {
   updateEvent,
   deleteEvent,
   getEvents,
-  getPastEvents,
+  getRequestedCards,
   searchEvents,
   getEvent,
 } = require("./event");
@@ -31,7 +31,7 @@ module.exports = {
   updateEvent,
   deleteEvent,
   getEvents,
-  getPastEvents,
+  getRequestedCards,
   searchEvents,
   getEvent,
   createPrice,

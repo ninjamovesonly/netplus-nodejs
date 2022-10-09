@@ -5,6 +5,7 @@ const { Event, Price, Gallery } = require("../models");
 const { guid } = require("../util");
 const { getPrices } = require("../models/price");
 const { getGallery } = require("../models/gallery");
+const { getAttendees } = require("../models/attendee");
 const logger = require("../util/log");
 
 const createEvent = async (req, res) => {
@@ -40,7 +41,6 @@ const createEvent = async (req, res) => {
       description: req.body.description,
       start_date: req.body.start_date,
       end_date: req.body.end_date,
-      gallery: "",
     });
 
     let response, status;
@@ -136,7 +136,7 @@ const updateEvent = async (req, res) => {
       data: { event },
     });
   } catch (error) {
-    logger(err);
+    logger(error);
     res.send({ success: "false", message: "An error has occurred" });
   }
 };
@@ -189,43 +189,51 @@ const getEvents = async (req, res) => {
                "apikey": []
         }]
   */
-  let offset = 0,
+  try {
+    let offset = 0,
     page = Number(req.query.page) || 1,
     limit = Number(req.query.limit) || 100;
-  if (page > 1) {
-    offset = limit * page;
-    offset = offset - limit;
-  }
-
-  const events = await Event.findAll({
-    limit,
-    offset,
-    where: {
-      user_id: {
-        [Op.eq]: req?.isce_auth?.user_id,
-      }
+    if (page > 1) {
+      offset = limit * page;
+      offset = offset - limit;
     }
-  });
+    
+    const events = await Event.findAll({
+      limit,
+      offset,
+      where: {
+        user_id: {
+          [Op.eq]: req.isce_auth.user_id,
+        }
+      }
+    });
 
-  const updatedEvents = await Promise.all(events?.map(async (event) => {
-    const item = event.dataValues;
-    const prices = await getPrices(item.id);
-    const gallery = await getGallery(item.id);
-    return { ...item, prices, gallery };
-  })); 
+    const updatedEvents = await Promise.all(events?.map(async (event) => {
+      const item = event.dataValues;
+      const prices = await getPrices(item.id);
+      const gallery = await getGallery(item.id);
+      const attendees = await getAttendees(item.id);
+      return { ...item, prices, gallery, attendees };
+    })); 
 
-  const past = updatedEvents.filter(({ start_date }) => new Date(start_date) < new Date());
-  const upcoming = updatedEvents.filter(({ start_date }) => new Date(start_date) >= new Date());
+    const past = updatedEvents.filter(({ start_date }) => new Date(start_date) < new Date());
+    const upcoming = updatedEvents.filter(({ start_date }) => new Date(start_date) >= new Date());
 
-  res.json({
-    success: "true",
-    data: {
-      count: updatedEvents?.length,
-      all: updatedEvents,
-      upcoming,
-      past
-    },
-  });
+    res.status(200).send({
+      success: "true",
+      data: {
+        count: updatedEvents?.length,
+        all: updatedEvents,
+        upcoming,
+        past
+      },
+    });
+  } catch (error) {
+    logger(error);
+    res.status(500).send({
+      success: 'false', message: 'A server error occurred'
+    });
+  }
 };
 
 const searchEvents = async (req, res) => {
@@ -282,21 +290,71 @@ const getEvent = async (req, res) => {
   try {
     const event = await Event.findOne({ 
       where: { 
-        id: req.params.id,
+        id: req?.params?.id,
         user_id: req?.isce_auth?.user_id 
       } 
     });
+
     if(!event?.id){
       res.status(404).send({ success: "false", message: "No data found" });
     }
 
     const prices = await getPrices(event.id);
     const gallery = await getGallery(event.id);
-    const data = { ...event.dataValues, gallery, prices };
+    const attendees = await getAttendees(event.id);
+    const data = { ...event.dataValues, gallery, prices, attendees };
+
     res.status(200).send({ success: "true", data });
   } catch (error) {
     logger(error);
     res.status(500).send({ success: "false", message: "An error occurred" });
+  }
+};
+
+const getRequestedCards = async (req, res) => {
+  //receives event_id, requested card number, event_price_id
+
+  try {
+    let price = await Price.findOne({
+      where: {
+        id: req.body?.event_price_id,
+      },
+    });
+
+    const updatedOrder = +req?.body?.order_amount + price?.order_amount;
+    if(updatedOrder > price?.attendees){
+      res.send({
+        success: "false",
+        message: "Maximum amount reached"
+      })
+    }
+    
+    /* NEEDS UPDATE */
+    //send a mail to isce indicating that a card request has been made
+      //mail will contain user details, event details, and the total cost of cards
+
+    //send a mail to user indicating that they will receive the cards soon
+        //mail will contain user details, event details, and the total cost of cards
+
+    //update price table
+
+    await Price.update({ order_amount: updatedOrder }, {
+      where: {
+        id: req.body?.event_price_id,
+      },
+    });
+
+    res.send({
+      success: "true",
+      message: "Updated successfully",
+      data: { order_amount: updatedOrder }
+    });
+  } catch (error) {
+    logger(error)
+    res.send({
+      success: "false",
+      message: "Unable to update data"
+    });
   }
 };
 
@@ -307,4 +365,5 @@ module.exports = {
   getEvents,
   searchEvents,
   getEvent,
+  getRequestedCards
 };
