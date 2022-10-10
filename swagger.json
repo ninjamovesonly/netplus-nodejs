@@ -350,11 +350,22 @@
         ]
       }
     },
-    "/api/card/events": {
-      "get": {
+    "/api/events/{id}/get-cards": {
+      "post": {
         "description": "",
-        "parameters": [],
-        "responses": {}
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
       }
     },
     "/api/attendee/create": {

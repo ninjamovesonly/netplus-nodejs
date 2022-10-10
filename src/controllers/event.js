@@ -103,30 +103,44 @@ const updateEvent = async (req, res) => {
   */
 
   try {
-    const event = await Event.update(req.body, {
+    await Event.update(req.body, {
       where: {
         id: req.params.id,
       },
     });
 
+    const event = await Event.findOne({ 
+      where: { 
+        id: req?.params?.id
+      } 
+    });
+
     const prices = req.body?.prices;
     if(prices?.length > 0){
+      await Price.destroy({
+        where: {
+          event_id: event?.id
+        }
+      });
+
       prices.forEach(async (price) => {
-        await Price.update(price, { 
-          where: {
-            id: price?.id
-          }
+        await Price.create({ 
+          id: guid(), event_id: event?.id, ...price, order_amount: 0 
         });
       });
     }
 
     const gallery = req.body?.gallery;
     if (gallery?.length > 0){
+      await Gallery.destroy({
+        where: {
+          event_id: event?.id
+        }
+      });
+
       gallery.forEach(async (item) => {
-        await Gallery.update(item, { 
-          where: {
-            id: item?.id
-          }
+        await Gallery.create({
+          id: guid(), event_id: event?.id, ...item
         });
       });
     }
