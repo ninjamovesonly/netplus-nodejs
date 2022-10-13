@@ -230,8 +230,8 @@ const getEvents = async (req, res) => {
       return { ...item, prices, gallery, attendees };
     })); 
 
-    const past = updatedEvents.filter(({ start_date }) => new Date(start_date) < new Date());
-    const upcoming = updatedEvents.filter(({ start_date }) => new Date(start_date) >= new Date());
+    const past = updatedEvents.filter(({ start_date }) => new Date(start_date) < new Date((new Date()).valueOf() - 1000*60*60*24));
+    const upcoming = updatedEvents.filter(({ start_date }) => new Date(start_date) >= new Date((new Date()).valueOf() - 1000*60*60*24));
 
     res.status(200).send({
       success: "true",
@@ -340,29 +340,29 @@ const getRequestedCards = async (req, res) => {
       res.send({
         success: "false",
         message: "Maximum amount reached"
-      })
-    }
-    
-    /* NEEDS UPDATE */
-    //send a mail to isce indicating that a card request has been made
-      //mail will contain user details, event details, and the total cost of cards
-
-    //send a mail to user indicating that they will receive the cards soon
+      });
+    }else{
+      /* NEEDS UPDATE */
+      //send a mail to isce indicating that a card request has been made
         //mail will contain user details, event details, and the total cost of cards
 
-    //update price table
+      //send a mail to user indicating that they will receive the cards soon
+          //mail will contain user details, event details, and the total cost of cards
 
-    await Price.update({ order_amount: updatedOrder }, {
-      where: {
-        id: req.body?.event_price_id,
-      },
-    });
+      //update price table
 
-    res.send({
-      success: "true",
-      message: "Updated successfully",
-      data: { order_amount: updatedOrder }
-    });
+      await Price.update({ order_amount: updatedOrder }, {
+        where: {
+          id: req.body?.event_price_id,
+        },
+      });
+
+      res.send({
+        success: "true",
+        message: "Updated successfully",
+        data: { order_amount: updatedOrder }
+      });
+    }
   } catch (error) {
     logger(error)
     res.send({

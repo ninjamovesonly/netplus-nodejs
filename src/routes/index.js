@@ -55,7 +55,7 @@ route.post("/api/events/:id/get-cards", controllers.getRequestedCards);
 
 
 //Card Event Routes
-//route.get("/api/card/events", controllers.getPastEvents);
+route.get("/api/card/events/:id", controllers.cardGetEvents);
 //route.get("/api/card/events/:id", controllers.getEvents);
 
 //Attendee routes

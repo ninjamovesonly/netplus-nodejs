@@ -9,6 +9,12 @@ const {
   getEvent,
 } = require("./event");
 
+const {
+  cardGetEvents,
+  cardSearchEvents,
+  cardGetEvent,
+} = require("./card");
+
 const { createPrice, updatePrice, getPrices, getPrice } = require("./price");
 
 const {
@@ -47,4 +53,7 @@ module.exports = {
   updateAttendee,
   getAttendees,
   getAttendee,
+  cardGetEvents,
+  cardSearchEvents,
+  cardGetEvent,
 };
