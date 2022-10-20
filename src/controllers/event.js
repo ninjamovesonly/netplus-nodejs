@@ -230,8 +230,9 @@ const getEvents = async (req, res) => {
       return { ...item, prices, gallery, attendees };
     })); 
 
-    const past = updatedEvents.filter(({ start_date }) => new Date(start_date) < new Date((new Date()).valueOf() - 1000*60*60*24));
-    const upcoming = updatedEvents.filter(({ start_date }) => new Date(start_date) >= new Date((new Date()).valueOf() - 1000*60*60*24));
+    const yesterday = new Date((new Date()).valueOf() - 1000*60*60*24);
+    const past = updatedEvents.filter(({ start_date }) => new Date(start_date) < yesterday);
+    const upcoming = updatedEvents.filter(({ start_date }) => new Date(start_date) >= yesterday);
 
     res.status(200).send({
       success: "true",
@@ -311,14 +312,17 @@ const getEvent = async (req, res) => {
 
     if(!event?.id){
       res.status(404).send({ success: "false", message: "No data found" });
+    }else{
+      const yesterday = new Date((new Date()).valueOf() - 1000*60*60*24);
+      const past = (new Date(event?.start_date) < yesterday);
+
+      const prices = await getPrices(event.id);
+      const gallery = await getGallery(event.id);
+      const attendees = await getAttendees(event.id);
+      const data = { ...event.dataValues, gallery, prices, attendees, past };
+
+      res.status(200).send({ success: "true", data });
     }
-
-    const prices = await getPrices(event.id);
-    const gallery = await getGallery(event.id);
-    const attendees = await getAttendees(event.id);
-    const data = { ...event.dataValues, gallery, prices, attendees };
-
-    res.status(200).send({ success: "true", data });
   } catch (error) {
     logger(error);
     res.status(500).send({ success: "false", message: "An error occurred" });

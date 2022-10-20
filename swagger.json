@@ -368,6 +368,45 @@
         }
       }
     },
+    "/api/card/events/{id}": {
+      "get": {
+        "tags": [
+          "Event"
+        ],
+        "description": "Get Events",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "page",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        },
+        "security": [
+          {
+            "apikey": []
+          }
+        ]
+      }
+    },
     "/api/attendee/create": {
       "post": {
         "tags": [

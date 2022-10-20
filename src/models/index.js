@@ -78,6 +78,11 @@ const Price = sequelize.define("event_price", {
     allowNull: false,
     defaultValue: 0
   },
+  withChips: {
+    type: DataTypes.STRING,
+    allowNull: true,
+    defaultValue: "without"
+  }
 });
 
 const Gallery = sequelize.define("event_gallerie", {
@@ -191,7 +196,7 @@ const Url = sequelize.define("event_url", {
 
 const init = async () => {
   await Event.sync();
-  await Price.sync();
+  await Price.sync({ force: true });
   await Gallery.sync();
   await Attendee.sync();
   await Token.sync();

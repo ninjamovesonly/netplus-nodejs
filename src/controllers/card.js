@@ -138,6 +138,39 @@ const cardGetEvent = async (req, res) => {
   }
 };
 
+const cardRegisterEvent = async (req, res) => {
+  /*
+    #swagger.tags = ["Event"]
+    #swagger.description = 'Get Event by id'
+     #swagger.security = [{
+               "apikey": []
+        }]
+  */
+
+  try {
+    const event = await Event.findOne({ 
+      where: { 
+        id: req?.params?.id,
+        user_id: req?.isce_auth?.user_id 
+      } 
+    });
+
+    if(!event?.id){
+      res.status(404).send({ success: "false", message: "No data found" });
+    }
+
+    const prices = await getPrices(event.id);
+    const gallery = await getGallery(event.id);
+    const attendees = await getAttendees(event.id);
+    const data = { ...event.dataValues, gallery, prices, attendees };
+
+    res.status(200).send({ success: "true", data });
+  } catch (error) {
+    logger(error);
+    res.status(500).send({ success: "false", message: "An error occurred" });
+  }
+};
+
 module.exports = {
   cardGetEvents,
   cardSearchEvents,
