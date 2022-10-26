@@ -7,7 +7,6 @@ src/storage/images/
 .env.prod
 .DS_Store
 
-database/
 # Logs
 logs
 *.log
