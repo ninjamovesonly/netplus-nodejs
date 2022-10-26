@@ -411,41 +411,46 @@
         ]
       }
     },
+    "/api/card/events/open": {
+      "get": {
+        "tags": [
+          "Event"
+        ],
+        "description": "Get Events",
+        "parameters": [
+          {
+            "name": "page",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        },
+        "security": [
+          {
+            "apikey": []
+          }
+        ]
+      }
+    },
     "/api/card/events/register": {
       "post": {
         "tags": [
           "Event"
         ],
         "description": "Get Event by id",
-        "parameters": [
-          {
-            "name": "body",
-            "in": "body",
-            "schema": {
-              "type": "object",
-              "properties": {
-                "email": {
-                  "example": "any"
-                },
-                "event_prices_id": {
-                  "example": "any"
-                },
-                "event_id": {
-                  "example": "any"
-                },
-                "image": {
-                  "example": "any"
-                },
-                "name": {
-                  "example": "any"
-                },
-                "phone": {
-                  "example": "any"
-                }
-              }
-            }
-          }
-        ],
+        "parameters": [],
         "responses": {
           "200": {
             "description": "OK"
@@ -556,6 +561,20 @@
             "apikey": []
           }
         ]
+      }
+    },
+    "/api/card/events/payment/success": {
+      "post": {
+        "description": "",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
       }
     },
     "/api/attendee/create": {
