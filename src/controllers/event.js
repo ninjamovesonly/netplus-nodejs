@@ -1,77 +1,12 @@
 "use strict";
 
-const { response } = require("express");
 const { Op } = require("sequelize");
-const { Event, Price } = require("../models");
-const { asyncForEach } = require("../util");
+const { Event, Price, Gallery } = require("../models");
+const { guid } = require("../util");
+const { getPrices } = require("../models/price");
+const { getGallery } = require("../models/gallery");
+const { getAttendees } = require("../models/attendee");
 const logger = require("../util/log");
-
-const totalCount = async () => {
-  let val = await Event.count({
-    where: {
-      start_date: {
-        [Op.lt]: new Date(),
-      },
-    },
-  })
-    .then((data) => {
-      return data;
-    })
-    .catch((err) => logger(err));
-  return val;
-};
-
-const getPrices = async (id) => {
-  return await Price.findAll({ where: { event_id: id } }).then((data) => {
-    data = data.length ? data : [];
-    return data;
-  });
-  // .catch((err) => logger(err));
-};
-
-const getPast = async () => {
-  return new Promise(async (resolve) => {
-    await Event.findAll({
-      limit: 20,
-      where: {
-        start_date: {
-          [Op.lt]: new Date(),
-        },
-      },
-    }).then(async (data) => {
-      let events = [];
-      await asyncForEach(data, async (item) => {
-        await getPrices(item.id).then((prices) => {
-          events.push({ ...item, prices });
-        });
-      }).finally(() => {
-        resolve(events);
-      });
-    });
-  });
-};
-
-const getFuture = async () => {
-  return new Promise(async (resolve) => {
-    await Event.findAll({
-      limit: 20,
-      where: {
-        start_date: {
-          [Op.gt]: new Date(),
-        },
-      },
-    }).then(async (data) => {
-      let events = [];
-      await asyncForEach(data, async (item) => {
-        await getPrices(item.id).then((prices) => {
-          events.push({ ...item, prices });
-        });
-      }).finally(() => {
-        resolve(events);
-      });
-    });
-  });
-};
 
 const createEvent = async (req, res) => {
   /*
@@ -83,6 +18,7 @@ const createEvent = async (req, res) => {
     #swagger.parameters['obj'] = {
                 in: 'body',
                 schema: {
+                      $image: "string",
                       $title: "string",
                       $description: "string",
                       $image: "string",
@@ -90,35 +26,60 @@ const createEvent = async (req, res) => {
                       $user_id: "string",
                       $start_date: "datetime",  
                       $end_date: "datetime",  
+                      $gallery: "array",
+                      $prices: "array"
                 }
         }
   */
 
   try {
-    const data = await Event.create({
-      user_id: req.isce_auth.user_id,
-      image: req.body.image,
-      title: req.body.title,
-      location: req.body.location,
-      description: req.body.description,
-      start_date: req.body.start_date,
-      end_date: "2022-10-10",
+    const event = await Event.create({
+      user_id: req?.isce_auth?.user_id,
+      image: req?.body?.image,
+      clean_name: req?.body?.name || req?.body?.title.replace(/ /g,"-"),
+      title: req?.body?.title,
+      location: req?.body?.location,
+      description: req?.body?.description,
+      start_date: req?.body?.start_date,
+      end_date: req?.body?.end_date,
     });
 
-    let response;
-    if (data.id) {
+    let response, status;
+    if (event?.id) {
+
+      const prices = req?.body?.prices;
+      if(prices?.length > 0){
+        prices.forEach(async (price) => {
+          await Price.create({ 
+            id: guid(), event_id: event?.id, ...price, order_amount: 0 
+          });
+        });
+      }
+
+      const gallery = req?.body?.gallery;
+      if (gallery?.length > 0){
+        gallery.forEach(async (item) => {
+          await Gallery.create({ 
+            id: guid(), event_id: event?.id, ...item 
+          });
+        });
+      }
+
+      status = 200;
       response = {
         success: "true",
         message: "Event created successfully",
-        data,
+        data: event,
       };
     } else {
+      status = 404;
       response = { success: "false", message: "Unable to save event" };
     }
-    res.send(response);
+
+    res.status(status).send(response);
   } catch (error) {
     logger(error);
-    res.send({ success: "false", message: error.message });
+    res.status(500).send({ success: "false", message: error?.message });
   }
 };
 
@@ -142,18 +103,57 @@ const updateEvent = async (req, res) => {
         }
   */
 
-  await Event.update(req.body, {
-    where: {
-      id: req.params.id,
-    },
-  })
-    .then((data) => {
-      res.send({
-        success: true,
-        data,
+  try {
+    await Event.update(req.body, {
+      where: {
+        id: req.params.id,
+      },
+    });
+
+    const event = await Event.findOne({ 
+      where: { 
+        id: req?.params?.id
+      } 
+    });
+
+    const prices = req.body?.prices;
+    if(prices?.length > 0){
+      await Price.destroy({
+        where: {
+          event_id: event?.id
+        }
       });
-    })
-    .catch((err) => logger(err));
+
+      prices.forEach(async (price) => {
+        await Price.create({ 
+          id: guid(), event_id: event?.id, ...price, order_amount: 0 
+        });
+      });
+    }
+
+    const gallery = req.body?.gallery;
+    if (gallery?.length > 0){
+      await Gallery.destroy({
+        where: {
+          event_id: event?.id
+        }
+      });
+
+      gallery.forEach(async (item) => {
+        await Gallery.create({
+          id: guid(), event_id: event?.id, ...item
+        });
+      });
+    }
+
+    res.send({
+      success: "true",
+      data: { event },
+    });
+  } catch (error) {
+    logger(error);
+    res.send({ success: "false", message: "An error has occurred" });
+  }
 };
 
 const deleteEvent = async (req, res) => {
@@ -165,21 +165,35 @@ const deleteEvent = async (req, res) => {
         }]
   */
 
-  await Event.destroy({
-    where: {
-      id: req.params.id,
-    },
-  })
-    .then(() => {
-      res.send({
-        success: true,
-        message: "Event deleted",
+  try {
+    if(!req?.params?.id){
+      res.status(404).send({
+        success: "false",
+        message: "Invalid event id",
       });
-    })
-    .catch((err) => {
-      logger(err)
-      res.send({ success: "false", message: error.message });
+    }
+
+    const event = await Event.destroy({
+      where: {
+        id: req.params.id,
+      },
     });
+
+    if(!event){
+      res.status(404).send({
+        success: "false",
+        message: "Event not available",
+      });
+    }
+  
+    res.status(200).send({
+      success: "true",
+      message: "Event deleted",
+    });
+  } catch (error) {
+    logger(err);
+    res.status(500).send({ success: "false", message: "An error occurred" });
+  }
 };
 
 const getEvents = async (req, res) => {
@@ -190,108 +204,52 @@ const getEvents = async (req, res) => {
                "apikey": []
         }]
   */
-  let offset = 0,
+  try {
+    let offset = 0,
     page = Number(req.query.page) || 1,
     limit = Number(req.query.limit) || 100;
-  if (page > 1) {
-    offset = limit * page;
-    offset = offset - limit;
-  }
-
-  await totalCount()
-    .then(async (total) => {
-      await Event.findAll({
-        limit,
-        offset,
-        where: {
-          start_date: {
-            [Op.gte]: new Date(),
-          },
-        },
-      }).then(async (data) => {
-        let past, upcoming;
-
-        await getPast().then((pe) => {
-          past = pe;
-        });
-
-        await getFuture().then((fe) => {
-          upcoming = fe;
-        });
-        let events = [];
-        await asyncForEach(data, async (item) => {
-          await getPrices(item.id).then((prices) => {
-            events.push({ ...item, prices });
-          });
-        }).finally(() => {
-          res.send({
-            success: "true",
-            data: {
-              count: data.length,
-              all: data,
-              past,
-              upcoming,
-              total,
-            },
-          });
-        });
-      });
-    })
-    .catch((err) => {
-      logger(err);
-      res.send({
-        success: "false",
-        message: "Unable to get events list",
-      });
+    if (page > 1) {
+      offset = limit * page;
+      offset = offset - limit;
+    }
+    
+    const events = await Event.findAll({
+      limit,
+      offset,
+      where: {
+        user_id: {
+          [Op.eq]: req.isce_auth.user_id,
+        }
+      }
     });
-};
 
-const getPastEvents = async (req, res) => {
-  /*
-    #swagger.tags = ["Event"]
-    #swagger.description = 'Get past events'
-     #swagger.security = [{
-               "apikey": []
-        }]
-  */
-  let offset = 0,
-    page = Number(req.query.page) || 1,
-    limit = Number(req.query.limit) || 100;
-  if (page > 1) {
-    offset = limit * page;
-    offset = offset - limit;
+    const updatedEvents = await Promise.all(events?.map(async (event) => {
+      const item = event.dataValues;
+      const prices = await getPrices(item.id);
+      const gallery = await getGallery(item.id);
+      const attendees = await getAttendees(item.id);
+      return { ...item, prices, gallery, attendees };
+    })); 
+
+    const yesterday = new Date((new Date()).valueOf() - 1000*60*60*24);
+    const past = updatedEvents.filter(({ start_date }) => new Date(start_date) < yesterday);
+    const upcoming = updatedEvents.filter(({ start_date }) => new Date(start_date) >= yesterday);
+
+    res.status(200).send({
+      success: "true",
+      data: {
+        count: updatedEvents?.length,
+        all: updatedEvents,
+        upcoming,
+        past
+      },
+    });
+  } catch (error) {
+    logger(error);
+    res.status(500).send({
+      success: 'false', message: 'A server error occurred'
+    });
   }
-
-  await totalCount()
-    .then(async (total) => {
-      await Event.findAll({
-        limit,
-        offset,
-        where: {
-          start_date: {
-            [Op.lt]: new Date(),
-          },
-        },
-      }).then(async (data) => {
-        let events = [];
-        await asyncForEach(data, async (item) => {
-          await getPrices(item.id).then((prices) => {
-            events.push({ ...item, prices });
-          });
-        }).finally(() => {
-          res.send({
-            success: "true",
-            data: {
-              count: data.length,
-              all: data,
-              total,
-            },
-          });
-        });
-        res.send({ success: true, data, total });
-      });
-    })
-    .catch((err) => logger(err));
 };
 
 const searchEvents = async (req, res) => {
@@ -302,39 +260,41 @@ const searchEvents = async (req, res) => {
                "apikey": []
         }]
   */
-  let offset = 0,
+  
+  try {
+    let offset = 0,
     page = Number(req.query.page) || 1,
     limit = Number(req.query.limit) || 100,
     query = req.query.query;
 
-  if (page > 1) {
-    offset = limit * page;
-    offset = offset - limit;
-  }
+    if (page > 1) {
+      offset = limit * page;
+      offset = offset - limit;
+    }
 
-  await totalCount()
-    .then(async (total) => {
-      await Event.findAll({
-        limit,
-        offset,
-        where: {
-          [Op.or]: [
-            { title: { [Op.like]: query } },
-            { description: { [Op.like]: query } },
-          ],
-          title: { [Op.like]: query },
-          start_date: {
-            [Op.gte]: new Date(),
-          },
+    const events = await Event.findAll({
+      limit,
+      offset,
+      where: {
+        [Op.or]: [
+          { title: { [Op.like]: query } },
+          { description: { [Op.like]: query } },
+        ],
+        title: { [Op.like]: query },
+        start_date: {
+          [Op.gte]: new Date(),
         },
-      }).then((data) => {
-        res.send({ success: true, data, total });
-      });
-    })
-    .catch((err) => logger(err));
+      },
+    });
+
+    res.status(200).send({ success: "true", data: { events } });
+  } catch (error) {
+    logger(error);
+    res.status(500).send({ success: "false", message: "an error occurred" })
+  }
 };
 
-const getEvent = (req, res) => {
+const getEvent = async (req, res) => {
   /*
     #swagger.tags = ["Event"]
     #swagger.description = 'Get Event by id'
@@ -343,18 +303,78 @@ const getEvent = (req, res) => {
         }]
   */
 
-  Event.findOne({ where: { id: req.params.id } })
-    .then(async (data) => {
-      if (data) {
-        await getPrices(data.id).then((prices) => {
-          data.prices = prices;
-          res.send({ success: true, data });
-        });
-      } else {
-        res.send({ success: false, message: "No data" });
-      }
-    })
-    .catch((err) => logger(err));
+  try {
+    const event = await Event.findOne({ 
+      where: { 
+        id: req?.params?.id,
+        user_id: req?.isce_auth?.user_id 
+      } 
+    });
+
+    if(!event?.id){
+      res.status(404).send({ success: "false", message: "No data found" });
+    }else{
+      const yesterday = new Date((new Date()).valueOf() - 1000*60*60*24);
+      const past = (new Date(event?.start_date) < yesterday);
+
+      const prices = await getPrices(event.id);
+      const gallery = await getGallery(event.id);
+      const attendees = await getAttendees(event.id);
+      const data = { ...event.dataValues, gallery, prices, attendees, past };
+
+      res.status(200).send({ success: "true", data });
+    }
+  } catch (error) {
+    logger(error);
+    res.status(500).send({ success: "false", message: "An error occurred" });
+  }
+};
+
+const getRequestedCards = async (req, res) => {
+  //receives event_id, requested card number, event_price_id
+
+  try {
+    let price = await Price.findOne({
+      where: {
+        id: req.body?.event_price_id,
+      },
+    });
+
+    const updatedOrder = +req?.body?.order_amount + price?.order_amount;
+    if(updatedOrder > price?.attendees){
+      res.send({
+        success: "false",
+        message: "Maximum amount reached"
+      });
+    }else{
+      /* NEEDS UPDATE */
+      //send a mail to isce indicating that a card request has been made
+        //mail will contain user details, event details, and the total cost of cards
+
+      //send a mail to user indicating that they will receive the cards soon
+          //mail will contain user details, event details, and the total cost of cards
+
+      //update price table
+
+      await Price.update({ order_amount: updatedOrder }, {
+        where: {
+          id: req.body?.event_price_id,
+        },
+      });
+
+      res.send({
+        success: "true",
+        message: "Updated successfully",
+        data: { order_amount: updatedOrder }
+      });
+    }
+  } catch (error) {
+    logger(error)
+    res.send({
+      success: "false",
+      message: "Unable to update data"
+    });
+  }
 };
 
 module.exports = {
@@ -362,7 +382,7 @@ module.exports = {
   updateEvent,
   deleteEvent,
   getEvents,
-  getPastEvents,
   searchEvents,
   getEvent,
+  getRequestedCards
 };

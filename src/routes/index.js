@@ -4,47 +4,70 @@ const controllers = require("../controllers");
 const config = require("../config");
 
 const authenticate = (req, res, next) => {
-    async function authenticateCheck(){
-       const token = req.header('Authorization');
-       try {
-           const { data: auth } = await axios.post(config.auth.url + '/api/user-profile', {}, {
-               headers: {
-                   'Content-type': 'application/json',
-                   'Authorization': token
-               }
-           });
-           if(auth.success === 'true'){
-               req.isce_auth = auth?.data?.user;
-               next();
-           }
-       } catch (error) {
-           res.json({
-               success: 'false',
-               message: 'Unauthorized'
-           })
-       }
+  async function authenticateCheck() {
+    const token = req.header("Authorization");
+    try {
+      const { data: auth } = await axios.post(
+        config.auth.url + "/api/user-profile",
+        {},
+        {
+          headers: {
+            "Content-type": "application/json",
+            Authorization: token,
+          },
+        }
+      );
+
+      if (auth.success === "true") {
+        req.isce_auth = auth?.data?.user;
+        next();
+      } else {
+        res.status(401).send({
+          success: "false",
+          message: "Unauthorized",
+        });
+      }
+    } catch (error) {
+      res.status(500).send({
+        error,
+        success: "false",
+        message: "Unauthorized",
+      });
     }
-    authenticateCheck();
-  };
+  }
+  authenticateCheck();
+};
 
 const route = Router();
 
 //Event routes
-route.post("/api/event/create", authenticate, controllers.createEvent);
-route.post("/api/event/update", controllers.updateEvent);
-route.get("/api/events", controllers.getEvents);
-route.get("/api/event/:id", controllers.getEvent);
 
-//Price routes
-route.post("/api/price/create", controllers.createPrice);
-route.post("/api/price/update", controllers.updatePrice);
-route.get("/api/prices/:id", controllers.getPrices);
-route.get("/api/price/:id", controllers.getPrice);
+route.post("/api/events/create", authenticate, controllers.createEvent);
+route.get("/api/events", authenticate, controllers.getEvents);
+route.get("/api/events/search", authenticate, controllers.searchEvents);
 
-//Upload routes
-route.post("/api/upload/image/:id", controllers.uploadImage);
-route.post("/api/upload/document/:id", controllers.uploadFile);
-route.get("/api/upload/relative/:id", controllers.getFileByRelative);
-route.get("/api/upload/:id", controllers.getFileById);
+route.get("/api/events/:id", authenticate, controllers.getEvent);
+route.post("/api/events/:id", authenticate, controllers.updateEvent);
+route.delete("/api/events/:id", authenticate, controllers.deleteEvent);
+route.post("/api/events/:id/get-cards", controllers.getRequestedCards);
+
+//route.post("/api/events/:id/card", authenticate, controllers.get);
+
+
+//Card Event Routes
+route.get("/api/card/events", controllers.cardGetEvents);
+route.get("/api/card/events/open", controllers.cardGetOpenEvents);
+route.post("/api/card/events/register", controllers.cardRegisterEvent);
+route.get("/api/card/events/token/:id", controllers.cardTokenPage);
+route.get("/api/card/events/chip/:id", controllers.cardChipLoader);
+route.post("/api/card/events/chip/:id", controllers.attachTokenToChip);
+route.post("/api/card/events/payment/success", controllers.cardPaymentSuccess);
+
+//Attendee routes
+route.post("/api/attendee/create", controllers.createAttendee);
+//route.post("/api/attendee/update", controllers.updateAttendee);
+route.get("/api/attendees/:id", controllers.getAttendees);
+
+route.get("/api/attendees/:id", controllers.getAttendees);
 
 module.exports = route;

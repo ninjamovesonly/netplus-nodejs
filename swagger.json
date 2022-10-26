@@ -25,9 +25,12 @@
     "application/json"
   ],
   "paths": {
-    "/api/event/create": {
+    "/api/events/create": {
       "post": {
-        "description": "",
+        "tags": [
+          "Event"
+        ],
+        "description": "Create Event",
         "parameters": [
           {
             "name": "Authorization",
@@ -35,46 +38,327 @@
             "type": "string"
           },
           {
-            "name": "body",
+            "name": "obj",
+            "in": "body",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "image": {
+                  "type": "string",
+                  "example": "string"
+                },
+                "title": {
+                  "type": "string",
+                  "example": "string"
+                },
+                "description": {
+                  "type": "string",
+                  "example": "string"
+                },
+                "location": {
+                  "type": "string",
+                  "example": "string"
+                },
+                "user_id": {
+                  "type": "string",
+                  "example": "string"
+                },
+                "start_date": {
+                  "type": "string",
+                  "example": "datetime"
+                },
+                "end_date": {
+                  "type": "string",
+                  "example": "datetime"
+                },
+                "gallery": {
+                  "type": "string",
+                  "example": "array"
+                },
+                "prices": {
+                  "type": "string",
+                  "example": "array"
+                }
+              },
+              "required": [
+                "image",
+                "title",
+                "description",
+                "location",
+                "user_id",
+                "start_date",
+                "end_date",
+                "gallery",
+                "prices"
+              ]
+            }
+          }
+        ],
+        "responses": {
+          "401": {
+            "description": "Unauthorized"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        },
+        "security": [
+          {
+            "apikey": []
+          }
+        ]
+      }
+    },
+    "/api/events": {
+      "get": {
+        "tags": [
+          "Event"
+        ],
+        "description": "Get Events",
+        "parameters": [
+          {
+            "name": "Authorization",
+            "in": "header",
+            "type": "string"
+          },
+          {
+            "name": "page",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        },
+        "security": [
+          {
+            "apikey": []
+          }
+        ]
+      }
+    },
+    "/api/events/search": {
+      "get": {
+        "tags": [
+          "Event"
+        ],
+        "description": "Search events using title or description",
+        "parameters": [
+          {
+            "name": "Authorization",
+            "in": "header",
+            "type": "string"
+          },
+          {
+            "name": "page",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "query",
+            "in": "query",
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        },
+        "security": [
+          {
+            "apikey": []
+          }
+        ]
+      }
+    },
+    "/api/events/{id}": {
+      "get": {
+        "tags": [
+          "Event"
+        ],
+        "description": "Get Event by id",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "Authorization",
+            "in": "header",
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "404": {
+            "description": "Not Found"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        },
+        "security": [
+          {
+            "apikey": []
+          }
+        ]
+      },
+      "post": {
+        "tags": [
+          "Event"
+        ],
+        "description": "Update Event",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "Authorization",
+            "in": "header",
+            "type": "string"
+          },
+          {
+            "name": "obj",
             "in": "body",
             "schema": {
               "type": "object",
               "properties": {
                 "title": {
-                  "example": "any"
+                  "type": "string",
+                  "example": "string"
                 },
                 "description": {
-                  "example": "any"
+                  "type": "string",
+                  "example": "string"
+                },
+                "image": {
+                  "type": "string",
+                  "example": "string"
+                },
+                "location": {
+                  "type": "string",
+                  "example": "string"
                 },
                 "start_date": {
-                  "example": "any"
+                  "type": "string",
+                  "example": "datetime"
+                },
+                "end_date": {
+                  "type": "string",
+                  "example": "datetime"
                 }
-              }
+              },
+              "required": [
+                "title",
+                "description",
+                "image",
+                "location",
+                "start_date",
+                "end_date"
+              ]
             }
           }
         ],
         "responses": {
           "200": {
             "description": "OK"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "500": {
+            "description": "Internal Server Error"
           }
-        }
+        },
+        "security": [
+          {
+            "apikey": []
+          }
+        ]
+      },
+      "delete": {
+        "tags": [
+          "Event"
+        ],
+        "description": "Delete event by id",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "Authorization",
+            "in": "header",
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "404": {
+            "description": "Not Found"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        },
+        "security": [
+          {
+            "apikey": []
+          }
+        ]
       }
     },
-    "/api/event/update": {
+    "/api/events/{id}/get-cards": {
       "post": {
         "description": "",
         "parameters": [
           {
-            "name": "body",
-            "in": "body",
-            "schema": {
-              "type": "object",
-              "properties": {
-                "id": {
-                  "example": "any"
-                }
-              }
-            }
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "string"
           }
         ],
         "responses": {
@@ -84,7 +368,50 @@
         }
       }
     },
-    "/api/events": {
+    "/api/card/events": {
+      "get": {
+        "tags": [
+          "Event"
+        ],
+        "description": "Get Events",
+        "parameters": [
+          {
+            "name": "page",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "id",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "type",
+            "in": "query",
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        },
+        "security": [
+          {
+            "apikey": []
+          }
+        ]
+      }
+    },
+    "/api/card/events/open": {
       "get": {
         "tags": [
           "Event"
@@ -105,6 +432,9 @@
         "responses": {
           "200": {
             "description": "OK"
+          },
+          "500": {
+            "description": "Internal Server Error"
           }
         },
         "security": [
@@ -114,7 +444,29 @@
         ]
       }
     },
-    "/api/event/{id}": {
+    "/api/card/events/register": {
+      "post": {
+        "tags": [
+          "Event"
+        ],
+        "description": "Get Event by id",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        },
+        "security": [
+          {
+            "apikey": []
+          }
+        ]
+      }
+    },
+    "/api/card/events/token/{id}": {
       "get": {
         "tags": [
           "Event"
@@ -131,6 +483,9 @@
         "responses": {
           "200": {
             "description": "OK"
+          },
+          "500": {
+            "description": "Internal Server Error"
           }
         },
         "security": [
@@ -140,12 +495,94 @@
         ]
       }
     },
-    "/api/price/create": {
+    "/api/card/events/chip/{id}": {
+      "get": {
+        "tags": [
+          "Event"
+        ],
+        "description": "Get Event by id",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        },
+        "security": [
+          {
+            "apikey": []
+          }
+        ]
+      },
       "post": {
         "tags": [
-          "Price"
+          "Event"
         ],
-        "description": "Create Price",
+        "description": "Get Event by id",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "token": {
+                  "example": "any"
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        },
+        "security": [
+          {
+            "apikey": []
+          }
+        ]
+      }
+    },
+    "/api/card/events/payment/success": {
+      "post": {
+        "description": "",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      }
+    },
+    "/api/attendee/create": {
+      "post": {
+        "tags": [
+          "Attendee"
+        ],
+        "description": "Create Attendee",
         "parameters": [
           {
             "name": "obj",
@@ -157,24 +594,34 @@
                   "type": "string",
                   "example": "string"
                 },
-                "title": {
+                "image": {
                   "type": "string",
                   "example": "string"
                 },
-                "description": {
+                "name": {
                   "type": "string",
                   "example": "string"
                 },
-                "amount": {
+                "email": {
+                  "type": "string",
+                  "example": "string"
+                },
+                "phone": {
+                  "type": "string",
+                  "example": "string"
+                },
+                "price_category": {
                   "type": "string",
                   "example": "string"
                 }
               },
               "required": [
                 "event_id",
-                "title",
-                "description",
-                "amount"
+                "image",
+                "name",
+                "email",
+                "phone",
+                "price_category"
               ]
             }
           }
@@ -191,192 +638,12 @@
         ]
       }
     },
-    "/api/price/update": {
-      "post": {
-        "tags": [
-          "Price"
-        ],
-        "description": "Update Price",
-        "parameters": [
-          {
-            "name": "body",
-            "in": "body",
-            "schema": {
-              "type": "object",
-              "properties": {
-                "id": {
-                  "example": "any"
-                }
-              }
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "OK"
-          }
-        },
-        "security": [
-          {
-            "apikey": []
-          }
-        ]
-      }
-    },
-    "/api/prices/{id}": {
+    "/api/attendees/{id}": {
       "get": {
         "tags": [
-          "Price"
+          "Attendee"
         ],
-        "description": "Get Prices by event_id",
-        "parameters": [
-          {
-            "name": "id",
-            "in": "path",
-            "required": true,
-            "type": "string"
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "OK"
-          }
-        },
-        "security": [
-          {
-            "apikey": []
-          }
-        ]
-      }
-    },
-    "/api/price/{id}": {
-      "get": {
-        "tags": [
-          "Price"
-        ],
-        "description": "Get single price by id",
-        "parameters": [
-          {
-            "name": "id",
-            "in": "path",
-            "required": true,
-            "type": "string"
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "OK"
-          }
-        },
-        "security": [
-          {
-            "apikey": []
-          }
-        ]
-      }
-    },
-    "/api/upload/image/{id}": {
-      "post": {
-        "tags": [
-          "Upload"
-        ],
-        "description": "Upload image",
-        "consumes": [
-          "multipart/form-data"
-        ],
-        "parameters": [
-          {
-            "name": "id",
-            "in": "path",
-            "required": true,
-            "type": "string"
-          },
-          {
-            "name": "singleFile",
-            "in": "formData",
-            "type": "file",
-            "required": true
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "OK"
-          }
-        },
-        "security": [
-          {
-            "apikey": []
-          }
-        ]
-      }
-    },
-    "/api/upload/document/{id}": {
-      "post": {
-        "tags": [
-          "Upload"
-        ],
-        "description": "Upload document",
-        "consumes": [
-          "multipart/form-data"
-        ],
-        "parameters": [
-          {
-            "name": "id",
-            "in": "path",
-            "required": true,
-            "type": "string"
-          },
-          {
-            "name": "singleFile",
-            "in": "formData",
-            "type": "file",
-            "required": true
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "OK"
-          }
-        },
-        "security": [
-          {
-            "apikey": []
-          }
-        ]
-      }
-    },
-    "/api/upload/relative/{id}": {
-      "get": {
-        "tags": [
-          "Upload"
-        ],
-        "description": "Get upload by id",
-        "parameters": [
-          {
-            "name": "id",
-            "in": "path",
-            "required": true,
-            "type": "string"
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "OK"
-          }
-        },
-        "security": [
-          {
-            "apikey": []
-          }
-        ]
-      }
-    },
-    "/api/upload/{id}": {
-      "get": {
-        "tags": [
-          "Upload"
-        ],
-        "description": "Get a file by event id",
+        "description": "Get Attendees by event_id",
         "parameters": [
           {
             "name": "id",

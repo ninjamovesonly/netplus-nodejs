@@ -99,6 +99,16 @@ const asyncForEach = async (array, callback) => {
   }
 };
 
+const pastItems = (items) => {
+  const yesterday = new Date((new Date()).valueOf() - 1000*60*60*24);
+  return items.filter(({ start_date }) => new Date(start_date) < yesterday);
+}
+
+const upcomingItems = (items) => {
+  const yesterday = new Date((new Date()).valueOf() - 1000*60*60*24);
+  return items.filter(({ start_date }) => new Date(start_date) >= yesterday);
+}
+
 module.exports = {
   slug,
   code,
@@ -111,4 +121,6 @@ module.exports = {
   getEXT,
   percentage,
   asyncForEach,
+  pastItems,
+  upcomingItems
 };
