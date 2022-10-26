@@ -9,7 +9,7 @@ const slug = () => {
 };
 
 const code = () => {
-  let code = Math.random() * (1000000000 - 10000) + 10000;
+  let code = Math.random() * (999999999999999) + 10000;
   code = Math.round(code);
   return code;
 };

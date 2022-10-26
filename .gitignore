@@ -7,6 +7,10 @@ src/storage/images/
 .env.prod
 .DS_Store
 
+# 
+package-lock.json
+yarn.lock
+
 # Logs
 logs
 *.log
