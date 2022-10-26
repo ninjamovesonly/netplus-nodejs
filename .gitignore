@@ -4,6 +4,7 @@ src/storage/users/
 src/storage/docs/
 src/storage/images/
 .env
+.env.prod
 .DS_Store
 
 # Logs

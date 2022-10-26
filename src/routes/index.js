@@ -55,12 +55,19 @@ route.post("/api/events/:id/get-cards", controllers.getRequestedCards);
 
 
 //Card Event Routes
-route.get("/api/card/events/:id", controllers.cardGetEvents);
-//route.get("/api/card/events/:id", controllers.getEvents);
+route.get("/api/card/events", controllers.cardGetEvents);
+route.get("/api/card/events/open", controllers.cardGetOpenEvents);
+route.post("/api/card/events/register", controllers.cardRegisterEvent);
+route.get("/api/card/events/token/:id", controllers.cardTokenPage);
+route.get("/api/card/events/chip/:id", controllers.cardChipLoader);
+route.post("/api/card/events/chip/:id", controllers.attachTokenToChip);
+route.post("/api/card/events/payment/success", controllers.cardPaymentSuccess);
 
 //Attendee routes
 route.post("/api/attendee/create", controllers.createAttendee);
 //route.post("/api/attendee/update", controllers.updateAttendee);
+route.get("/api/attendees/:id", controllers.getAttendees);
+
 route.get("/api/attendees/:id", controllers.getAttendees);
 
 module.exports = route;

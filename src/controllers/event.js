@@ -35,31 +35,32 @@ const createEvent = async (req, res) => {
   try {
     const event = await Event.create({
       user_id: req?.isce_auth?.user_id,
-      image: req.body.image,
-      title: req.body.title,
-      location: req.body.location,
-      description: req.body.description,
-      start_date: req.body.start_date,
-      end_date: req.body.end_date,
+      image: req?.body?.image,
+      clean_name: req?.body?.name || req?.body?.title.replace(/ /g,"-"),
+      title: req?.body?.title,
+      location: req?.body?.location,
+      description: req?.body?.description,
+      start_date: req?.body?.start_date,
+      end_date: req?.body?.end_date,
     });
 
     let response, status;
     if (event?.id) {
 
-      const prices = req.body?.prices;
+      const prices = req?.body?.prices;
       if(prices?.length > 0){
         prices.forEach(async (price) => {
           await Price.create({ 
-            id: guid(), event_id: event.id, ...price, order_amount: 0 
+            id: guid(), event_id: event?.id, ...price, order_amount: 0 
           });
         });
       }
 
-      const gallery = req.body?.gallery;
+      const gallery = req?.body?.gallery;
       if (gallery?.length > 0){
         gallery.forEach(async (item) => {
           await Gallery.create({ 
-            id: guid(), event_id: event.id, ...item 
+            id: guid(), event_id: event?.id, ...item 
           });
         });
       }

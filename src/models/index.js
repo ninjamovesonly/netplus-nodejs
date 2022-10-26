@@ -28,6 +28,10 @@ const Event = sequelize.define("event", {
     type: DataTypes.TEXT,
     allowNull: true,
   },
+  clean_name: {
+    type: DataTypes.TEXT,
+    allowNull: true
+  },
   location: {
     type: DataTypes.TEXT,
     allowNull: true,
@@ -141,13 +145,17 @@ const Attendee = sequelize.define("event_attendee", {
     type: DataTypes.STRING,
     allowNull: true,
   },
+  ticket: {
+    type: DataTypes.STRING,
+    allowNull: true,
+  },
   link: {
     type: DataTypes.STRING,
-    allowNull: false,
+    allowNull: true,
   },
   token: {
     type: DataTypes.STRING,
-    allowNull: false,
+    allowNull: true,
   },
 });
 
@@ -169,7 +177,7 @@ const Token = sequelize.define("event_token", {
   },
 });
 
-const Url = sequelize.define("event_url", {
+const EventUrl = sequelize.define("event_url", {
   id: {
     type: DataTypes.STRING,
     allowNull: false,
@@ -182,7 +190,7 @@ const Url = sequelize.define("event_url", {
   },
   event_attendee_id: {
     type: DataTypes.STRING,
-    allowNull: false,
+    allowNull: true,
   },
   event_url: {
     type: DataTypes.STRING,
@@ -194,15 +202,41 @@ const Url = sequelize.define("event_url", {
   },
 });
 
+const Paystack = sequelize.define("event_url", {
+  id: {
+    type: DataTypes.STRING,
+    allowNull: false,
+    defaultValue: guid(),
+    primaryKey: true,
+  },
+  access_code: {
+    type: DataTypes.STRING,
+    allowNull: false,
+  },
+  authorization_url: {
+    type: DataTypes.STRING,
+    allowNull: false,
+  },
+  reference: {
+    type: DataTypes.STRING,
+    allowNull: false,
+  },
+  metadata: {
+    type: DataTypes.TEXT,
+    allowNull: false,
+  },
+});
+
 const init = async () => {
-  await Event.sync();
-  await Price.sync({ force: true });
-  await Gallery.sync();
-  await Attendee.sync();
-  await Token.sync();
-  await Url.sync();
+  await Event.sync({ force: false });
+  await Price.sync({ force: false });
+  await Gallery.sync({ force: false });
+  await Attendee.sync({ force: false });
+  await Token.sync({ force: false });
+  await EventUrl.sync({ force: false });
+  await Paystack.sync({ force: false });
 };
 
 init();
 
-module.exports = { Event, Price, Gallery, Attendee, Token, Url };
+module.exports = { Event, Price, Gallery, Attendee, Token, EventUrl, Paystack };

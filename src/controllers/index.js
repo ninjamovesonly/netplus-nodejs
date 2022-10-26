@@ -11,8 +11,14 @@ const {
 
 const {
   cardGetEvents,
+  cardGetOpenEvents,
   cardSearchEvents,
   cardGetEvent,
+  cardRegisterEvent,
+  cardPaymentSuccess,
+  cardTokenPage,
+  cardChipLoader,
+  attachTokenToChip
 } = require("./card");
 
 const { createPrice, updatePrice, getPrices, getPrice } = require("./price");
@@ -54,6 +60,12 @@ module.exports = {
   getAttendees,
   getAttendee,
   cardGetEvents,
+  cardGetOpenEvents,
   cardSearchEvents,
   cardGetEvent,
+  cardRegisterEvent,
+  cardPaymentSuccess,
+  cardTokenPage,
+  cardChipLoader,
+  attachTokenToChip
 };
