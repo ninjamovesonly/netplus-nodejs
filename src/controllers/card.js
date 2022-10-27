@@ -231,8 +231,8 @@ const cardRegisterEvent = async (req, res) => {
 
     let eventToken = null;
     const aid = guid();
-    let ticket = "http://localhost:3000/event/u/ticket/" + aid;
-    let link = "http://localhost:3000/event/u/arena/" + aid;
+    let ticket = "/event/u/ticket/" + aid;
+    let link = "/event/u/arena/" + aid;
     if(price?.withChips === 'with'){
       eventToken = await Token.findOne({ where: { used: false }});
     }
@@ -321,8 +321,8 @@ const cardPaymentSuccess = async (req, res) => {
 
     let eventToken = null;
     const aid = guid();
-    let ticket = "http://localhost:3000/event/u/ticket/" + aid;
-    let link = "http://localhost:3000/event/u/arena/" + aid;
+    let ticket = "/event/u/ticket/" + aid;
+    let link = "/event/u/arena/" + aid;
     
     if(price?.withChips === 'with'){
       eventToken = await Token.findOne({ where: { used: false }});
