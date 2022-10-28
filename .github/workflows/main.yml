@@ -1,4 +1,4 @@
-name: Deploy to server
+name: Deploy to Server
 on:
   push:
     branches:
@@ -24,9 +24,5 @@ jobs:
           password: ${{ secrets.REMOTE_PASS }}
           port: ${{ secrets.REMOTE_PORT }}
           script: |
-            cd /var/www/html/events
-            git pull origin main 
-            export NVM_DIR=~/.nvm
-            source ~/.nvm/nvm.sh
-            yarn 
-            yarn production
+            whoami
+            ls -al
