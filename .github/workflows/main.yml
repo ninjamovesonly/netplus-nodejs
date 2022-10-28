@@ -24,7 +24,7 @@ jobs:
           password: ${{ secrets.REMOTE_PASS }}
           port: ${{ secrets.REMOTE_PORT }}
           script: |
-            cd /var/www/html/server
+            cd /var/www/html/events
             git pull origin main 
             export NVM_DIR=~/.nvm
             source ~/.nvm/nvm.sh
