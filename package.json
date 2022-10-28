@@ -6,6 +6,7 @@
   "scripts": {
     "dev": "yarn docs && nodemon ./src/app.js",
     "docs": "node swagger.js",
+    "test": "node test.js",
     "init-seed": "bash init.sh",
     "start": "yarn docs && pm2 start ./src/app.js -n 'ISCE_events API' --watch",
     "production": "yarn docs && pm2 reload ./src/app.js -n 'ISCE_events API'",
@@ -30,6 +31,7 @@
     "loadtest": "^5.2.0",
     "moment": "^2.29.3",
     "mysql2": "^2.3.3",
+    "nodemailer": "^6.8.0",
     "pm2": "^5.2.0",
     "request": "^2.88.2",
     "sequelize": "^6.21.3",

@@ -15,5 +15,9 @@ module.exports = {
   },
   auth: {
     url: process.env.AUTH_URL
+  },
+  link: {
+    server1: process.env.SERVER_1,
+    frontend: process.env.FRONTEND
   }
 };

@@ -1,4 +1,5 @@
 "use strict";
+require("dotenv").config();
 
 const { Op } = require("sequelize");
 const { Event, Attendee, Token, EventUrl, Price, Paystack } = require("../models");
@@ -9,6 +10,7 @@ const logger = require("../util/log");
 const { guid, pastItems, upcomingItems } = require("../util");
 const axios = require('axios');
 const _ = require('lodash');
+const { sendMail } = require("../util/mailer");
 const {initializePayment, verifyPayment} = require('../config/paystack')();
 
 const cardGetEvents = async (req, res) => {
@@ -28,7 +30,7 @@ const cardGetEvents = async (req, res) => {
       offset = offset - limit;
     }
 
-    let url = 'https://developer.isce.app/v1/connect/api/connect-vcard';
+    let url = process.env.SERVER_1 + '/connect/api/connect-vcard';
     url = (req.query.id) ? url + `?id=${req.query.id}` : null;
     url = (url && req.query.type) ? url + `&type=${req.query.type}` : null;
     if(!url){
@@ -215,6 +217,12 @@ const cardRegisterEvent = async (req, res) => {
   */
 
   try {
+
+    const event = await Event.findOne({ where: { id: req?.body?.event_id }});
+    if(!event) {
+      return res.status(200).send({ success: "false", message: "No event specified" })
+    }
+
     let attendee = await Attendee.findOne({ 
       where: { 
         email: req?.body?.email,
@@ -231,8 +239,8 @@ const cardRegisterEvent = async (req, res) => {
 
     let eventToken = null;
     const aid = guid();
-    let ticket = "/event/u/ticket/" + aid;
-    let link = "/event/u/arena/" + aid;
+    let ticket = process.env.FRONTEND + "/event/u/ticket/" + aid;
+    let link = process.env.FRONTEND + "/event/u/arena/" + aid;
     if(price?.withChips === 'with'){
       eventToken = await Token.findOne({ where: { used: false }});
     }
@@ -289,6 +297,25 @@ const cardRegisterEvent = async (req, res) => {
       });
     }
 
+    //email should contain qrcode, arena link
+    const mail = sendMail({
+      to: metadata?.email,
+      subject: 'Ticket: ' + event?.title,
+      data: {
+        qrcode: `https://chart.googleapis.com/chart?chs=250x250&cht=qr&chl=${link}&choe=UTF-8`,
+        ticket: ticket,
+        pass_type: price?.title,
+        image: req?.body?.image,
+        title: event?.title,
+        arena: link,
+        token: eventToken?.token
+      }
+    });
+
+    if(!mail){
+      return res.status(404).send({ success: "false", message: "unable to send mail" });
+    }
+
     //send an email with the user link attached
     return res.status(200).send({ success: "true", link: ticket, message: 'You have been successfully registered' });
   } catch (error) {
@@ -306,6 +333,11 @@ const cardPaymentSuccess = async (req, res) => {
 
     const metadata = vpay?.data?.metadata;
 
+    const event = await Event.findOne({ where: { id: metadata?.event_id }});
+    if(!event) {
+      return res.status(200).send({ success: "false", message: "No event specified" })
+    }
+
     let attendee = await Attendee.findOne({ where: { 
       email: vpay?.data?.customer?.email,
       event_id:  metadata?.event_id
@@ -321,8 +353,8 @@ const cardPaymentSuccess = async (req, res) => {
 
     let eventToken = null;
     const aid = guid();
-    let ticket = "/event/u/ticket/" + aid;
-    let link = "/event/u/arena/" + aid;
+    let ticket = process.env.FRONTEND + "/event/u/ticket/" + aid;
+    let link = process.env.FRONTEND + "/event/u/arena/" + aid;
     
     if(price?.withChips === 'with'){
       eventToken = await Token.findOne({ where: { used: false }});
@@ -351,11 +383,30 @@ const cardPaymentSuccess = async (req, res) => {
       });
     }
 
+    //email should contain qrcode, arena link
+    const mail = sendMail({
+      to: metadata?.email,
+      subject: 'Ticket: ' + event?.title,
+      data: {
+        qrcode: `https://chart.googleapis.com/chart?chs=250x250&cht=qr&chl=${link}&choe=UTF-8`,
+        ticket: ticket,
+        pass_type: price?.title,
+        image: metadata?.image,
+        title: event?.title,
+        arena: link,
+        token: eventToken?.token
+      }
+    });
+
+    if(!mail){
+      return res.status(404).send({ success: "false", message: "unable to send mail" });
+    }
+
     //send an email with the user link attached
     res.status(200).send({ success: "true", link: ticket, message: 'You have been successfully registered' });
   } catch (error) {
     logger(error);
-    res.status(500).send({ success: "false", message: "A server error occurrred" })
+    res.status(500).send({ success: "false", message: "A :wq error occurrred" })
   }
 }
 

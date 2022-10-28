@@ -33,10 +33,19 @@ const createEvent = async (req, res) => {
   */
 
   try {
-    const event = await Event.create({
+    const clean_name = req?.body?.clean_name?.replace(/ /g,"-") || req?.body?.title?.replace(/ /g,"-");
+    let event = await Event.findOne({
+      where: {
+        clean_name: clean_name
+      }
+    });
+    if(event){
+      return res.status(404).send({ success: "false", message: "Event name already exists" });
+    }
+    event = await Event.create({
       user_id: req?.isce_auth?.user_id,
       image: req?.body?.image,
-      clean_name: req?.body?.name || req?.body?.title.replace(/ /g,"-"),
+      clean_name: clean_name,
       title: req?.body?.title,
       location: req?.body?.location,
       description: req?.body?.description,
@@ -44,42 +53,36 @@ const createEvent = async (req, res) => {
       end_date: req?.body?.end_date,
     });
 
-    let response, status;
-    if (event?.id) {
-
-      const prices = req?.body?.prices;
-      if(prices?.length > 0){
-        prices.forEach(async (price) => {
-          await Price.create({ 
-            id: guid(), event_id: event?.id, ...price, order_amount: 0 
-          });
+    if(!event?.id){
+      return res.status(404).send({ success: "false", message: "Unable to create event" });
+    }
+    
+    const prices = req?.body?.prices;
+    if(prices?.length > 0){
+      prices?.forEach(async (price) => {
+        await Price.create({ 
+          id: guid(), event_id: event?.id, ...price, order_amount: 0 
         });
-      }
-
-      const gallery = req?.body?.gallery;
-      if (gallery?.length > 0){
-        gallery.forEach(async (item) => {
-          await Gallery.create({ 
-            id: guid(), event_id: event?.id, ...item 
-          });
-        });
-      }
-
-      status = 200;
-      response = {
-        success: "true",
-        message: "Event created successfully",
-        data: event,
-      };
-    } else {
-      status = 404;
-      response = { success: "false", message: "Unable to save event" };
+      });
     }
 
-    res.status(status).send(response);
+    const gallery = req?.body?.gallery;
+    if (gallery?.length > 0){
+      gallery?.forEach(async (item) => {
+        await Gallery.create({ 
+          id: guid(), event_id: event?.id, ...item 
+        });
+      });
+    }
+
+    return res.status(200).send({
+      success: "true",
+      message: "Event created successfully",
+      data: event,
+    });
   } catch (error) {
     logger(error);
-    res.status(500).send({ success: "false", message: error?.message });
+    return res.status(500).send({ success: "false", message: error?.message });
   }
 };
 
@@ -115,6 +118,10 @@ const updateEvent = async (req, res) => {
         id: req?.params?.id
       } 
     });
+
+    if(!event) {
+      return res.status(200).send({ success: "false", message: "No event specified" });
+    }
 
     const prices = req.body?.prices;
     if(prices?.length > 0){
@@ -152,7 +159,7 @@ const updateEvent = async (req, res) => {
     });
   } catch (error) {
     logger(error);
-    res.send({ success: "false", message: "An error has occurred" });
+    return res.status(500).send({ success: "false", message: "An error has occurred" });
   }
 };
 
@@ -232,10 +239,20 @@ const getEvents = async (req, res) => {
     })); 
 
     const yesterday = new Date((new Date()).valueOf() - 1000*60*60*24);
-    const past = updatedEvents.filter(({ start_date }) => new Date(start_date) < yesterday);
+
+    const sortDate = (dates, options) => {
+      options = { date_to_sort: 'start_date' }
+      return dates.sort(
+        (dateA, dateB) => Number(new Date(dateA[options?.date_to_sort])) - Number(new Date(dateB[options?.date_to_sort])),
+      )
+    }
+
+    let past = updatedEvents.filter(({ start_date }) => new Date(start_date) < yesterday);
+    past = sortDate(past);
+
     const upcoming = updatedEvents.filter(({ start_date }) => new Date(start_date) >= yesterday);
 
-    res.status(200).send({
+    return res.status(200).send({
       success: "true",
       data: {
         count: updatedEvents?.length,
@@ -246,7 +263,7 @@ const getEvents = async (req, res) => {
     });
   } catch (error) {
     logger(error);
-    res.status(500).send({
+    return res.status(500).send({
       success: 'false', message: 'A server error occurred'
     });
   }
