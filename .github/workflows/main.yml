@@ -25,4 +25,5 @@ jobs:
           port: ${{ secrets.remote_port }}
           script: |
             whoami
+            echo "$HOST"
             ls -al
