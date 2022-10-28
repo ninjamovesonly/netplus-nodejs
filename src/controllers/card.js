@@ -299,7 +299,7 @@ const cardRegisterEvent = async (req, res) => {
 
     //email should contain qrcode, arena link
     const mail = sendMail({
-      to: metadata?.email,
+      to: req?.body?.email,
       subject: 'Ticket: ' + event?.title,
       data: {
         qrcode: `https://chart.googleapis.com/chart?chs=250x250&cht=qr&chl=${link}&choe=UTF-8`,
