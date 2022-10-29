@@ -24,5 +24,7 @@ jobs:
           key: ${{ secrets.KEY }}
           port: ${{ secrets.PORT }}
           script: |
-            whoami
-            ls -lah
+            cd /var/www/html/events
+            git pull origin main
+            npm install
+            pm2 restart all
