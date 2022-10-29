@@ -4,19 +4,19 @@
   "description": "ISCE_events",
   "main": "app.js",
   "scripts": {
-    "dev": "yarn docs && nodemon ./src/app.js",
+    "dev": "nodemon src/app.js",
     "docs": "node swagger.js",
     "test": "node test.js",
     "init-seed": "bash init.sh",
-    "start": "yarn docs && pm2 start ./src/app.js -n 'ISCE_events API' --watch",
-    "production": "yarn docs && pm2 reload ./src/app.js -n 'ISCE_events API'",
+    "start": "node src/app.js",
+    "production": "node src/app.js",
     "fix-package": "yarn-audit-fix --force",
     "pm2-kill": "pm2 kill",
     "pm2-list": "pm2 list",
     "pm2-show": "pm2 show 0",
     "pm2-env": "pm2 env 0"
   },
-  "author": "Olalekan Animashaun <kim.olalekan@gmail.com> (https://kimolalekan.github.io/)",
+  "author": "ISCE Digital Concepts <iscedigitalconcept@gmail.com> (https://isce.tech/)",
   "license": "ISC",
   "dependencies": {
     "axios": "^0.27.2",
