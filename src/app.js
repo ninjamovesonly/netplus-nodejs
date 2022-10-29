@@ -49,7 +49,7 @@ app.use((err, req, res, next) => {
   res.status(500).send({
     success: false,
     status: false,
-    error: "Something broken! Please contact the engineering team.",
+    error: "Something broken! Please contact support.",
     help: "Please check the docs.",
   });
 });
