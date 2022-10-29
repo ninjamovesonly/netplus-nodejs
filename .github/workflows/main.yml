@@ -25,6 +25,8 @@ jobs:
           port: ${{ secrets.PORT }}
           script: |
             cd /var/www/html/events
-            git pull origin main
-            npm install
-            pm2 restart all
+            git pull origin main 
+            export NVM_DIR=~/.nvm
+            source ~/.nvm/nvm.sh
+            yarn 
+            yarn production
