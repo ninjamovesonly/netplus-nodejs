@@ -1,4 +1,4 @@
-name: Deploy to server
+name: Deploy to Server
 on:
   push:
     branches:
@@ -16,15 +16,15 @@ jobs:
       - name: Install packages && run lint
         run: yarn
 
-      - name: executing remote ssh commands using password
+      - name: executing events remote ssh commands using ssh key
         uses: appleboy/ssh-action@master
         with:
-          host: ${{ secrets.REMOTE_HOST  }}
-          username: ${{ secrets.REMOTE_USER }}
-          password: ${{ secrets.REMOTE_PASS }}
-          port: ${{ secrets.REMOTE_PORT }}
+          host: ${{ secrets.HOST }}
+          username: ${{ secrets.USERNAME }}
+          key: ${{ secrets.KEY }}
+          port: ${{ secrets.PORT }}
           script: |
-            cd /var/www/html/server
+            cd /var/www/html/events
             git pull origin main 
             export NVM_DIR=~/.nvm
             source ~/.nvm/nvm.sh
