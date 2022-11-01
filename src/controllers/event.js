@@ -33,7 +33,7 @@ const createEvent = async (req, res) => {
   */
 
   try {
-    const clean_name = req?.body?.clean_name?.replace(/ /g,"-") || req?.body?.title?.replace(/ /g,"-");
+    const clean_name = req?.body?.title?.replace(/ /g,"-");
     let event = await Event.findOne({
       where: {
         clean_name: clean_name
@@ -42,6 +42,13 @@ const createEvent = async (req, res) => {
     if(event){
       return res.status(404).send({ success: "false", message: "Event name already exists" });
     }
+
+    //If no prices add, don't save 
+    const prices = req?.body?.prices;
+    if(prices?.length < 1){
+      return res.status(404).send({ success: "false", message: "Unable to create event" });
+    }
+
     event = await Event.create({
       user_id: req?.isce_auth?.user_id,
       image: req?.body?.image,
@@ -57,8 +64,7 @@ const createEvent = async (req, res) => {
       return res.status(404).send({ success: "false", message: "Unable to create event" });
     }
     
-    const prices = req?.body?.prices;
-    if(prices?.length > 0){
+    if(prices?.length > 1){
       prices?.forEach(async (price) => {
         await Price.create({ 
           id: guid(), event_id: event?.id, ...price, order_amount: 0 
