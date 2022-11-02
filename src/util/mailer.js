@@ -210,7 +210,7 @@ const ticketTemplate = (data = {}) => {
                                   11-05-2022
                              </div>
                              <div class="attendee">
-                                  Oyeniran Ayobami Paul
+                                  ${ data?.name }
                              </div>
                              <div class="ticket_type">
                                   ${data?.pass_type}
