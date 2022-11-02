@@ -109,6 +109,16 @@ const upcomingItems = (items) => {
   return items.filter(({ start_date }) => new Date(start_date) >= yesterday);
 }
 
+const displayDate = (d) => {
+  const date = new Date(d);
+  if(!date) return null;
+  return date.toDateString();
+}
+
+const getQR = (item) => {
+  return `https://chart.googleapis.com/chart?chs=250x250&cht=qr&chl=${item}&choe=UTF-8`;
+}
+
 module.exports = {
   slug,
   code,
@@ -122,5 +132,7 @@ module.exports = {
   percentage,
   asyncForEach,
   pastItems,
-  upcomingItems
+  upcomingItems,
+  displayDate,
+  getQR
 };
