@@ -302,6 +302,7 @@ const cardRegisterEvent = async (req, res) => {
       to: req?.body?.email,
       subject: 'Ticket: ' + event?.title,
       data: {
+        name: req?.body?.name,
         qrcode: `https://chart.googleapis.com/chart?chs=250x250&cht=qr&chl=${link}&choe=UTF-8`,
         ticket: ticket,
         pass_type: price?.title,
@@ -388,6 +389,7 @@ const cardPaymentSuccess = async (req, res) => {
       to: metadata?.email,
       subject: 'Ticket: ' + event?.title,
       data: {
+        name: metadata?.full_name,
         qrcode: `https://chart.googleapis.com/chart?chs=250x250&cht=qr&chl=${link}&choe=UTF-8`,
         ticket: ticket,
         pass_type: price?.title,
