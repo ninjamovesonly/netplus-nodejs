@@ -227,7 +227,32 @@ const Paystack = sequelize.define("event_url", {
   },
 });
 
-const Chat = sequelize.define("event_chats", {
+const EventChat = sequelize.define("event_chats", {
+  id: {
+    type: DataTypes.STRING,
+    allowNull: false,
+    defaultValue: guid(),
+    primaryKey: true,
+  },
+  event_id: {
+    type: DataTypes.STRING,
+    allowNull: false,
+  },
+  ip: {
+    type: DataTypes.STRING,
+    allowNull: false,
+  },
+  text: {
+    type: DataTypes.STRING,
+    allowNull: false,
+  },
+  image: {
+    type: DataTypes.TEXT,
+    allowNull: false,
+  },
+});
+
+const EventFeedback = sequelize.define("event_feedbacks", {
   id: {
     type: DataTypes.STRING,
     allowNull: false,
@@ -260,9 +285,10 @@ const init = async () => {
   await Token.sync({ force: false });
   await EventUrl.sync({ force: false });
   await Paystack.sync({ force: false });
-  await Chat.sync({ force: false });
+  await EventChat.sync({ force: false });
+  await EventFeedback.sync({ force: false });
 };
 
 init();
 
-module.exports = { Event, Price, Gallery, Attendee, Token, EventUrl, Paystack, Chat };
+module.exports = { Event, Price, Gallery, Attendee, Token, EventUrl, Paystack, EventChat, EventFeedback };
