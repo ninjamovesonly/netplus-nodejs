@@ -7,7 +7,7 @@ const { getPrices } = require("../models/price");
 const { getGallery } = require("../models/gallery");
 const { getAttendees } = require("../models/attendee");
 const logger = require("../util/log");
-const { guid, pastItems, upcomingItems } = require("../util");
+const { guid, pastItems, upcomingItems, displayDate, getQR } = require("../util");
 const axios = require('axios');
 const _ = require('lodash');
 const { sendMail } = require("../util/mailer");
@@ -303,13 +303,14 @@ const cardRegisterEvent = async (req, res) => {
       subject: 'Ticket: ' + event?.title,
       data: {
         name: req?.body?.name,
-        qrcode: `https://chart.googleapis.com/chart?chs=250x250&cht=qr&chl=${link}&choe=UTF-8`,
+        qrcode: getQR(link),
         ticket: ticket,
         pass_type: price?.title,
         image: req?.body?.image,
         title: event?.title,
         arena: link,
-        token: eventToken?.token
+        token: eventToken?.token,
+        event_date: displayDate(event?.start_date)
       }
     });
 
@@ -372,7 +373,8 @@ const cardPaymentSuccess = async (req, res) => {
       price_category: price?.title,
       ticket: ticket,
       link: link,
-      token: eventToken?.token
+      token: eventToken?.token,
+      event_date: displayDate(event?.start_date)
     });
 
     //update token only after a link is generated
@@ -390,7 +392,7 @@ const cardPaymentSuccess = async (req, res) => {
       subject: 'Ticket: ' + event?.title,
       data: {
         name: metadata?.full_name,
-        qrcode: `https://chart.googleapis.com/chart?chs=250x250&cht=qr&chl=${link}&choe=UTF-8`,
+        qrcode: getQR(link),
         ticket: ticket,
         pass_type: price?.title,
         image: metadata?.image,

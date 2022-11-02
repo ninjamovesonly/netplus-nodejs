@@ -226,7 +226,7 @@ const ticketTemplate = (data = {}) => {
                                   <div class="token_button">${data?.token ? data?.token : '' }</div>
                              </div>
                              <div class="token">
-                                  <div class="token_link">${data?.arena}</div>
+                             <a class="token_link" href="${ data?.arena }">Visit Event Arena</a>
                              </div>
                         </div>
                    </div>
