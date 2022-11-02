@@ -1,5 +1,8 @@
 ## ISCE events API
 
+
+[![Deploy to Server](https://github.com/iscedcs/isce.app_events/actions/workflows/main.yml/badge.svg)](https://github.com/iscedcs/isce.app_events/actions/workflows/main.yml)
+
 Prerequisite
 
 NodeJS v14 upward
@@ -28,4 +31,4 @@ yarn build && yarn export
 
 Maintainer
 
-Olalekan Animashaun
+ISCE Digital Concepts
