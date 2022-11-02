@@ -164,6 +164,10 @@ const ticketTemplate = (data = {}) => {
                 -webkit-box-shadow: 4px 4px 2px 0px rgba(0, 0, 0, 0.75);
                 -moz-box-shadow: 4px 4px 2px 0px rgba(0, 0, 0, 0.75);
            }
+
+           .d-none {
+               display: none;
+           }
     
               .extra_information {
                    width: 250px;
@@ -207,7 +211,7 @@ const ticketTemplate = (data = {}) => {
                              </table>
     
                              <div class="event_date">
-                                  11-05-2022
+                                  ${data?.event_date}
                              </div>
                              <div class="attendee">
                                   ${ data?.name }
@@ -218,8 +222,8 @@ const ticketTemplate = (data = {}) => {
                              <div class="token_barcode">
                                   <img src="${data?.qrcode}" alt="" height="50px">
                              </div>
-                             <div class="token">
-                                  <div class="token_button">${data?.token}</div>
+                             <div class=${ data?.token ? 'token' : 'd-none'}>
+                                  <div class="token_button">${data?.token ? data?.token : '' }</div>
                              </div>
                              <div class="token">
                                   <div class="token_link">${data?.arena}</div>
