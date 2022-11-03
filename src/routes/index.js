@@ -68,6 +68,8 @@ route.post("/api/attendee/create", controllers.createAttendee);
 //route.post("/api/attendee/update", controllers.updateAttendee);
 route.get("/api/attendees/:id", controllers.getAttendees);
 
-route.get("/api/attendees/:id", controllers.getAttendees);
+//Arena routes
+route.get("/api/attendees/:id/chat", controllers.getArenaChat);
+route.post("/api/attendees/:id/chat", controllers.saveArenaChat);
 
 module.exports = route;

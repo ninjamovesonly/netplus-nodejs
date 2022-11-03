@@ -16,7 +16,7 @@ const saveArenaChat = async (req, res) => {
   */
 
   try {
-    const form = _.pick(req.body,['event_id','text']);
+    const form = _.pick(req.body,['event_id', 'attendee_id', 'text']);
 
     await EventChat.create({
         id: guid(),
