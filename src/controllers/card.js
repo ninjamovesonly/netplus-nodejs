@@ -2,7 +2,7 @@
 require("dotenv").config();
 
 const { Op } = require("sequelize");
-const { Event, Attendee, Token, EventUrl, Price, Paystack } = require("../models");
+const { Event, Attendee, Token, EventUrl, Price, Paystack, EventChat } = require("../models");
 const { getPrices } = require("../models/price");
 const { getGallery } = require("../models/gallery");
 const { getAttendees } = require("../models/attendee");
@@ -442,6 +442,11 @@ const cardTokenPage = async (req, res) => {
       where: { id: attendee.event_price_id }
     })
     token.price = price;
+
+    const chats = await EventChat.findAll({
+      where: { event_id: attendee.event_id }
+    })
+    token.chats = chats;
 
     res.status(200).send({ success: 'true', data: token })
   } catch (error) {
