@@ -444,7 +444,7 @@ const cardTokenPage = async (req, res) => {
     token.price = price;
 
     const chats = await EventChat.findAll({
-      where: { event_id: attendee.event_id }
+      where: { event_id: attendee?.event_id }
     })
     token.chats = chats;
 
