@@ -265,7 +265,7 @@ const ticketTemplate2 = (data = {}) => {
      <meta charset="UTF-8">
      <meta http-equiv="X-UA-Compatible" content="IE=edge">
      <meta name="viewport" content="width=device-width, initial-scale=1.0">
-     <title>${ data?.title } - Your Ticket</title>
+     <title>${ data?.event?.title }, Your Ticket</title>
      <link rel="icon" type="image/x-icon" href="https://isce.app/assets/images/favicon-light.ico"></link>
      <link rel="preconnect" href="https://fonts.googleapis.com">
      <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -335,8 +335,8 @@ const ticketTemplate2 = (data = {}) => {
      <div>
           <div class="nav" style="background-color: black; width: 100%;">
                <div class="container" style="text-align: center; padding-top: 10px; padding-bottom: 10px;">
-                    <a href="https://isce.app">
-                         <img src="https://isce.app/static/media/logofull-dark.799050dcfe6253adf98e.webp" alt="ISCE"
+                    <a href="${ encodeURI('https://isce.app') }">
+                         <img src="${ encodeURI('https://isce.app/static/media/logofull-dark.799050dcfe6253adf98e.webp') }" alt="ISCE"
                               height="20px">
                     </a>
                </div>
@@ -346,7 +346,7 @@ const ticketTemplate2 = (data = {}) => {
                     <div class="content" style="margin-bottom: 50px;">
                          <div
                               style="overflow: hidden; height: 150px; border-top-left-radius: 10px; border-top-right-radius: 10px;">
-                              <img src="${ data?.event?.image }"
+                              <img src="${ encodeURI(data?.event?.image) }"
                                    alt="Event" height="150px" width="100%"
                                    style="object-fit: cover; object-position: top;">
                          </div>
@@ -362,7 +362,7 @@ const ticketTemplate2 = (data = {}) => {
                               </div>
 
 
-                              <table width="100%" style="margin-bottom: 20px;">
+                              <table width="100%" style="margin-bottom: 20px; display: block; width: 100%;">
                                    <tr>
                                         <td style="font-weight: bold;">
                                              Ticket Category
@@ -381,8 +381,7 @@ const ticketTemplate2 = (data = {}) => {
                                    </tr>
                               </table>
 
-
-                              <table width="100%" style="margin-bottom: 20px;">
+                              <table width="100%" style="margin-bottom: 20px; display: block;  width: 100%;">
                                    <tr>
                                         <td style="font-weight: bold;">
                                              Event URL
@@ -391,12 +390,13 @@ const ticketTemplate2 = (data = {}) => {
                                              Access code
                                         </td>
                                    </tr>
+                                   </tr>
                                    <tr>
                                         <td>
-                                             <a href="${ data?.arena }">Click here</a>
+                                             <a href="${ encodeURI(data?.arena) }">Click here</a>
                                         </td>
                                         <td>
-                                             ${data?.token ? data?.token : '' }
+                                             ${data?.token ? data?.token : 'None' }
                                         </td>
                                    </tr>
                               </table>
@@ -469,7 +469,7 @@ const transport = nodemailer.createTransport({
 const sendMail = async (data = {}) => {
     const d_data = data?.data;
     const mailOptions = {
-        from: data?.from || (d_data?.title + ', Your Ticket <event@isce.app>'),
+        from: data?.from || ('"ISCE Support" <event@isce.app>'),
         to: data?.to,
         subject: data?.subject,
         html: ticketTemplate2(d_data)
