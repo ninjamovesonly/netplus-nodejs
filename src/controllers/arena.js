@@ -16,15 +16,16 @@ const saveArenaChat = async (req, res) => {
   */
 
   try {
-    const form = _.pick(req.body,['event_id', 'attendee_id', 'text']);
+    const form = _.pick(req?.body,['event_id', 'attendee_id', 'message']);
 
-    await EventChat.create({
+    res.status(200).send({ success: "true", form, body: req?.body });
+    /* await EventChat.create({
         id: guid(),
         ip: paystack?.access_code,
         authorization_url: paystack?.authorization_url,
         reference: paystack?.reference,
         metadata: JSON.stringify(form)
-      });
+      }); */
 
   } catch (error) {
     logger(error);
