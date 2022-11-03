@@ -3,6 +3,7 @@
 require("dotenv").config();
 
 module.exports = {
+  environment: process.env.ENVIRONMENT,
   api: {
     host: process.env.DB_HOST,
     db: process.env.DB_NAME,

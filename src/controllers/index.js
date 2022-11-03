@@ -1,4 +1,5 @@
 "use strict";
+
 const {
   createEvent,
   updateEvent,
@@ -38,6 +39,11 @@ const {
   getAttendee,
 } = require("./attendee");
 
+const {
+  saveArenaChat,
+  getArenaChat
+} = require('./arena');
+
 module.exports = {
   createEvent,
   updateEvent,
@@ -67,5 +73,7 @@ module.exports = {
   cardPaymentSuccess,
   cardTokenPage,
   cardChipLoader,
-  attachTokenToChip
+  attachTokenToChip,
+  saveArenaChat,
+  getArenaChat
 };

@@ -2,7 +2,7 @@
 
 const { Op } = require("sequelize");
 const { Event, Price, Gallery } = require("../models");
-const { guid } = require("../util");
+const { guid, sortDate } = require("../util");
 const { getPrices } = require("../models/price");
 const { getGallery } = require("../models/gallery");
 const { getAttendees } = require("../models/attendee");
@@ -50,6 +50,7 @@ const createEvent = async (req, res) => {
     }
 
     event = await Event.create({
+      id: guid(),
       user_id: req?.isce_auth?.user_id,
       image: req?.body?.image,
       clean_name: clean_name,
@@ -226,6 +227,7 @@ const getEvents = async (req, res) => {
       offset = offset - limit;
     }
     
+    const user = req?.isce_auth;
     const events = await Event.findAll({
       limit,
       offset,
@@ -236,25 +238,18 @@ const getEvents = async (req, res) => {
       }
     });
 
-    const updatedEvents = await Promise.all(events?.map(async (event) => {
+    let updatedEvents = await Promise.all(events?.map(async (event) => {
       const item = event.dataValues;
       const prices = await getPrices(item.id);
       const gallery = await getGallery(item.id);
       const attendees = await getAttendees(item.id);
       return { ...item, prices, gallery, attendees };
     })); 
+    updatedEvents = sortDate(updatedEvents);
 
     const yesterday = new Date((new Date()).valueOf() - 1000*60*60*24);
 
-    const sortDate = (dates, options) => {
-      options = { date_to_sort: 'start_date' }
-      return dates.sort(
-        (dateA, dateB) => Number(new Date(dateA[options?.date_to_sort])) - Number(new Date(dateB[options?.date_to_sort])),
-      )
-    }
-
     let past = updatedEvents.filter(({ start_date }) => new Date(start_date) < yesterday);
-    past = sortDate(past);
 
     const upcoming = updatedEvents.filter(({ start_date }) => new Date(start_date) >= yesterday);
 
@@ -264,7 +259,8 @@ const getEvents = async (req, res) => {
         count: updatedEvents?.length,
         all: updatedEvents,
         upcoming,
-        past
+        past,
+        user
       },
     });
   } catch (error) {
@@ -334,19 +330,20 @@ const getEvent = async (req, res) => {
       } 
     });
 
-    if(!event?.id){
-      res.status(404).send({ success: "false", message: "No data found" });
-    }else{
-      const yesterday = new Date((new Date()).valueOf() - 1000*60*60*24);
-      const past = (new Date(event?.start_date) < yesterday);
-
-      const prices = await getPrices(event.id);
-      const gallery = await getGallery(event.id);
-      const attendees = await getAttendees(event.id);
-      const data = { ...event.dataValues, gallery, prices, attendees, past };
-
-      res.status(200).send({ success: "true", data });
+    if(!event){
+      return res.status(404).send({ success: "false", message: "No data found" });
     }
+    
+    const user = req?.isce_auth;
+    const yesterday = new Date((new Date()).valueOf() - 1000*60*60*24);
+    const past = (new Date(event?.start_date) < yesterday);
+
+    const prices = await getPrices(event.id);
+    const gallery = await getGallery(event.id);
+    const attendees = await getAttendees(event.id);
+    const data = { ...event?.dataValues, gallery, prices, attendees, past, user };
+
+    return res.status(200).send({ success: "true", data });
   } catch (error) {
     logger(error);
     res.status(500).send({ success: "false", message: "An error occurred" });

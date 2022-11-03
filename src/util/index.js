@@ -119,6 +119,13 @@ const getQR = (item) => {
   return `https://chart.googleapis.com/chart?chs=250x250&cht=qr&chl=${item}&choe=UTF-8`;
 }
 
+const sortDate = (items, options) => {
+  const x_options = { date_to_sort: 'start_date', ...options }
+  return items.sort(
+    (itemA, itemB) => Number(new Date(itemA[x_options?.date_to_sort])) - Number(new Date(itemB[x_options?.date_to_sort])),
+  )
+}
+
 module.exports = {
   slug,
   code,
@@ -134,5 +141,6 @@ module.exports = {
   pastItems,
   upcomingItems,
   displayDate,
-  getQR
+  getQR,
+  sortDate
 };
