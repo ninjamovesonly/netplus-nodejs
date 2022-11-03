@@ -1,9 +1,10 @@
 "use strict";
 require("dotenv").config();
 
-const { Event, Attendee, EventUrl, Price, EventChat } = require("../models");
+const { EventChat } = require("../models");
 const logger = require("../util/log");
 const _ = require('lodash');
+const { guid } = require("../util");
 
 
 const saveArenaChat = async (req, res) => {
