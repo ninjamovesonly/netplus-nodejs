@@ -264,7 +264,7 @@ const init = async () => {
   await Token.sync({ force: false });
   await EventUrl.sync({ force: false });
   await Paystack.sync({ force: false });
-  await EventChat.sync({ force: true });
+  await EventChat.sync({ force: false });
 };
 
 init();
