@@ -223,15 +223,14 @@ const cardRegisterEvent = async (req, res) => {
       return res.status(200).send({ success: "false", message: "No event specified" })
     }
 
-    return res.status(200).send({ success: 'false' })
-
     let attendee = await Attendee.findOne({ 
       where: { 
         email: req?.body?.email,
         event_id:  req?.body?.event_id
-      }});
+    }});
+
     if(attendee){
-      return res.status(200).send({ success: "true", link: attendee?.ticket, message: "You are already registered" })
+      return res.status(200).send({ success: "false", link: attendee?.ticket, message: "You are already registered" })
     }
     
     const price = await Price.findOne({ where: { id: req?.body?.event_prices_id }});
@@ -309,10 +308,14 @@ const cardRegisterEvent = async (req, res) => {
         ticket: ticket,
         pass_type: price?.title,
         image: req?.body?.image,
+        event_image: event?.image,
         title: event?.title,
         arena: link,
         token: eventToken?.token,
-        event_date: displayDate(event?.start_date)
+        event_date: displayDate(event?.start_date),
+        event,
+        attendee,
+        price
       }
     });
 
@@ -400,7 +403,10 @@ const cardPaymentSuccess = async (req, res) => {
         image: metadata?.image,
         title: event?.title,
         arena: link,
-        token: eventToken?.token
+        token: eventToken?.token,
+        event,
+        attendee,
+        price
       }
     });
 
@@ -431,7 +437,11 @@ const cardTokenPage = async (req, res) => {
     const attendee = await Attendee.findOne({
       where: { id: req.params.id }
     });
-    token = { ...attendee.dataValues }
+    token = { ...attendee?.dataValues }
+
+    if(!attendee){
+      return res.status(200).send({ success: 'false', message: "No user found" })
+    }
 
     const event = await Event.findOne({
       where: { id: attendee.event_id }
@@ -448,7 +458,7 @@ const cardTokenPage = async (req, res) => {
     })
     token.chats = chats;
 
-    res.status(200).send({ success: 'true', data: token })
+    return res.status(200).send({ success: 'true', data: token })
   } catch (error) {
     logger(error);
     res.status(500).send({ success: "false", message: "An error occurred" });
