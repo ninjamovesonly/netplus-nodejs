@@ -246,7 +246,7 @@ const EventChat = sequelize.define("event_chats", {
     type: DataTypes.STRING,
     allowNull: false,
   },
-  text: {
+  message: {
     type: DataTypes.STRING,
     allowNull: false,
   },
@@ -264,7 +264,7 @@ const init = async () => {
   await Token.sync({ force: false });
   await EventUrl.sync({ force: false });
   await Paystack.sync({ force: false });
-  await EventChat.sync({ force: false });
+  await EventChat.sync({ force: true });
 };
 
 init();

@@ -25,7 +25,7 @@ const saveArenaChat = async (req, res) => {
         event_id: form?.event_id,
         attendee_id: form?.attendee_id,
         ip: req?.header('x-forwarded-for') ||  req?.socket?.remoteAddress,
-        text: form?.message,
+        message: form?.message,
         image: form?.image
     });
 
