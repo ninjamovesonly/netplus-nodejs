@@ -69,7 +69,6 @@ route.post("/api/attendee/create", controllers.createAttendee);
 route.get("/api/attendees/:id", controllers.getAttendees);
 
 //Arena routes
-route.get("/api/attendees/:id/chat", controllers.getArenaChat);
-route.post("/api/attendees/:id/chat", controllers.saveArenaChat);
+route.post("/api/card/events_chat/create/:id", controllers.saveArenaChat);
 
 module.exports = route;

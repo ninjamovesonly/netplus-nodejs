@@ -223,6 +223,8 @@ const cardRegisterEvent = async (req, res) => {
       return res.status(200).send({ success: "false", message: "No event specified" })
     }
 
+    return res.status(200).send({ success: 'false' })
+
     let attendee = await Attendee.findOne({ 
       where: { 
         email: req?.body?.email,
