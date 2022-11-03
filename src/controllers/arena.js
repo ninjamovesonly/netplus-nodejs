@@ -16,20 +16,26 @@ const saveArenaChat = async (req, res) => {
   */
 
   try {
-    const form = _.pick(req?.body,['event_id', 'attendee_id', 'message']);
+    const form = _.pick(req?.body,['event_id', 'attendee_id', 'message', 'image']);
 
-    res.status(200).send({ success: "true", form, body: req?.body });
-    /* await EventChat.create({
+    
+    const chat = await EventChat.create({
         id: guid(),
-        ip: paystack?.access_code,
-        authorization_url: paystack?.authorization_url,
-        reference: paystack?.reference,
-        metadata: JSON.stringify(form)
-      }); */
+        event_id: form?.event_id,
+        attendee_id: form?.attendee_id,
+        ip: req?.header('x-forwarded-for') ||  req?.socket?.remoteAddress,
+        text: form?.message,
+        image: form?.image
+    });
 
+    if(!chat){
+        return res.status(404).send({ success: "false", message: "Unable to create event" });
+    }
+
+    return res.status(200).send({ success: "true", message: "chat created successfully" });
   } catch (error) {
     logger(error);
-    res.status(500).send({ success: "false", message: "An error occurred" });
+    return res.status(500).send({ success: "false", message: "An error occurred" });
   }
 };
 
