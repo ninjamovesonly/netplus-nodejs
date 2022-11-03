@@ -300,7 +300,7 @@ const cardRegisterEvent = async (req, res) => {
 
     //email should contain qrcode, arena link
     const mail = sendMail({
-      from: `${ encodeURI(event?.title) } <event@isce.app>`,
+      from: `${ event?.title } <event@isce.app>`,
       to: req?.body?.email,
       subject: 'Ticket: ' + event?.title,
       data: {
@@ -394,7 +394,7 @@ const cardPaymentSuccess = async (req, res) => {
 
     //email should contain qrcode, arena link
     const mail = sendMail({
-      from: `${ encodeURI(event?.title) } <event@isce.app>`,
+      from: `${ event?.title } <event@isce.app>`,
       to: metadata?.email,
       subject: 'Ticket: ' + event?.title,
       data: {
