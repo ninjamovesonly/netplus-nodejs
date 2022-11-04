@@ -479,16 +479,13 @@ const cardChipLoader = async (req, res) => {
   try {
     let obj = {};
     const url = await EventUrl.findOne({
-      where: { event_id: req.params.id }
+      where: { event_id: req?.params?.id }
     });
     obj = { ...url?.dataValues }
 
-    const tokens = await Token.findAll();
-    obj.tokens = tokens
-
     if(obj?.event_attendee_id){
       const attendee = await Attendee.findOne({
-        where: { id: obj.event_attendee_id }
+        where: { id: obj?.event_attendee_id }
       });
       obj.attendee = attendee;
 
@@ -503,10 +500,10 @@ const cardChipLoader = async (req, res) => {
       obj.price = price;
     }
 
-    res.status(200).send({ success: 'true', data: obj })
+    return res.status(200).send({ success: 'true', data: obj })
   } catch (error) {
     logger(error);
-    res.status(500).send({ success: "false", message: "An error occurred" });
+    return res.status(500).send({ success: "false", message: "An error occurred" });
   }
 };
 
@@ -526,9 +523,10 @@ const attachTokenToChip = async (req, res) => {
       where: { event_id: event_chip_id }
     });
     event_url = { ...url.dataValues }
+    return res.status(200).send({ success: 'true', data: { event_url } })
 
     const attendee = await Attendee.findOne({
-      where: { token: req.body.token }
+      where: { token: req?.body?.token }
     });
     event_url.attendee = attendee;
     if(attendee){
