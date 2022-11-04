@@ -367,7 +367,7 @@ const ticketTemplate2 = (data = {}) => {
 
                               <table width="100%" style="margin-bottom: 20px; display: block; width: 100%;">
                                    <tr>
-                                        <td style="font-weight: bold;">
+                                        <td style="font-weight: bold; width: 50%;">
                                              Ticket Category
                                         </td>
                                         <td style="font-weight: bold;">
@@ -375,7 +375,7 @@ const ticketTemplate2 = (data = {}) => {
                                         </td>
                                    </tr>
                                    <tr>
-                                        <td>
+                                        <td style="width: 50%;">
                                              ${ data?.price?.title }
                                         </td>
                                         <td>
@@ -386,7 +386,7 @@ const ticketTemplate2 = (data = {}) => {
 
                               <table width="100%" style="margin-bottom: 20px; display: block;  width: 100%;">
                                    <tr>
-                                        <td style="font-weight: bold;">
+                                        <td style="font-weight: bold; width: 50%">
                                              Event URL
                                         </td>
                                         <td style="font-weight: bold;">
@@ -395,10 +395,10 @@ const ticketTemplate2 = (data = {}) => {
                                    </tr>
                                    </tr>
                                    <tr>
-                                        <td>
+                                        <td style="width: 50%;">
                                              <a href="${ encodeURI(data?.arena) }">Click here</a>
                                         </td>
-                                        <td>
+                                        <td style="text-transform: capitalize;">
                                              ${data?.token ? data?.token : 'None' }
                                         </td>
                                    </tr>
