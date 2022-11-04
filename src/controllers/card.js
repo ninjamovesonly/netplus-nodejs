@@ -484,7 +484,7 @@ const cardChipLoader = async (req, res) => {
         Authorization: req?.header("Authorization")
       }
     });
-    const auth = response?.data || null;
+    const auth = response?.data?.user || null;
 
     const url = await EventUrl.findOne({
       where: { event_id: req?.params?.id }
