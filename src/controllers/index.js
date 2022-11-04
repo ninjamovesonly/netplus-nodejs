@@ -19,7 +19,8 @@ const {
   cardPaymentSuccess,
   cardTokenPage,
   cardChipLoader,
-  attachTokenToChip
+  attachTokenToChip,
+  setCheckedStatus
 } = require("./card");
 
 const { createPrice, updatePrice, getPrices, getPrice } = require("./price");
@@ -75,5 +76,6 @@ module.exports = {
   cardChipLoader,
   attachTokenToChip,
   saveArenaChat,
-  getArenaChat
+  getArenaChat,
+  setCheckedStatus
 };

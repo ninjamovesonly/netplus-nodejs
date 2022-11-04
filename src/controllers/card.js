@@ -579,12 +579,35 @@ const attachTokenToChip = async (req, res) => {
     })
     event_url.price = price;
 
-    res.status(200).send({ success: 'true', data: { event_url } })
+    return res.status(200).send({ success: 'true', data: { event_url } })
   } catch (error) {
     logger(error);
-    res.status(500).send({ success: "false", message: "An error occurred" });
+    return res.status(500).send({ success: "false", message: "An error occurred" });
   }
 };
+
+const setCheckedStatus = async (req, res) => {
+  try {
+    const attendee_id = req?.params?.id;
+    const attendee = await Attendee.findOne({
+      where: { id: attendee_id }
+    });
+
+    if(!attendee){
+      return res.status(200).send({ success: "false", message: "No user selected" });
+    }
+
+    await Attendee.update({ checked_in: true }, {
+      where: { attendee: attendee_id }
+    });
+
+    return res.status(200).send({ success: "true", message: "User checked in" });
+
+  } catch (error) {
+    logger(error);
+    return res.status(500).send({ success: "false", message: "An error occurred" });
+  }
+}
 
 module.exports = {
   cardGetEvents,
@@ -595,5 +618,6 @@ module.exports = {
   cardChipLoader,
   attachTokenToChip,
   cardPaymentSuccess,
-  cardGetOpenEvents
+  cardGetOpenEvents,
+  setCheckedStatus
 };
