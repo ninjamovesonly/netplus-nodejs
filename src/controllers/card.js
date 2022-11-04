@@ -517,32 +517,53 @@ const attachTokenToChip = async (req, res) => {
   */
 
   try {
+    const event_token = req?.body?.token;
+    if(!event_token){
+      return res.status(200).send({ success: 'false', message: 'No token added' })
+    }
+
     let event_url = {};
-    const event_chip_id = req.params.id;
+    const event_chip_id = req.params?.id;
     const url = await EventUrl.findOne({
       where: { event_id: event_chip_id }
     });
+
+    if(!url){
+      return res.status(200).send({ success: 'false', message: 'Invalid chip' })
+    }
     event_url = { ...url.dataValues }
-    return res.status(200).send({ success: 'true', data: { event_url } })
+
+    const tokenData = EventUrl.findOne({
+      where: { 
+        token: event_token,
+        used: true
+      }
+    });
+
+    if(!tokenData){
+      return res.status(200).send({ success: 'false', message: 'Unable to validate token' })
+    }
 
     const attendee = await Attendee.findOne({
-      where: { token: req?.body?.token }
+      where: { token: event_token }
     });
-    event_url.attendee = attendee;
-    if(attendee){
-      await EventUrl.update({ event_attendee_id: attendee.id }, {
-        where: { event_id: event_chip_id }
-      });
+
+    if(!attendee){
+      return res.status(200).send({ success: 'false', message: 'No user is attached to this account' })
     }
+
+    await EventUrl.update({ event_attendee_id: attendee?.id }, {
+      where: { event_id: event_chip_id }
+    });
     event_url.attendee = attendee;
 
     const event = await Event.findOne({
-      where: { id: attendee.event_id }
+      where: { id: attendee?.event_id }
     });
     event_url.event = event;
 
     const price = await Price.findOne({
-      where: { id: attendee.event_price_id }
+      where: { id: attendee?.event_price_id }
     })
     event_url.price = price;
 
