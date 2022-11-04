@@ -67,6 +67,7 @@ route.post("/api/card/events/payment/success", controllers.cardPaymentSuccess);
 route.post("/api/attendee/create", controllers.createAttendee);
 //route.post("/api/attendee/update", controllers.updateAttendee);
 route.get("/api/attendees/:id", controllers.getAttendees);
+route.get("/api/attendees/check/:id", controllers.setCheckedStatus);
 
 //Arena routes
 route.post("/api/card/events_chat/create/:id", controllers.saveArenaChat);
