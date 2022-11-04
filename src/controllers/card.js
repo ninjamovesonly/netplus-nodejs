@@ -476,8 +476,8 @@ const cardChipLoader = async (req, res) => {
   */
 
   try {
-    const my_profile = process.env.SERVER_1 + '/auth/public/api/user-profile';;
-    const { data: response } = await axios?.get(my_profile, {
+    const my_profile = process.env.SERVER_1 + '/auth/api/user-profile';
+    const { data: response } = await axios?.post(my_profile, {
       headers:{
         Authorization: req?.header("Authorization")
       }
