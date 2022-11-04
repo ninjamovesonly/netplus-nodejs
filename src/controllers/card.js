@@ -482,7 +482,7 @@ const cardChipLoader = async (req, res) => {
         Authorization: req?.header("Authorization")
       }
     });
-    return res.send({
+    return res.status(200).send({
       success: 'false',
       data: response
     })
