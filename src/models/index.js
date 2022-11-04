@@ -157,6 +157,11 @@ const Attendee = sequelize.define("event_attendee", {
     type: DataTypes.STRING,
     allowNull: true,
   },
+  checked_in: {
+    type: DataTypes.BOOLEAN,
+    allowNull: false,
+    defaultValue: false
+  }
 });
 
 const Token = sequelize.define("event_token", {
@@ -257,14 +262,14 @@ const EventChat = sequelize.define("event_chats", {
 });
 
 const init = async () => {
-  await Event.sync({ force: false });
-  await Price.sync({ force: false });
-  await Gallery.sync({ force: false });
-  await Attendee.sync({ force: false });
-  await Token.sync({ force: false });
-  await EventUrl.sync({ force: false });
-  await Paystack.sync({ force: false });
-  await EventChat.sync({ force: false });
+  await Event.sync();
+  await Price.sync();
+  await Gallery.sync();
+  await Attendee.sync({ alter: true });
+  await Token.sync();
+  await EventUrl.sync();
+  await Paystack.sync();
+  await EventChat.sync();
 };
 
 init();
