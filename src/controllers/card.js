@@ -588,6 +588,33 @@ const attachTokenToChip = async (req, res) => {
 
 const setCheckedStatus = async (req, res) => {
   try {
+    const my_profile = process.env.SERVER_1 + '/auth/api/user-profile';
+    const { data: response } = await axios?.post(my_profile, {},{
+      headers:{
+        Authorization: req?.header("Authorization")
+      }
+    });
+    const auth = response?.data?.user || null;
+    if(!auth){
+      return res.status(200).send({ success: "false", message: "Invalid user" });
+    }
+
+    const event_url = await EventUrl.findOne({
+      where: { event_id: req?.body?.url_id }
+    });
+
+    if(!event_url){
+      return res.status(200).send({ success: "false", message: "No chip selected" });
+    }
+
+    const event = await EventUrl.findOne({
+      where: { event_id: req?.body?.event_id }
+    });
+
+    if(!event){
+      return res.status(200).send({ success: "false", message: "No event selected" });
+    }
+
     const attendee_id = req?.params?.id;
     const attendee = await Attendee.findOne({
       where: { id: attendee_id }
@@ -601,7 +628,7 @@ const setCheckedStatus = async (req, res) => {
       where: { id: attendee_id }
     });
 
-    return res.status(200).send({ success: "true", message: "User checked in" });
+    return res.status(200).send({ success: "true", data: { status: true } });
 
   } catch (error) {
     logger(error);
