@@ -272,7 +272,6 @@ const ticketTemplate2 = (data = {}) => {
      <link href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap"
           rel="stylesheet">
 
-
      <style>
           * {
                font-family: 'Poppins', sans-serif;
@@ -355,6 +354,10 @@ const ticketTemplate2 = (data = {}) => {
 
                               <div class="" style="font-weight: 300; font-size: 10; margin-bottom: 20px;">
                                    <span class="event_date">${ data?.event?.description }</span>
+                              </div>
+
+                              <div class="" style="font-weight: 300; font-size: 10; margin-bottom: 20px;">
+                                   <span class="event_date">${ data?.event?.location }</span>
                               </div>
 
                               <div class="" style="font-weight: 300; font-size: 10; margin-bottom: 20px;">
