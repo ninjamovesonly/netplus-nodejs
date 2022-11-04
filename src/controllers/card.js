@@ -476,22 +476,24 @@ const cardChipLoader = async (req, res) => {
   */
 
   try {
+    let obj = {};
+
     const my_profile = process.env.SERVER_1 + '/auth/api/user-profile';
-    const { data: response } = await axios?.post(my_profile, {
+    const { data: response } = await axios?.post(my_profile, {},{
       headers:{
         Authorization: req?.header("Authorization")
       }
     });
-    return res.status(200).send({
-      success: 'false',
-      data: response
-    })
+    const auth = response?.data || null;
 
-    let obj = {};
     const url = await EventUrl.findOne({
       where: { event_id: req?.params?.id }
     });
-    obj = { ...url?.dataValues }
+
+    if(!url){
+      return res.status(200).send({ success: 'false', message: 'No chip found' })
+    }
+    obj = { ...url?.dataValues, user: auth }
 
     if(obj?.event_attendee_id){
       const attendee = await Attendee.findOne({
