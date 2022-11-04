@@ -607,7 +607,7 @@ const setCheckedStatus = async (req, res) => {
       return res.status(200).send({ success: "false", message: "No chip selected" });
     }
 
-    const event = await EventUrl.findOne({
+    const event = await Event.findOne({
       where: { event_id: req?.body?.event_id }
     });
 
