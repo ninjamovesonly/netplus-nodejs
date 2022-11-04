@@ -434,7 +434,6 @@ const cardTokenPage = async (req, res) => {
   */
 
   try {
-
     let token = {}
     const attendee = await Attendee.findOne({
       where: { id: req.params.id }
@@ -477,6 +476,17 @@ const cardChipLoader = async (req, res) => {
   */
 
   try {
+    const my_profile = process.env.SERVER_1 + '/auth/public/api/user-profile';;
+    const { data: response } = await axios?.get(my_profile, {
+      headers:{
+        Authorization: req?.header("Authorization")
+      }
+    });
+    return res.send({
+      success: 'false',
+      data: response
+    })
+
     let obj = {};
     const url = await EventUrl.findOne({
       where: { event_id: req?.params?.id }
@@ -490,12 +500,12 @@ const cardChipLoader = async (req, res) => {
       obj.attendee = attendee;
 
       const event = await Event.findOne({
-        where: { id: attendee.event_id }
+        where: { id: attendee?.event_id }
       });
       obj.event = event;
   
       const price = await Price.findOne({
-        where: { id: attendee.event_price_id }
+        where: { id: attendee?.event_price_id }
       })
       obj.price = price;
     }
