@@ -608,7 +608,7 @@ const setCheckedStatus = async (req, res) => {
     }
 
     const event = await Event.findOne({
-      where: { event_id: req?.body?.event_id }
+      where: { id: req?.body?.event_id }
     });
 
     if(!event){
