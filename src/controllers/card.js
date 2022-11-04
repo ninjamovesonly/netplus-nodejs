@@ -598,7 +598,7 @@ const setCheckedStatus = async (req, res) => {
     }
 
     await Attendee.update({ checked_in: true }, {
-      where: { attendee: attendee_id }
+      where: { id: attendee_id }
     });
 
     return res.status(200).send({ success: "true", message: "User checked in" });
