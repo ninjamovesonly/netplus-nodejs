@@ -338,10 +338,12 @@ const getEvent = async (req, res) => {
     const yesterday = new Date((new Date()).valueOf() - 1000*60*60*24);
     const past = (new Date(event?.start_date) < yesterday);
 
-    const prices = await getPrices(event.id);
-    const gallery = await getGallery(event.id);
-    const attendees = await getAttendees(event.id);
-    const data = { ...event?.dataValues, gallery, prices, attendees, past, user };
+    const prices = await getPrices(event?.id);
+    const gallery = await getGallery(event?.id);
+    const attendees = await getAttendees(event?.id);
+    const chats = await getAttendees(event?.id);
+
+    const data = { ...event?.dataValues, gallery, prices, attendees, past, user, chats };
 
     return res.status(200).send({ success: "true", data });
   } catch (error) {
