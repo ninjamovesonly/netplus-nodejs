@@ -19,6 +19,16 @@ const saveArenaChat = async (req, res) => {
   try {
     const form = _.pick(req?.body,['event_id', 'attendee_id', 'message', 'image']);
 
+    const event = await Event.findOne({ 
+      where: { 
+        id: form?.event_id
+      } 
+    });
+
+    if(!event){
+      return res.status(200).send({ success: "false", message: "Invalid event accessed" });
+    }
+
     
     const chat = await EventChat.create({
         id: guid(),
