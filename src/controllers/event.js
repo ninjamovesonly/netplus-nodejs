@@ -5,7 +5,7 @@ const { Event, Price, Gallery } = require("../models");
 const { guid, sortDate } = require("../util");
 const { getPrices } = require("../models/price");
 const { getGallery } = require("../models/gallery");
-const { getAttendees } = require("../models/attendee");
+const { getAttendees, getChats } = require("../models/attendee");
 const logger = require("../util/log");
 
 const createEvent = async (req, res) => {
@@ -341,7 +341,7 @@ const getEvent = async (req, res) => {
     const prices = await getPrices(event?.id);
     const gallery = await getGallery(event?.id);
     const attendees = await getAttendees(event?.id);
-    const chats = await getAttendees(event?.id);
+    const chats = await getChats(event?.id);
 
     const data = { ...event?.dataValues, gallery, prices, attendees, past, user, chats };
 
