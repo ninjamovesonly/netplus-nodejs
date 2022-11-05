@@ -7,7 +7,7 @@ const { getPrices } = require("../models/price");
 const { getGallery } = require("../models/gallery");
 const { getAttendees } = require("../models/attendee");
 const logger = require("../util/log");
-const { guid, pastItems, upcomingItems, displayDate, getQR, sortBy } = require("../util");
+const { guid, pastItems, upcomingItems, displayDate, getQR } = require("../util");
 const axios = require('axios');
 const _ = require('lodash');
 const { sendMail } = require("../util/mailer");
@@ -457,8 +457,8 @@ const cardTokenPage = async (req, res) => {
     const chats = await EventChat.findAll({
       where: { event_id: attendee?.event_id }
     })
-    token.chats = chats.sort(function(a, b) {
-      return a.updatedAt.localeCompare(b.updatedAt)
+    token.chats = chats?.sort(function(a, b) {
+      return (a?.updatedAt < b?.updatedAt) ? -1 : ((a?.updatedAt > b?.updatedAt) ? 1 : 0);
     });
 
     return res.status(200).send({ success: 'true', data: token })
@@ -516,9 +516,9 @@ const cardChipLoader = async (req, res) => {
       const chats = await EventChat.findAll({
         where: { event_id: attendee?.event_id }
       })
-      obj.chats = chats.sort(function(a, b) {
-        return a.updatedAt.localeCompare(b.updatedAt)
-    });
+      obj.chats = chats?.sort(function(a, b) {
+        return (a?.updatedAt < b?.updatedAt) ? -1 : ((a?.updatedAt > b?.updatedAt) ? 1 : 0);
+      });
     }
 
     return res.status(200).send({ success: 'true', data: obj })

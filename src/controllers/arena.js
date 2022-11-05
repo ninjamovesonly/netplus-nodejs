@@ -65,8 +65,8 @@ const getArenaChat = async (req, res) => {
             return res.status(404).send({ success: "false", message: "No chats yet" })
         }
 
-        chats = chats.sort(function(a, b) {
-          return a?.updatedAt.localeCompare(b?.updatedAt)
+        chats = chats?.sort(function(a, b) {
+          return (a?.updatedAt < b?.updatedAt) ? -1 : ((a?.updatedAt > b?.updatedAt) ? 1 : 0);
         });
 
         return res.status(200).send({ success: "true", data: { chats } })  
