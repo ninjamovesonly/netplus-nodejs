@@ -457,7 +457,7 @@ const cardTokenPage = async (req, res) => {
     const chats = await EventChat.findAll({
       where: { event_id: attendee?.event_id }
     })
-    token.chats = chats;
+    token.chats = chats.reverse();
 
     return res.status(200).send({ success: 'true', data: token })
   } catch (error) {
@@ -514,7 +514,7 @@ const cardChipLoader = async (req, res) => {
       const chats = await EventChat.findAll({
         where: { event_id: attendee?.event_id }
       })
-      obj.chats = chats;
+      obj.chats = chats.reverse();
     }
 
     return res.status(200).send({ success: 'true', data: obj })
