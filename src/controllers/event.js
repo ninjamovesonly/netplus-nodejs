@@ -342,8 +342,8 @@ const getEvent = async (req, res) => {
     const gallery = await getGallery(event?.id);
     const attendees = await getAttendees(event?.id);
     let chats = await getChats(event?.id);
-    chats = chats.sort(function(a, b) {
-      return a.updatedAt.localeCompare(b.updatedAt)
+    chats = chats?.sort(function(a, b) {
+      return (a?.updatedAt < b?.updatedAt) ? -1 : ((a?.updatedAt > b?.updatedAt) ? 1 : 0);
     });
 
     const data = { ...event?.dataValues, gallery, prices, attendees, past, user, chats };
