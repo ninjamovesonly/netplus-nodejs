@@ -5,7 +5,7 @@ const { Event, Price, Gallery } = require("../models");
 const { guid, sortDate } = require("../util");
 const { getPrices } = require("../models/price");
 const { getGallery } = require("../models/gallery");
-const { getAttendees } = require("../models/attendee");
+const { getAttendees, getChats } = require("../models/attendee");
 const logger = require("../util/log");
 
 const createEvent = async (req, res) => {
@@ -341,14 +341,14 @@ const getEvent = async (req, res) => {
     const prices = await getPrices(event?.id);
     const gallery = await getGallery(event?.id);
     const attendees = await getAttendees(event?.id);
-    const chats = await getAttendees(event?.id);
+    const chats = await getChats(event?.id);
 
     const data = { ...event?.dataValues, gallery, prices, attendees, past, user, chats };
 
     return res.status(200).send({ success: "true", data });
   } catch (error) {
     logger(error);
-    res.status(500).send({ success: "false", message: "An error occurred" });
+    return res.status(500).send({ success: "false", message: "An error occurred" });
   }
 };
 
@@ -364,12 +364,13 @@ const getRequestedCards = async (req, res) => {
 
     const updatedOrder = +req?.body?.order_amount + price?.order_amount;
     if(updatedOrder > price?.attendees){
-      res.send({
+      return res.send({
         success: "false",
         message: "Maximum amount reached"
       });
-    }else{
-      /* NEEDS UPDATE */
+    }
+
+    /* NEEDS UPDATE */
       //send a mail to isce indicating that a card request has been made
         //mail will contain user details, event details, and the total cost of cards
 
@@ -384,15 +385,14 @@ const getRequestedCards = async (req, res) => {
         },
       });
 
-      res.send({
+      return res.send({
         success: "true",
         message: "Updated successfully",
         data: { order_amount: updatedOrder }
       });
-    }
   } catch (error) {
     logger(error)
-    res.send({
+    return res.send({
       success: "false",
       message: "Unable to update data"
     });
