@@ -510,6 +510,11 @@ const cardChipLoader = async (req, res) => {
         where: { id: attendee?.event_price_id }
       })
       obj.price = price;
+
+      const chats = await EventChat.findAll({
+        where: { event_id: attendee?.event_id }
+      })
+      obj.chats = chats;
     }
 
     return res.status(200).send({ success: 'true', data: obj })
