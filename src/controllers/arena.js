@@ -60,10 +60,14 @@ const getArenaChat = async (req, res) => {
     */
   
     try {
-        const chats = await EventChat.findAll({ where: { id: req?.body?.event_id }});
+        let chats = await EventChat.findAll({ where: { id: req?.body?.event_id }});
         if(!chats){
             return res.status(404).send({ success: "false", message: "No chats yet" })
         }
+
+        chats = chats.sort(function(a, b) {
+          return a?.updatedAt.localeCompare(b?.updatedAt)
+        });
 
         return res.status(200).send({ success: "true", data: { chats } })  
     } catch (error) {
