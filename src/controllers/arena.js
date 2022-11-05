@@ -1,7 +1,7 @@
 "use strict";
 require("dotenv").config();
 
-const { EventChat } = require("../models");
+const { EventChat, Event } = require("../models");
 const logger = require("../util/log");
 const _ = require('lodash');
 const { guid } = require("../util");
