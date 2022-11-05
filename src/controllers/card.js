@@ -457,7 +457,9 @@ const cardTokenPage = async (req, res) => {
     const chats = await EventChat.findAll({
       where: { event_id: attendee?.event_id }
     })
-    token.chats = sortDate(chats, { date_to_sort: 'updatedAt' });
+    token.chats = chats?.sort(function(x, y){
+      return x?.updatedAt - y?.updatedAt;
+    });
 
     return res.status(200).send({ success: 'true', data: token })
   } catch (error) {
@@ -514,7 +516,9 @@ const cardChipLoader = async (req, res) => {
       const chats = await EventChat.findAll({
         where: { event_id: attendee?.event_id }
       })
-      obj.chats = sortDate(chats, { date_to_sort: 'updatedAt' })
+      obj.chats = chats?.sort(function(x, y){
+        return x?.updatedAt - y?.updatedAt;
+      })
     }
 
     return res.status(200).send({ success: 'true', data: obj })
