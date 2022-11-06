@@ -86,6 +86,7 @@ const sendEndOfEventMails = async (req, res) => {
       id: event_id
     }
   });
+  return res.status(200).send({ success: "false", event })
 
   if(!event){
     return res.status(200).send({ success: "false", message: "No event found" })
