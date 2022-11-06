@@ -86,12 +86,11 @@ const sendEndOfEventMails = async (req, res) => {
       id: event_id
     }
   });
-
   if(!event){
     return res.status(200).send({ success: "false", message: "No event found" })
   }
 
-  const attendees = Attendee.findAll({
+  const attendees = await Attendee.findAll({
     where: {
       event_id: event?.id
     }
