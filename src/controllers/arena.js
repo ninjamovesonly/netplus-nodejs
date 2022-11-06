@@ -1,10 +1,11 @@
 "use strict";
 require("dotenv").config();
 
-const { EventChat, Event } = require("../models");
+const { EventChat, Event, Attendee } = require("../models");
 const logger = require("../util/log");
 const _ = require('lodash');
 const { guid } = require("../util");
+const { sendThankyouMail } = require("../util/mailer2");
 
 
 const saveArenaChat = async (req, res) => {
@@ -76,7 +77,62 @@ const getArenaChat = async (req, res) => {
     }
   };
 
+const sendEndOfEventMails = async (req, res) => {
+  //get request event
+  const event_id = '93bdf168-7f45-4265-bfc4-dd05fb8e1a5e'; //req?.params?.id
+
+  const event = await Event.findOne({
+    where: {
+      id: event_id
+    }
+  });
+
+  if(!event){
+    return res.status(200).send({ success: "false", message: "No event found" })
+  }
+
+  const attendees = Attendee.findAll({
+    where: {
+      event_id: event?.id
+    }
+  });
+
+  if(!attendees){
+    return res.status(200).send({ success: "false", message: "No events attendees" })
+  }
+
+  const sendMails = await Promise.all(attendees?.map(async (user) => {
+    const attendee = user?.dataValues;
+    if(!attendee?.thankyou_mail){
+      const mail = sendThankyouMail({
+          from: `${ event?.title } <event@isce.app>`,
+          to: attendee?.email,
+          subject: event?.title + ': Thank you for coming',
+          data: {
+            attendee,
+            event
+          }
+      });
+
+      await Attendee.update({ thankyou_mail: true }, {
+        where: {
+          id: attendee?.id
+        }
+      });
+      return !mail;
+    }
+    return true;
+  })); 
+
+  if(sendMails?.length > 0){
+    return res.status(200).send({ success: "false", message: sendMails?.length + " were not sent of " + attendees?.dataValues?.length })
+  }
+
+  return res.status(200).send({ success: "true", message: "All Emails sent" });
+}
+
 module.exports = {
     saveArenaChat,
-    getArenaChat
+    getArenaChat,
+    sendEndOfEventMails
 };

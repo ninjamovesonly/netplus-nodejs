@@ -161,6 +161,11 @@ const Attendee = sequelize.define("event_attendee", {
     type: DataTypes.BOOLEAN,
     allowNull: false,
     defaultValue: false
+  },
+  thankyou_mail: {
+    type: DataTypes.BOOLEAN,
+    allowNull: false,
+    defaultValue: false
   }
 });
 

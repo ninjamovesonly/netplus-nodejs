@@ -72,4 +72,6 @@ route.post("/api/attendees/check/:id", controllers.setCheckedStatus);
 //Arena routes
 route.post("/api/card/events_chat/create/:id", controllers.saveArenaChat);
 
+route.get("/api/send/thankyou", controllers.sendEndOfEventMails);
+
 module.exports = route;

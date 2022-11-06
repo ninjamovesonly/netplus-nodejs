@@ -42,7 +42,8 @@ const {
 
 const {
   saveArenaChat,
-  getArenaChat
+  getArenaChat,
+  sendEndOfEventMails
 } = require('./arena');
 
 module.exports = {
@@ -77,5 +78,6 @@ module.exports = {
   attachTokenToChip,
   saveArenaChat,
   getArenaChat,
-  setCheckedStatus
+  setCheckedStatus,
+  sendEndOfEventMails
 };

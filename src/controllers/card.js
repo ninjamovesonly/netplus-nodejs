@@ -117,7 +117,7 @@ const cardGetOpenEvents = async (req, res) => {
     item.gallery = await getGallery(event.id);
     item.attendees = await getAttendees(event.id);
 
-    res.status(200).send({
+    return res.status(200).send({
       success: "true",
       data: {
         count: item?.length,
@@ -167,7 +167,7 @@ const cardSearchEvents = async (req, res) => {
       },
     });
 
-    res.status(200).send({ success: "true", data: { events } });
+    return res.status(200).send({ success: "true", data: { events } });
   } catch (error) {
     logger(error);
     res.status(500).send({ success: "false", message: "an error occurred" })
@@ -200,10 +200,10 @@ const cardGetEvent = async (req, res) => {
     const attendees = await getAttendees(event.id);
     const data = { ...event?.dataValues, gallery, prices, attendees };
 
-    res.status(200).send({ success: "true", data });
+    return res.status(200).send({ success: "true", data });
   } catch (error) {
     logger(error);
-    res.status(500).send({ success: "false", message: "An error occurred" });
+    return res.status(500).send({ success: "false", message: "An error occurred" });
   }
 };
 
@@ -417,10 +417,10 @@ const cardPaymentSuccess = async (req, res) => {
     }
 
     //send an email with the user link attached
-    res.status(200).send({ success: "true", link: ticket, message: 'You have been successfully registered' });
+    return res.status(200).send({ success: "true", link: ticket, message: 'You have been successfully registered' });
   } catch (error) {
     logger(error);
-    res.status(500).send({ success: "false", message: "A :wq error occurrred" })
+    return res.status(500).send({ success: "false", message: "A :wq error occurrred" })
   }
 }
 
@@ -464,7 +464,7 @@ const cardTokenPage = async (req, res) => {
     return res.status(200).send({ success: 'true', data: token })
   } catch (error) {
     logger(error);
-    res.status(500).send({ success: "false", message: "An error occurred" });
+    return res.status(500).send({ success: "false", message: "An error occurred" });
   }
 };
 
