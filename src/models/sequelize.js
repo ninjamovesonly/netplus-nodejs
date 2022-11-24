@@ -2,25 +2,27 @@
 
 require("dotenv").config();
 const Sequelize = require("sequelize");
-const config = require("../config");
 
-let sequelize;
-if(config?.environment === 'prod'){
-  sequelize = new Sequelize(
-    config.api.db,
-    config.api.user,
-    config.api.pass,
-    {
-      host: config.api.host,
-      dialect: "mysql",
-      port: config.api.port,
-    }
-  );
-}else{
-  sequelize = new Sequelize({
+const sqliteDatabase = (path = null) => {
+  return new Sequelize({
     dialect: 'sqlite',
-    storage: '../../database/db.sqlite'
+    storage: path || '../../database/db.sqlite'
   });
 }
+
+const hostDatabase = () => {
+  return new Sequelize(
+    process.env.DB_DATABASE,
+    process.env.DB_USERNAME,
+    process.env.DB_PASSWORD,
+    {
+      host: process.env.DB_HOST,
+      dialect: process.env.DB_CONNECTION,
+      port: process.env.DB_PORT,
+    }
+  );
+}
+
+const sequelize = process.env.DB_CONNECTION === 'sqlite' ? sqliteDatabase() : hostDatabase();
 
 module.exports = sequelize;
