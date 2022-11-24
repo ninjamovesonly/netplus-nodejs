@@ -3,6 +3,8 @@ const controllers = require("../controllers");
 
 const route = Router();
 
-route.get("/", controllers.helloWorld);
+route.post("/api/order", controllers.AppController.processOrder);
+
+route.get('/v1/checkout', controllers.AppController.processPayment);
 
 module.exports = route;

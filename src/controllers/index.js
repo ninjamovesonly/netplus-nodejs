@@ -1,9 +1,7 @@
 "use strict";
 
-const {
-  helloWorld,
-} = require("./ExampleController");
+const AppController = require("./AppController");
 
 module.exports = {
-  helloWorld
+  AppController
 };

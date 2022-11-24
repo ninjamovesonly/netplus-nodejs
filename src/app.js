@@ -67,6 +67,7 @@ app.use((req, res, next) => {
 // Store the db connection and start listening on a port.
 const startExpress = () => {
   server.listen(process.env.PORT);
+  console.log(`server running on localhost:${process.env.PORT}`)
 };
 
 // Start express gracefully
