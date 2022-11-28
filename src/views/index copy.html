@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Process Payment</title>
+    <link href="https://netdna.bootstrapcdn.com/bootstrap/3.0.0/css/bootstrap.min.css" rel="stylesheet" id="bootstrap-css">
+    <script src="https://netdna.bootstrapcdn.com/bootstrap/3.0.0/js/bootstrap.min.js"></script>
+    <script src="https://code.jquery.com/jquery-1.11.1.min.js"></script>
+</head>
+<body>
+    <div class="container">
+        <div class="row">
+            <div class="col-xs-12 col-md-4">
+                <div class="panel panel-default">
+                    <div class="panel-heading">
+                        <h3 class="panel-title">
+                            Payment Details
+                        </h3>
+                        <div class="checkbox pull-right">
+                            <label>
+                                <input type="checkbox" />
+                                Remember
+                            </label>
+                        </div>
+                    </div>
+                    <div class="panel-body">
+                        <form role="form">
+                        <div class="form-group">
+                            <label for="cardNumber">
+                                CARD NUMBER</label>
+                            <div class="input-group">
+                                <input type="text" class="form-control" id="cardNumber" placeholder="Valid Card Number"
+                                    required autofocus />
+                                <span class="input-group-addon"><span class="glyphicon glyphicon-lock"></span></span>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-xs-7 col-md-7">
+                                <div class="form-group">
+                                    <label for="expityMonth">
+                                        EXPIRY DATE</label>
+                                    <div class="col-xs-6 col-lg-6 pl-ziro">
+                                        <input type="text" class="form-control" id="expiryMonth" placeholder="MM" required />
+                                    </div>
+                                    <div class="col-xs-6 col-lg-6 pl-ziro">
+                                        <input type="text" class="form-control" id="expiryYear" placeholder="YY" required /></div>
+                                </div>
+                            </div>
+                            <div class="col-xs-5 col-md-5 pull-right">
+                                <div class="form-group">
+                                    <label for="cvCode">
+                                        CV CODE</label>
+                                    <input type="password" class="form-control" id="cvCode" placeholder="CV" required />
+                                </div>
+                            </div>
+                        </div>
+                        </form>
+                    </div>
+                </div>
+                <ul class="nav nav-pills nav-stacked">
+                    <li class="active"><a href="#"><span class="badge pull-right">{{ currency }} {{ amount }}</span> Final Payment</a>
+                    </li>
+                    <span id="transId" class="badge pull-right">{{ ref }}</span>
+                </ul>
+                <br/>
+                <button id="btnStart" class="btn btn-success btn-lg btn-block" role="button">Pay</button>
+            </div>
+        </div>
+        <div id="redirect" style="height: 100vh; width:650px !important;"></div>
+    </div>
+
+    <script>
+        const baseUrl = window.location.origin; //"https://api.netpluspay.com/"; //
+    
+        // netpluspay.com payment endpoint
+        const payUrl = baseUrl + "/api/v1/pay";
+        const livePayString = "NP221107082841000000589:LIVE:5399832693039814:09/23:270::USD";
+
+        const checkOutString = btoa(livePayString);
+    
+        /*
+            netpluspay.com requery endpoint to obtain the status of the transaction after successful processing
+        */
+        const reQueryUrl = baseUrl+"transactions/requery/xxxx/";
+    
+        /*
+            Intiate the process flow
+        */
+        const myheaders = {"Content-Type": "application/json", "Accept": "application/json"};
+        makeAuth = () => {
+            const payload = {
+                cardNumber: document.querySelector("#cardNumber")?.value,
+                expiryDate: `${document.querySelector("#expiryMonth")?.value}/${document.querySelector("#expiryYear")?.value}`,
+                cvv: document.querySelector("#cardNumber")?.value,
+                transId: document.querySelector("#transId")?.innerHTML
+            }
+            
+            const init = {
+                body: JSON.stringify(payload),
+                method: "POST",
+                headers: {"content-type": "application/json"}
+            };
+            try {
+                fetch(payUrl, init) //this makes POST request to the pay endpoint.
+                    .then(async (res) => {
+                        const body = await res.json(); // the return response is obtained from the promise response object.
+                        if (body.code == "S0") { // Check for the transaction response code. Where S0 means 3DS is required
+                       document.getElementById('redirect').innerHTML = body.redirectHtml;
+                       setTimeout(() => {
+                            const threeDF = document.getElementById('threedsChallengeRedirectForm') ?? document.getElementById('threedsFrictionLessRedirectForm');
+                            threeDF.submit();
+                       }, 1000);
+
+                       window.onmessage = (event) => {
+                            fetch(reQueryUrl+`${body.transId}`,{headers: myheaders, method: "GET"})
+                                .then(async(res2) => {
+                                    const data = await res2.text();
+                                    console.log(data);
+                                })
+                                .catch(err => console.log('requery error:\n*********************\n', err));
+                        }
+                        
+                        /*let count = 0;
+                        const timed = setInterval(() => {
+                            setTimeout(() => {
+                                fetch(reQueryUrl+`${body.transId}`,{headers: myheaders, method: "GET"})
+                                .then(async(res2) => {
+                                    count += 1;
+                                    const data = await res2.text();
+                                    if(data.code == '00' || data.code == '90') {
+                                        clearInterval(timed)
+                                        console.log('No ',count,' try ', data);
+                                    } else {
+                                        console.log('No ',count,' try ', data);
+                                    }
+                                })
+                                .catch(err => console.log('requery error:\n*********************\n', err));
+                            }, 2000);
+                        }, 5000);*/
+                    }
+                    })
+                    .catch(error => console.log('request error:\n*********************\n', error))
+            } catch (error) {
+                console.log('process error:\n**********************\n', error);
+            }
+        }
+        /*
+            Kickstart the process flow here.
+        */
+        document.getElementById("btnStart").addEventListener("click", (event) => {
+            event.preventDefault();
+            makeAuth();
+        })
+    </script>
+</body>
+</html>

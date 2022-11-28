@@ -10,6 +10,11 @@ const signale = require("signale");
 const swaggerUi = require("swagger-ui-express");
 const swaggerFile = require("../swagger.json");
 const routes = require("./routes");
+const engine = require('consolidate');
+
+app.set('views', __dirname + '/views');
+app.engine('html', engine.mustache);
+app.set('view engine', 'html');
 
 app.use(helmet());
 app.disable("x-powered-by");

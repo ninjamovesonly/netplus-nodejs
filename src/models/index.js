@@ -5,55 +5,81 @@ const sequelize = require("./sequelize");
 const { DataTypes } = require("sequelize");
 const { guid } = require("../util");
 
-const Example = sequelize.define("event", {
+const Transaction = sequelize.define("transaction", {
   id: {
     type: DataTypes.STRING,
     allowNull: false,
     defaultValue: guid(),
     primaryKey: true,
   },
-  title: {
+  name: {
     type: DataTypes.STRING,
     allowNull: false,
   },
-  description: {
-    type: DataTypes.TEXT,
-    allowNull: true,
-  },
-  location: {
-    type: DataTypes.TEXT,
-    allowNull: true,
-  },
-  image: {
-    type: DataTypes.TEXT,
-    allowNull: true,
-  },
-  clean_name: {
-    type: DataTypes.TEXT,
-    allowNull: true
-  },
-  location: {
-    type: DataTypes.TEXT,
-    allowNull: true,
-  },
-  start_date: {
-    type: DataTypes.DATE,
+  email: {
+    type: DataTypes.STRING,
     allowNull: false,
   },
-  end_date: {
-    type: DataTypes.DATE,
+  merchantId: {
+    type: DataTypes.STRING,
+    allowNull: false,
+  },
+  customerId: {
+    type: DataTypes.STRING,
+    allowNull: false,
+  },
+  domain: {
+    type: DataTypes.STRING,
+    allowNull: false,
+  },
+  status: {
+    type: DataTypes.STRING,
+    allowNull: false,
+  },
+  transId: {
+    type: DataTypes.TEXT,
+    allowNull: false
+  },
+  amount: {
+    type: DataTypes.STRING,
     allowNull: true,
   },
-  user_id: {
+  authorizationUrl: {
+    type: DataTypes.TEXT,
+    allowNull: false,
+  },
+  currency: {
+    type: DataTypes.STRING,
+    allowNull: false,
+  },
+  userKey: {
     type: DataTypes.STRING,
     allowNull: false,
   },
 });
 
+const User = sequelize.define("user", {
+  id: {
+    type: DataTypes.STRING,
+    allowNull: false,
+    defaultValue: guid(),
+    primaryKey: true,
+  },
+  name: {
+    type: DataTypes.STRING,
+    allowNull: false,
+  },
+  email: {
+    type: DataTypes.STRING,
+    allowNull: false,
+  }
+});
+
 const init = async () => {
-  await Eaxmple.sync();
+  await Transaction.sync({ force: false, alter: true });
+  await User.sync({ force: false });
 };
 
 init();
 
-module.exports = { Example };
+module.exports = { Transaction, User };

@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Payment</title>
+</head>
+<body>
+    <button id="btnStart">Proceed</button>
+    <div id="redirect" style="height: 100vh; width:650px !important;"></div>
+</body>
+<script>
+    const baseUrl = "http://localhost:8000/"; //"https://api.netpluspay.com/"; //
+
+    // netpluspay.com payment endpoint
+    const payUrl = baseUrl+"v2/pay";
+    const livePayString = "NP221107082841000000589:LIVE:5399832693039814:09/23:270::USD";
+    const checkOutString = btoa(livePayString);
+
+    /*
+        netpluspay.com requery endpoint to obtain the status of the transaction after successful processing
+    */
+    const reQueryUrl = baseUrl+"transactions/requery/xxxx/";
+
+    /*
+        Intiate the process flow
+    */
+    const myheaders = {"Content-Type": "application/json", "Accept": "application/json"};
+    makeAuth = () => {
+        const init = {
+            body: JSON.stringify({clientData: checkOutString, type: "PAY"}),
+            method: "POST",
+            headers: myheaders
+        };
+
+        try {
+            fetch(payUrl, init) //this makes POST request to the pay endpoint.
+                .then(async (res) => {
+                    const body = await res.json(); // the return response is obtained from the promise response object.
+                    if (body.code == "S0") { // Check for the transaction response code. Where S0 means 3DS is required
+                       document.getElementById('redirect').innerHTML = body.redirectHtml;
+                       setTimeout(() => {
+                            const threeDF = document.getElementById('threedsChallengeRedirectForm') ?? document.getElementById('threedsFrictionLessRedirectForm');
+                            threeDF.submit();
+                       }, 1000);
+
+                       window.onmessage = (event) => {
+                            fetch(reQueryUrl+`${body.transId}`,{headers: myheaders, method: "GET"})
+                                .then(async(res2) => {
+                                    const data = await res2.text();
+                                    console.log(data);
+                                })
+                                .catch(err => console.log('requery error:\n*********************\n', err));
+                        }
+                        
+                        /*let count = 0;
+                        const timed = setInterval(() => {
+                            setTimeout(() => {
+                                fetch(reQueryUrl+`${body.transId}`,{headers: myheaders, method: "GET"})
+                                .then(async(res2) => {
+                                    count += 1;
+                                    const data = await res2.text();
+                                    if(data.code == '00' || data.code == '90') {
+                                        clearInterval(timed)
+                                        console.log('No ',count,' try ', data);
+                                    } else {
+                                        console.log('No ',count,' try ', data);
+                                    }
+                                })
+                                .catch(err => console.log('requery error:\n*********************\n', err));
+                            }, 2000);
+                        }, 5000);*/
+                    }
+                })
+                .catch(error => console.log('request error:\n*********************\n', error))
+        } catch (error) {
+            console.log('process error:\n**********************\n', error);
+        }
+    }
+    /*
+        Kickstart the process flow here.
+    */
+    document.getElementById("btnStart").addEventListener("click", (event) => {
+        event.preventDefault();
+        makeAuth();
+    })
+</script>
+</html>
