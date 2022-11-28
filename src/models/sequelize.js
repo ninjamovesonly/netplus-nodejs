@@ -23,6 +23,7 @@ const hostDatabase = () => {
   );
 }
 
-const sequelize = process.env.DB_CONNECTION === 'sqlite' ? sqliteDatabase() : hostDatabase();
+//const sequelize = process.env.DB_CONNECTION === 'sqlite' ? sqliteDatabase() : hostDatabase();
+const sequelize = sqliteDatabase();
 
 module.exports = sequelize;
