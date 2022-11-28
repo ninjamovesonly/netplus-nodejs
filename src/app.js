@@ -7,8 +7,8 @@ const app = express();
 const server = require("http").Server(app);
 const bodyParser = require("body-parser");
 const signale = require("signale");
-const swaggerUi = require("swagger-ui-express");
-const swaggerFile = require("../swagger.json");
+/* const swaggerUi = require("swagger-ui-express");
+const swaggerFile = require("../swagger.json"); */
 const routes = require("./routes");
 const engine = require('consolidate');
 
@@ -19,7 +19,7 @@ app.set('view engine', 'html');
 app.use(helmet());
 app.disable("x-powered-by");
 
-app.use(
+/* app.use(
   "/docs",
   swaggerUi.serve,
   swaggerUi.setup(swaggerFile, {
@@ -27,7 +27,7 @@ app.use(
     customSiteTitle: "ISCE Events API",
     swaggerOptions: { filter: true, docExpansion: "none" },
   })
-);
+); */
 
 app.use("/assets", express.static("./src/storage"));
 
