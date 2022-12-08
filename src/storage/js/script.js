@@ -10,8 +10,21 @@ $(function() {
     var amex = $("#amex");
     var redirect = $("#redirect");
     var creditCardForm = $('#creditCardForm');
+    var loadingButton = $('#loadingButton');
+    loadingButton.hide();
+
+    function loadButton(loading = false){
+        if(!loading){
+            loadingButton.hide();
+            confirmButton.show();
+        }else{
+            loadingButton.show();
+            confirmButton.hide();
+        }
+    }
 
     redirect.hide();
+    loadButton(false);
 
     // Use the payform library to format and validate
     // the payment fields.
@@ -49,14 +62,19 @@ $(function() {
 
         e.preventDefault();
 
+        loadButton(true);
+
         var isCardValid = $.payform.validateCardNumber(cardNumber.val());
         var isCvvValid = $.payform.validateCardCVC(CVV.val());
 
         if(owner.val().length < 5){
+            loadButton(false);
             alert("Wrong owner name");
         } else if (!isCardValid) {
+            loadButton(false);
             alert("Wrong card number");
         } else if (!isCvvValid) {
+            loadButton(false);
             alert("Wrong CVV");
         } else {
             // Everything is correct. Add your form submission code here.
@@ -83,6 +101,7 @@ $(function() {
                 fetch(payUrl, init) //this makes POST request to the pay endpoint.
                     .then(async (res) => {
                         const body = await res.json(); // the return response is obtained from the promise response object.
+                        loadButton(false);
                         if (body?.code === "S0") { // Check for the transaction response code. Where S0 means 3DS is required
                             creditCardForm.hide();
                             redirect.show();
@@ -97,19 +116,24 @@ $(function() {
                                     .then(async(res2) => {
                                         const data = await res2.json();
                                         if(data.code === '90') {
-                                            console.log('Unable to process payment');
+                                            window.location.replace(window.origin + '/checkout/failed');
                                         } 
                                         else if(data.code === '00'){
-                                            console.log('Transaction processed successfully');
+                                            window.location.replace(window.origin + '/checkout/success');
                                         }
                                         else {
-                                            console.log('A major error occurred')
+                                            console.log('Something went wrong!')
+                                            window.location.replace(window.origin + '/checkout/failed');
                                         }
                                     })
                                     .catch(err => 
                                         console.log('requery error:\n*********************\n', err)
                                     );
                             }
+                        }else if(body?.code === "90"){
+                            window.location.replace(window.origin + '/checkout/failed');
+                        }else if(body?.code === "00"){
+                            window.location.replace(window.origin + '/checkout/success');
                         }
                     })
                     .catch(error => console.log('request error:\n*********************\n', error))

@@ -1,6 +1,8 @@
 const views = {
     home: __dirname + "/../views/home.html",
     checkout: __dirname + "/../views/index.html",
+    checkoutFailed: __dirname + "/../views/failed.html",
+    checkoutSuccess: __dirname + "/../views/success.html",
     error: __dirname + "/../views/404.html",
     admin: {
         login: __dirname + "/../views/admin/login.html",

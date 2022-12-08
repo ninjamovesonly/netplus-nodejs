@@ -218,9 +218,21 @@ const requeryUrl = async (req, res) => {
     }
 }
 
+const checkoutFailed = async (req, res) => {
+    return res.render(views?.checkoutFailed, { 
+    });
+}
+
+const checkoutSuccess = async (req, res) => {
+    return res.render(views?.checkoutSuccess, { 
+    });
+}
+
 module.exports = {
   processOrder,
   processPayment,
   getCardDetails,
-  requeryUrl
+  requeryUrl,
+  checkoutFailed,
+  checkoutSuccess
 };

@@ -15,6 +15,8 @@ route.get("/", controllers.ExampleController.helloWorld);
 
 route.post("/transaction/initialize", controllers.AppController.processOrder);
 
+route.get('/checkout/failed', controllers.AppController.checkoutFailed);
+route.get('/checkout/success', controllers.AppController.checkoutSuccess);
 route.get('/checkout/:ref', controllers.AppController.getCardDetails);
 
 route.post('/api/v1/pay', controllers.AppController.processPayment);
