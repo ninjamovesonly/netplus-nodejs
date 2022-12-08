@@ -3,16 +3,34 @@ const { default: axios } = require('axios');
 const _ = require('lodash');
 const util = require('../util');
 const views = require('../views');
-const { Transaction } = require("../models");
+const { Transaction, User, MerchantId } = require("../models");
 
 const processOrder = async (req, res) => {
     try {
-        const body = _.pick(req.body, ['name', 'email', 'amount', 'currency', 'merchantId', 'userKey' ]);
+        const body = _.pick(req.body, 
+            [
+                'name', 'email', 'amount', 'currency', 'merchantId', 'userKey', 'callbackUrl', 'metadata' 
+            ]
+        );
 
-        if(!body?.userKey !== "INUThgResdytey"){
+        const user = await User.findAll({
+        });
+
+        if(!user){
             return res.send({
                 success: false,
-                message: "Invalid user key"
+                message: "Invalid Authorization"
+            });
+        }
+
+        const merchant = await MerchantId.findOne({
+            where: { merchant: body?.merchantId }
+        });
+
+        if(!merchant){
+            return res.send({
+                success: false,
+                message: "Invalid Authorization"
             });
         }
 
@@ -31,9 +49,24 @@ const processOrder = async (req, res) => {
             });
         }
 
-        const origin = `${req?.protocol}://${req?.get('host')}`;
-        const url = origin + '/v1/checkout/' + data.transId;
 
+        //Check to ensure generated code not in database
+        //Preventing repeating accessCode within the database
+        let hasAccessCode = true;
+        let accessCode = null;
+
+        do {
+            accessCode = util.orderId(10);
+            hasAccessCode = await Transaction.findOne({
+                where: { accessCode: accessCode }
+            });
+        } while (hasAccessCode);
+
+        //Generate access code link
+        const origin = `${req?.protocol}://${req?.get('host')}`;
+        const url = origin + '/checkout/' + accessCode;
+
+        //Save transaction to database
         const saveTransaction = await Transaction.create({ 
             id: util.guid(),
             authorizationUrl: url,
@@ -41,6 +74,8 @@ const processOrder = async (req, res) => {
             name: body.name,
             email: body.email,
             userKey: body.userKey,
+            accessCode: accessCode,
+            callbackUrl: body?.callbackUrl || origin + '/transaction/closed',
             ...data
         });
 
@@ -56,7 +91,8 @@ const processOrder = async (req, res) => {
             message: "Successfully created transaction",
             data: {
                 authorizationUrl: url,
-                ...data
+                accessCode: accessCode,
+                reference: data?.transId
             }
         });
     } catch (error) {
@@ -67,20 +103,22 @@ const processOrder = async (req, res) => {
 };
 
 const getCardDetails = async (req,res) => {
-    const transId = req?.params?.ref;
-    if(!transId){
+    const accessCode = req?.params?.ref;
+    if(!accessCode){
         return res.render(views?.error);
     }
 
     const tnx = await Transaction.findOne({
         where: {
-          transId: transId
+          accessCode: accessCode
         }
     });
 
     if(!tnx){
         return res.render(views?.error, {});
     }
+
+    const transId = tnx.transId;
 
     const years = () => {
         let currentYear = new Date().getFullYear(), years = [];

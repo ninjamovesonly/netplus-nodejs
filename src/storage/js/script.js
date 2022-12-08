@@ -60,9 +60,8 @@ $(function() {
             alert("Wrong CVV");
         } else {
             // Everything is correct. Add your form submission code here.
-            const baseUrl = window.location.origin; //"https://api.netpluspay.com/"; //
+            const baseUrl = window.location.origin; 
     
-            // netpluspay.com payment endpoint
             const payUrl = baseUrl + "/api/v1/pay";
             const reQueryUrl = baseUrl + "/transactions/requery/";
             const myheaders = {"Content-Type": "application/json", "Accept": "application/json"};
@@ -96,30 +95,22 @@ $(function() {
                             window.onmessage = (event) => {
                                 fetch(reQueryUrl+`${body.transId}`,{ headers: myheaders, method: "GET"})
                                     .then(async(res2) => {
-                                        const data = await res2.text();
-                                        console.log(data);
+                                        const data = await res2.json();
+                                        if(data.code === '90') {
+                                            console.log('Unable to process payment');
+                                        } 
+                                        else if(data.code === '00'){
+                                            console.log('Transaction processed successfully');
+                                        }
+                                        else {
+                                            console.log('A major error occurred')
+                                        }
                                     })
-                                    .catch(err => console.log('requery error:\n*********************\n', err));
+                                    .catch(err => 
+                                        console.log('requery error:\n*********************\n', err)
+                                    );
                             }
-                                
-                                /*let count = 0;
-                                const timed = setInterval(() => {
-                                    setTimeout(() => {
-                                        fetch(reQueryUrl+`${body.transId}`,{headers: myheaders, method: "GET"})
-                                        .then(async(res2) => {
-                                            count += 1;
-                                            const data = await res2.text();
-                                            if(data.code == '00' || data.code == '90') {
-                                                clearInterval(timed)
-                                                console.log('No ',count,' try ', data);
-                                            } else {
-                                                console.log('No ',count,' try ', data);
-                                            }
-                                        })
-                                        .catch(err => console.log('requery error:\n*********************\n', err));
-                                    }, 2000);
-                                }, 5000);*/
-                    }
+                        }
                     })
                     .catch(error => console.log('request error:\n*********************\n', error))
             } catch (error) {

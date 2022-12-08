@@ -1,9 +1,10 @@
 "use strict";
 
-const helloWorld = async (req, res) => {
-  res.send("Nodejs Starter pack is running")
-};
+const views = require("../views");
 
+const helloWorld = async (req, res) => {
+  res.render(views.home);
+};
 
 module.exports = {
   helloWorld

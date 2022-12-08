@@ -1,6 +1,7 @@
 "use strict";
 require("dotenv").config();
 const express = require("express");
+const session = require('express-session');
 const cors = require("cors");
 const helmet = require("helmet");
 const app = express();
@@ -11,6 +12,13 @@ const signale = require("signale");
 const swaggerFile = require("../swagger.json"); */
 const routes = require("./routes");
 const engine = require('consolidate');
+const views = require("./views");
+
+app.use(session({
+	secret: 'secret',
+	resave: true,
+	saveUninitialized: true
+}));
 
 app.set('views', __dirname + '/views');
 app.engine('html', engine.mustache);
@@ -61,12 +69,13 @@ app.use((err, req, res, next) => {
 
 //Handle 404
 app.use((req, res, next) => {
-  res.status(404).send({
+  /* res.status(404).send({
     success: false,
     status: false,
     error: "Page not found or has been deleted.",
     help: "Please check the docs.",
-  });
+  }); */
+  res.render(views.error);
 });
 
 // Store the db connection and start listening on a port.

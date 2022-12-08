@@ -56,6 +56,15 @@ const Transaction = sequelize.define("transaction", {
     type: DataTypes.STRING,
     allowNull: false,
   },
+  accessCode: {
+    type: DataTypes.STRING,
+    allowNull: false,
+  },
+  callbackUrl: {
+    type: DataTypes.TEXT,
+    allowNull: false,
+    defaultValue: "/transaction/closed"
+  },
 });
 
 const User = sequelize.define("user", {
@@ -72,14 +81,66 @@ const User = sequelize.define("user", {
   email: {
     type: DataTypes.STRING,
     allowNull: false,
+  },
+  key: {
+    type: DataTypes.STRING,
+    allowNull: false
   }
 });
+
+const Admin = sequelize.define("admin", {
+  id: {
+    type: DataTypes.STRING,
+    allowNull: false,
+    defaultValue: guid(),
+    primaryKey: true,
+  },
+  email: {
+    type: DataTypes.STRING,
+    allowNull: false,
+  },
+  password: {
+    type: DataTypes.STRING,
+    allowNull: false,
+  }
+});
+
+const MerchantId = sequelize.define("merchantid", {
+  id: {
+    type: DataTypes.STRING,
+    allowNull: false,
+    defaultValue: guid(),
+    primaryKey: true,
+  },
+  merchant: {
+    type: DataTypes.STRING,
+    allowNull: false,
+  },
+  name: {
+    type: DataTypes.STRING,
+    allowNull: true,
+  }
+});
+
 
 const init = async () => {
   await Transaction.sync({ force: false, alter: true });
   await User.sync({ force: false });
+  await Admin.sync({ force: false }).then(() => {
+    Admin.create({
+        id: guid(),
+        email: 'admin@admin.com',
+        password: 'testsample'
+    });
+  });
+  await MerchantId.sync({ force: false }).then(() => {
+    MerchantId.create({
+        id: guid(),
+        merchant: 'MID637fd2b99bc64'
+    });
+  });
 };
 
 init();
 
-module.exports = { Transaction, User };
+module.exports = { Transaction, User, Admin, MerchantId };
