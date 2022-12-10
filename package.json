@@ -3,6 +3,9 @@
   "version": "1.0.0",
   "description": "ISCE_events",
   "main": "app.js",
+  "engines": {
+    "node": "14.x"
+  },
   "scripts": {
     "dev": "nodemon src/app.js",
     "docs": "node swagger.js",
