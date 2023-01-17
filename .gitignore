@@ -3,6 +3,7 @@ src/storage/blogs/
 src/storage/users/
 src/storage/docs/
 src/storage/images/
+database/
 .env
 .env.prod
 .DS_Store
