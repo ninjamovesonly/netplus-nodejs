@@ -82,6 +82,10 @@ const User = sequelize.define("user", {
     type: DataTypes.STRING,
     allowNull: false,
   },
+  merchantid: {
+    type: DataTypes.STRING,
+    allowNull: true,
+  },
   key: {
     type: DataTypes.STRING,
     allowNull: false
@@ -125,7 +129,7 @@ const MerchantId = sequelize.define("merchantid", {
 
 const init = async () => {
   await Transaction.sync({ force: false, alter: true });
-  await User.sync({ force: false });
+  await User.sync({ force: false, alter: true });
   await Admin.sync({ force: false }).then(() => {
     Admin.create({
         id: guid(),

@@ -9,11 +9,13 @@ const processOrder = async (req, res) => {
     try {
         const body = _.pick(req.body, 
             [
-                'name', 'email', 'amount', 'currency', 'merchantId', 'userKey', 'callbackUrl', 'metadata' 
+                'name', 'email', 'amount', 'currency', 'merchantId', 'passKey', 'callbackUrl', 'metadata' 
             ]
         );
+        body.currency = (!body?.currency) ? "USD" : body.currency;
 
-        const user = await User.findAll({
+        const user = await User.findOne({
+            where: { key: body?.passKey }
         });
 
         if(!user){
@@ -23,7 +25,7 @@ const processOrder = async (req, res) => {
             });
         }
 
-        const merchant = await MerchantId.findOne({
+        /* const merchant = await MerchantId.findOne({
             where: { merchant: body?.merchantId }
         });
 
@@ -32,7 +34,7 @@ const processOrder = async (req, res) => {
                 success: false,
                 message: "Invalid Authorization"
             });
-        }
+        } */
 
         const form = { ...body, orderId: util.orderId() };
 
@@ -41,14 +43,13 @@ const processOrder = async (req, res) => {
                 ...form
             }
         });
-        
+
         if(!data){
             return res.send({
                 success: false,
-                message: "Unable to complete transaction"
+                message: "Unable to initialize transaction"
             });
         }
-
 
         //Check to ensure generated code not in database
         //Preventing repeating accessCode within the database
@@ -73,7 +74,7 @@ const processOrder = async (req, res) => {
             currency: form.currency,
             name: body.name,
             email: body.email,
-            userKey: body.userKey,
+            userKey: body.passKey,
             accessCode: accessCode,
             callbackUrl: body?.callbackUrl || origin + '/transaction/closed',
             ...data
@@ -92,7 +93,8 @@ const processOrder = async (req, res) => {
             data: {
                 authorizationUrl: url,
                 accessCode: accessCode,
-                reference: data?.transId
+                reference: accessCode,
+                transactionId: data?.transId
             }
         });
     } catch (error) {
@@ -136,6 +138,43 @@ const getCardDetails = async (req,res) => {
         domain: tnx.domain,
         name: tnx.name,
         years: years()
+    });
+    //__dirname : It will resolve to your project folder.
+}
+
+const getCardDetailsServerSide = async (req,res) => {
+    const accessCode = req?.params?.ref;
+    if(!accessCode){
+        return res.send({
+            success: 'false',
+            message: 'Invalid transaction reference'
+        });
+    }
+
+    const body = _.pick(req.body, 
+        [
+            'cardNumber', 'expiryDate', 'cvv'
+        ]
+    );
+
+    const tnx = await Transaction.findOne({
+        where: {
+          accessCode: accessCode
+        }
+    });
+
+    if(!tnx){
+        return res.send({
+            success: 'false',
+            message: 'Invalid transaction!'
+        });
+    }
+
+    const transId = tnx.transId;
+
+    return res.send({
+        success: 'false',
+        message: tnx
     });
     //__dirname : It will resolve to your project folder.
 }
@@ -184,6 +223,7 @@ const processPayment = async (req,res) => {
 const requeryUrl = async (req, res) => {
     try {
         const transId = req?.params?.ref;
+        
         const tnx = await Transaction.findOne({
             where: {
             transId: transId
@@ -234,5 +274,6 @@ module.exports = {
   getCardDetails,
   requeryUrl,
   checkoutFailed,
-  checkoutSuccess
+  checkoutSuccess,
+  getCardDetailsServerSide
 };

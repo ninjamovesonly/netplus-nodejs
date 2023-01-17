@@ -37,7 +37,7 @@ app.disable("x-powered-by");
   })
 ); */
 
-console.log(__dirname + "/../database/db.sqlite");
+//console.log(__dirname + "/../database/db.sqlite");
 
 app.use("/assets", express.static("./src/storage"));
 

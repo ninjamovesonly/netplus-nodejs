@@ -7,10 +7,14 @@ const views = {
     admin: {
         login: __dirname + "/../views/admin/login.html",
         dashboard: __dirname + "/../views/admin/dashboard.html",
+        allTransactions: __dirname + "/../views/admin/allTransactions.html",
         transaction: __dirname + "/../views/admin/transaction.html",
         users: __dirname + "/../views/admin/users.html",
         createUser: __dirname + "/../views/admin/createUser.html",
         userTransactions: __dirname + "/../views/admin/userTransactions.html"
+    },
+    docs: {
+        invincible: __dirname + "/../views/docs/invincible.html",
     }
 };
 

@@ -6,6 +6,11 @@ const helloWorld = async (req, res) => {
   res.render(views.home);
 };
 
+const docsInvincible = async (req, res) => {
+  res.render(views.docs.invincible);
+};
+
 module.exports = {
-  helloWorld
+  helloWorld,
+  docsInvincible
 };

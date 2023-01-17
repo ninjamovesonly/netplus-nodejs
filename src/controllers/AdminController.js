@@ -90,8 +90,6 @@ const Users = async (req, res) => {
 }
 
 const createUser = async (req, res) => {
-    
-
     const users = await User.findAll({
     });
 
@@ -112,8 +110,7 @@ const createUser = async (req, res) => {
 
 const saveUser = async (req, res) => {
     
-
-    const form = _.pick(req.body, ['name', 'email']);
+    const form = _.pick(req.body, ['name', 'email', 'merchantid']);
 
     let user = await User.findOne({
         where: { email: form?.email }
@@ -127,7 +124,8 @@ const saveUser = async (req, res) => {
         id: guid(),
         name: form?.name,
         email: form?.email,
-        key: orderId(16)
+        merchantid: form?.merchantid,
+        key: orderId(16),
     });
 
     return res.redirect('/admin/users');
