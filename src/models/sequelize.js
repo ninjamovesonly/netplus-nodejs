@@ -6,7 +6,7 @@ const Sequelize = require("sequelize");
 const sqliteDatabase = (path = null) => {
   return new Sequelize({
     dialect: 'sqlite',
-    storage: path || (__dirname + "/../database/db.sqlite")
+    storage: path || (__dirname + "/../database/local.sqlite")
   });
 }
 
