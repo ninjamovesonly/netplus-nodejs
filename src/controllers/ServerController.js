@@ -3,6 +3,7 @@ const { default: axios } = require('axios');
 const _ = require('lodash');
 const util = require('../util');
 const views = require('../views');
+const logger = require("../util/log");
 const { Transaction, User, MerchantId } = require("../models");
 
 const processOrder = async (req, res) => {
@@ -15,20 +16,20 @@ const processOrder = async (req, res) => {
                 message: "invalid reference"
             });
         }
-    
+
         const tnx = await Transaction.findOne({
             where: {
               accessCode: accessCode
             }
         });
-    
+
         if(!tnx){
             return res.send({
                 success: false,
                 message: "invalid reference"
             });
         }
-    
+
         const transId = tnx.transId;
 
         const body = _.pick(req.body, ['cardNumber', 'cvv', 'expiryDate']);
@@ -59,6 +60,7 @@ const processOrder = async (req, res) => {
 
         return res.send({ ...remainder });
     } catch (error) {
+logger(error);
         return res.send({
             message: error.message
         })
@@ -116,4 +118,4 @@ const requeryUrl = async (req, res) => {
 module.exports = {
     processOrder,
     requeryUrl
-  };
+};
