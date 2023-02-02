@@ -89,6 +89,20 @@ const User = sequelize.define("user", {
   key: {
     type: DataTypes.STRING,
     allowNull: false
+  },
+  password: {
+    type: DataTypes.STRING,
+    allowNull: true,
+    defaultValue: 'enoch1234'
+  },
+  apiKey: {
+    type: DataTypes.STRING,
+    allowNull: true
+  },
+  apiSecret: {
+    type: DataTypes.TEXT,
+    allowNull: true,
+    defaultValue: 'blank'
   }
 });
 
@@ -105,7 +119,7 @@ const Admin = sequelize.define("admin", {
   },
   password: {
     type: DataTypes.STRING,
-    allowNull: false,
+    allowNull: false
   }
 });
 
@@ -128,8 +142,8 @@ const MerchantId = sequelize.define("merchantid", {
 
 
 const init = async () => {
-  await Transaction.sync({ force: false, alter: true });
-  await User.sync({ force: false, alter: true });
+  await Transaction.sync({ force: false, alter: false });
+  await User.sync({ force: false });
   await Admin.sync({ force: false }).then(() => {
     Admin.create({
         id: guid(),

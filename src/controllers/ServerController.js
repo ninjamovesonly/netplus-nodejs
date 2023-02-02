@@ -57,7 +57,7 @@ const processOrder = async (req, res) => {
 
         const { TermUrl, ...remainder } = data;
 
-        res.send({ ...remainder });
+        return res.send({ ...remainder });
     } catch (error) {
         return res.send({
             message: error.message

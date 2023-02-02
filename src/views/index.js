@@ -13,8 +13,18 @@ const views = {
         createUser: __dirname + "/../views/admin/createUser.html",
         userTransactions: __dirname + "/../views/admin/userTransactions.html"
     },
+    users: {
+        login: __dirname + "/../views/users/login.html",
+        dashboard: __dirname + "/../views/users/dashboard.html",
+        allTransactions: __dirname + "/../views/users/allTransactions.html",
+        transaction: __dirname + "/../views/users/transaction.html",
+        users: __dirname + "/../views/users/users.html",
+        createUser: __dirname + "/../views/users/createUser.html",
+        userTransactions: __dirname + "/../views/users/userTransactions.html"
+    },
     docs: {
         invincible: __dirname + "/../views/docs/invincible.html",
+        checkout: __dirname + "/../views/docs/checkout.html"
     }
 };
 

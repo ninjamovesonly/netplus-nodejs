@@ -3,14 +3,19 @@
 const views = require("../views");
 
 const helloWorld = async (req, res) => {
-  res.render(views.home);
+  return res.render(views.home);
 };
 
+const docsCheckout = async (req, res) => {
+  return res.render(views.docs.checkout);
+}
+
 const docsInvincible = async (req, res) => {
-  res.render(views.docs.invincible);
+  return res.render(views.docs.invincible);
 };
 
 module.exports = {
   helloWorld,
-  docsInvincible
+  docsInvincible,
+  docsCheckout
 };
