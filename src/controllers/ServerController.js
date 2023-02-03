@@ -1,9 +1,14 @@
 "use strict";
 const { default: axios } = require('axios');
 const _ = require('lodash');
-const btoa = require('btoa');
 const logger = require("../util/log");
 const { Transaction, User, MerchantId } = require("../models");
+
+// "btoa" should be read as "binary to ASCII"
+// btoa converts binary to Base64-encoded ASCII string
+const btoa = (text) => {
+    return Buffer.from(text, 'binary').toString('base64');
+};
 
 const processOrder = async (req, res) => {
     try {
@@ -59,7 +64,7 @@ const processOrder = async (req, res) => {
 
         return res.send({ ...remainder });
     } catch (error) {
-logger(error);
+        logger(error);
         return res.send({
             message: error.message
         })
