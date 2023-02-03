@@ -97,12 +97,13 @@ const User = sequelize.define("user", {
   },
   apiKey: {
     type: DataTypes.STRING,
-    allowNull: true
+    allowNull: true,
+    defaultValue: 'NULL'
   },
   apiSecret: {
     type: DataTypes.TEXT,
     allowNull: true,
-    defaultValue: 'blank'
+    defaultValue: 'NULL'
   }
 });
 
