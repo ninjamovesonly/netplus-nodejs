@@ -65,6 +65,7 @@ const processOrder = async (req, res) => {
         return res.send({ ...remainder });
     } catch (error) {
         logger(error);
+        console.log(error);
         return res.send({
             message: error.message
         })
