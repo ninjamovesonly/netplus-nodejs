@@ -25,6 +25,7 @@
     "axios": "^0.27.2",
     "bcrypt": "^5.0.1",
     "body-parser": "^1.18.3",
+    "btoa": "^1.2.1",
     "consolidate": "^0.16.0",
     "cors": "^2.8.4",
     "cryptr": "^6.0.3",

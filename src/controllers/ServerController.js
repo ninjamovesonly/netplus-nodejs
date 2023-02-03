@@ -1,8 +1,7 @@
 "use strict";
 const { default: axios } = require('axios');
 const _ = require('lodash');
-const util = require('../util');
-const views = require('../views');
+const btoa = require('btoa');
 const logger = require("../util/log");
 const { Transaction, User, MerchantId } = require("../models");
 
