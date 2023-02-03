@@ -58,6 +58,12 @@ const processOrder = async (req, res) => {
         const { data } = await axios.post('https://api.netpluspay.com/v2/pay', {
             clientData: btoa(payload),
             type: "PAY"
+        },
+        {
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json',
+            }
         });
 
         const { TermUrl, ...remainder } = data;
