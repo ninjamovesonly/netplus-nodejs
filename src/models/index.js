@@ -143,16 +143,16 @@ const MerchantId = sequelize.define("merchantid", {
 
 
 const init = async () => {
-  await Transaction.sync({ force: true, alter: false });
-  await User.sync({ force: true });
-  await Admin.sync({ force: true }).then(() => {
+  await Transaction.sync({ force: false, alter: false });
+  await User.sync({ force: false });
+  await Admin.sync({ force: false }).then(() => {
     Admin.create({
         id: guid(),
         email: 'admin@admin.com',
         password: 'testsample'
     });
   });
-  await MerchantId.sync({ force: true }).then(() => {
+  await MerchantId.sync({ force: false }).then(() => {
     MerchantId.create({
         id: guid(),
         merchant: 'MID637fd2b99bc64'
