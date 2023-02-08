@@ -61,7 +61,7 @@ app.use(routes);
 //Handle error
 app.use((err, req, res, next) => {
   signale.fatal(err.stack);
-  res.status(500).send({
+  return res.status(500).send({
     success: false,
     status: false,
     error: "Something broken! Please contact support.",

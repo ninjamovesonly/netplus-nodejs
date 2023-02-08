@@ -20,7 +20,9 @@ const views = {
         transaction: __dirname + "/../views/users/transaction.html",
         users: __dirname + "/../views/users/users.html",
         createUser: __dirname + "/../views/users/createUser.html",
-        userTransactions: __dirname + "/../views/users/userTransactions.html"
+        userTransactions: __dirname + "/../views/users/userTransactions.html",
+        profile: __dirname + "/../views/users/profile.html",
+        customers: __dirname + "/../views/users/customers.html"
     },
     docs: {
         invincible: __dirname + "/../views/docs/invincible.html",

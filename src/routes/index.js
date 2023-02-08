@@ -34,20 +34,22 @@ route.get("/admin/users", adminAuth, controllers.AdminController.Users);
 route.get("/admin/user/create", adminAuth, controllers.AdminController.createUser);
 route.post("/admin/user/create",adminAuth, controllers.AdminController.saveUser);
 route.get("/admin/user/:id", adminAuth, controllers.AdminController.userTransactions);
-route.get("/admin/logout", controllers.AdminController.logout);
+route.get("/admin/logout", adminAuth, controllers.AdminController.logout);
 
-//User Routes
+//Merchant Routes
 route.get("/merchants/login", controllers.UserboardController.login);
 route.post("/merchants/login", controllers.UserboardController.loginUser);
 
 route.get("/merchants/dashboard", userAuth, controllers.UserboardController.dashboard);
-route.get("/merchants/transaction/:code", userAuth, controllers.AdminController.singleTransaction);
+route.get("/merchants/transaction/:code", userAuth, controllers.UserboardController.singleTransaction);
 
-route.get("/merchants", userAuth, controllers.AdminController.Users);
-route.get("/merchants/create", userAuth, controllers.AdminController.createUser);
-route.post("/merchants/create",userAuth, controllers.AdminController.saveUser);
-route.get("/merchants/:id", userAuth, controllers.AdminController.userTransactions);
-route.get("/merchants/logout", controllers.UserboardController.logout);
+route.get("/merchants/customers", userAuth, controllers.UserboardController.customers);
+
+//route.get("/merchants", userAuth, controllers.AdminController.Users);
+route.get("/merchants/profile", userAuth, controllers.UserboardController.profile);
+route.post("/merchants/profile",userAuth, controllers.UserboardController.saveUser);
+route.get("/merchants/logout", userAuth, controllers.UserboardController.logout);
+//route.get("/merchants/:id", userAuth, controllers.AdminController.userTransactions);
 
 
 module.exports = route;

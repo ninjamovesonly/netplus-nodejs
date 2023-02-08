@@ -1,8 +1,9 @@
 "use strict";
-const { Admin, Transaction, User } = require("../models");
+const { Transaction, User } = require("../models");
 const { guid, orderId } = require("../util");
 const views = require("../views");
 const _ = require("lodash");
+const axios = require('axios');
 
 const login = async (req, res) => {
     if(req.session.loggedin){
@@ -35,29 +36,59 @@ const loginUser = async (req, res) => {
 };
 
 const dashboard = async (req, res) => {
-    const user = JSON.parse(req.session.user);
+    try {
+        const user = JSON.parse(req.session.user);
 
-    let transactions = await Transaction.findAll({
-        where: {
-            userKey: user?.key
+        let transactions = await Transaction.findAll({
+            where: {
+                userKey: user?.key
+            }
+        });
+
+        if(!transactions){
+            return res.render(views?.error);
         }
-    });
 
-    if(!transactions){
-        return res.render(views?.error);
+        let customers = await Transaction.findAll({
+            attributes: ['email'],
+            group: ['email']
+        });
+
+        let processed = transactions.reduce((prev, current) => {
+            return prev + parseFloat(current.amount);
+        }, 0);
+
+        let successful_transactions = 0;
+        transactions = await Promise.all(transactions?.map(async (transaction) => {
+            const item = transaction.dataValues;
+            const url = `https://api.netpluspay.com/transactions/requery/${item.merchantId}/${item.transId}`
+            const { data: state } = await axios.get(url);
+            if(state.code === '00') successful_transactions += 1; 
+
+            return { 
+                ...item, 
+                state,
+                updatedAt: new Date(item.updatedAt).toDateString()
+            }
+        }));
+
+        return res.render(views?.users?.dashboard, {
+            transactions: transactions.reverse(),
+            count: transactions.length,
+            processed,
+            successful_transactions,
+            customers: customers.length
+        });
+    } catch (error) {
+        console.log(error.message)
+        return res.render(views?.users?.dashboard, {
+            transactions: [],
+            count: 0,
+            processed: 0,
+            successful_transactions: 0,
+            customers: 0
+        });
     }
-
-    transactions = await Promise.all(transactions?.map(async (transaction) => {
-        const item = transaction.dataValues;
-        return { 
-            ...item, 
-            updatedAt: new Date(item.updatedAt).toDateString()
-        }
-    }));
-
-    return res.render(views?.users?.dashboard, {
-        transactions: transactions.reverse()
-    });
 };
 
 const allTransactions = async (req, res) => {
@@ -123,14 +154,16 @@ const singleTransaction = async (req, res) => {
         return res.render(views.error);
     }
 
-    return res.render(views.admin.transaction, {
+    const url = `https://api.netpluspay.com/transactions/requery/${transaction.merchantId}/${transaction.transId}`
+    const { data: state } = await axios.get(url);
+    transaction.state = state;
+
+    return res.render(views.users.transaction, {
         transaction
     });
 }
 
 const Users = async (req, res) => {
-    
-
     let users = await User.findAll({
     });
 
@@ -151,47 +184,85 @@ const Users = async (req, res) => {
     });
 }
 
-const createUser = async (req, res) => {
-    const users = await User.findAll({
+const profile = async (req, res) => {
+    const user_session = JSON.parse(req?.session?.user);
+    const user_id = user_session?.id;
+    const user = await User.findOne({
+        where: {
+            id: user_id
+        }
     });
 
-    if(!users){
+    if(!user){
         return res.render(views.error);
     }
 
     let error = req?.query?.error;
     if(error == '1'){
-        error = 'User with this email already exists'
+        error = 'User does not exist'
     }
 
-    return res.render(views.admin.createUser, {
-        users,
+    return res.render(views.users.profile, {
+        user,
         error
     });
 }
 
 const saveUser = async (req, res) => {
     
-    const form = _.pick(req.body, ['name', 'email', 'merchantid']);
+    const form = _.pick(req.body, ['name', 'password']);
 
-    let user = await User.findOne({
-        where: { email: form?.email }
+    const user_session = JSON.parse(req?.session?.user);
+    const user_id = user_session?.id;
+    const user = await User.findOne({
+        where: {
+            id: user_id
+        }
     });
 
-    if(user){
-        return res.redirect('/merchants/user/create?error=1');
+    if(!user){
+        return res.redirect('/merchants/profile?error=1');
     }
 
-    user = await User.create({
-        id: guid(),
+    await User.update({
         name: form?.name,
-        email: form?.email,
-        merchantid: form?.merchantid,
-        key: orderId(16),
-    });
+        password: form?.password
+    }, { where: { id: user?.id }});
 
-    return res.redirect('/merchants/users');
+    return res.redirect('/merchants/profile');
 }
+
+const customers = async (req, res) => {
+    try {
+        const user = JSON.parse(req.session.user);
+
+        let customers = await Transaction.findAll({
+            where: {
+                userKey: user?.key
+            },
+            attributes: [
+                'name', 'email'
+            ],
+            group: ['email']
+        });
+
+        if(!customers){
+            return res.render(views?.error);
+        }
+
+        return res.render(views?.users?.customers, {
+            customers: customers
+        });
+    } catch (error) {
+        return res.render(views?.users?.customers, {
+            transactions: [],
+            count: 0,
+            processed: 0,
+            successful_transactions: 0,
+            customers: 0
+        });
+    }
+};
 
 const logout = async (req, res) => {
     req.session.loggedin = false;
@@ -201,5 +272,5 @@ const logout = async (req, res) => {
 }
 
 module.exports = {
-  login, dashboard, loginUser, singleTransaction, Users, createUser, saveUser, userTransactions, allTransactions, logout
+  login, dashboard, loginUser, singleTransaction, Users, saveUser, userTransactions, allTransactions, logout, profile, customers
 };

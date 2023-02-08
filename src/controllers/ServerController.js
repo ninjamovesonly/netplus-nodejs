@@ -45,11 +45,12 @@ const processOrder = async (req, res) => {
             });
         }
 
+        const eDate = body?.expiryDate?.replace(/[\/|-]/g, '');
         const payload_object = {
             transId: transId,
             domain: tnx.domain,
-            cardNumber: body.cardNumber,
-            expiryDate: body.expiryDate,
+            cardNumber: body?.cardNumber,
+            expiryDate: eDate,
             cvv: body.cvv
         };
 
@@ -58,12 +59,6 @@ const processOrder = async (req, res) => {
         const { data } = await axios.post('https://api.netpluspay.com/v2/pay', {
             clientData: btoa(payload),
             type: "PAY"
-        },
-        {
-            headers: {
-                'Accept': 'application/json',
-                'Content-Type': 'application/json',
-            }
         });
 
         const { TermUrl, ...remainder } = data;
@@ -71,10 +66,9 @@ const processOrder = async (req, res) => {
         return res.send({ ...remainder });
     } catch (error) {
         logger(error);
-        console.log(error);
         return res.send({
             message: error.message
-        })
+        });
     }
 };
 
@@ -123,7 +117,6 @@ const requeryUrl = async (req, res) => {
         });
     }
 }
-
 
 
 module.exports = {
