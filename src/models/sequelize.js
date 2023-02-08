@@ -23,6 +23,13 @@ const hostDatabase = () => {
   );
 }
 
+const postgresConnect = () => {
+  return new Sequelize("databaseName", "userName", "password", {
+    host: "localhost",
+    dialect: "postgres"
+  });
+}
+
 //const sequelize = process.env.DB_CONNECTION === 'sqlite' ? sqliteDatabase() : hostDatabase();
 const sequelize = sqliteDatabase();
 
