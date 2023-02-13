@@ -35,7 +35,6 @@ const loginUser = async (req, res) => {
 
 const dashboard = async (req, res) => {
     
-
     let transactions = await Transaction.findAll();
 
     transactions = await Promise.all(transactions?.map(async (transaction) => {

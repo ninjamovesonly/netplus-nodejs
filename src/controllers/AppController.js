@@ -4,6 +4,7 @@ const _ = require('lodash');
 const util = require('../util');
 const views = require('../views');
 const { Transaction, User, MerchantId } = require("../models");
+const logger = require('../util/log');
 
 const processOrder = async (req, res) => {
     try {
@@ -22,6 +23,20 @@ const processOrder = async (req, res) => {
             return res.send({
                 success: false,
                 message: "Invalid Authorization"
+            });
+        }
+
+        if(parseFloat(body?.amount) > 200){
+            return res.send({
+                success: false,
+                message: `Amount must not be greater than 200${body.currency}`
+            });
+        }
+
+        if(parseFloat(body?.amount) < 1){
+            return res.send({
+                success: false,
+                message: `Amount cannot be less than 1${body.currency}`
             });
         }
 
@@ -98,7 +113,9 @@ const processOrder = async (req, res) => {
             }
         });
     } catch (error) {
+        console.log(error);
         return res.send({
+            success: "false",
             message: error.message
         })
     }
