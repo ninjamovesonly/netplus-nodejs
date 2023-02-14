@@ -115,8 +115,7 @@ $(function() {
                                 fetch(reQueryUrl+`${body.transId}`,{ headers: myheaders, method: "GET"})
                                     .then(async(res2) => {
                                         const data = await res2.json();
-                                        console.log(data)
-                                        /* if(data.code === '90') {
+                                        if(data.code === '90') {
                                             window.location.replace(window.origin + '/checkout/failed');
                                         } 
                                         else if(data.code === '00'){
@@ -125,16 +124,16 @@ $(function() {
                                         else {
                                             console.log('Something went wrong!')
                                             window.location.replace(window.origin + '/checkout/failed');
-                                        } */
+                                        }
                                     })
                                     .catch(err => 
                                         console.log('requery error:\n*********************\n', err)
                                     );
                             }
                         }else if(body?.code === "90"){
-                            //window.location.replace(window.origin + '/checkout/failed');
+                            window.location.replace(window.origin + '/checkout/failed');
                         }else if(body?.code === "00"){
-                            //window.location.replace(window.origin + '/checkout/success');
+                            window.location.replace(window.origin + '/checkout/success');
                         }
                     })
                     .catch(error => console.log('request error:\n*********************\n', error))
