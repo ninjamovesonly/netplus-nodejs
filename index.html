@@ -1,0 +1,80 @@
+<!--
+    This is a sample implementation for the 3DS feature of netpluspay.com
+    NOTE that 3DS is not available in TEST, initiating a 3DS transaction in
+    TEST will will return an invalid credential error from MPGS which will
+    translated as a error 90 with http code of 400 INVALID_BAD_REQUEST
+-->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Payment</title>
+</head>
+<body>
+    <button id="btnStart">Proceed</button>
+    <div id="redirect" style="height: 100vh; width:650px !important;"></div>
+</body>
+<script>
+    const baseUrl = "https://api.netpluspay.com/";
+
+    // netpluspay.com payment endpoint
+    const payUrl = baseUrl+"v2/pay";
+    const livePayString = "NP230214090723000000437:LIVE:5338530813096466:10/23:091::USD";
+    
+    const checkOutString = btoa(livePayString);
+
+    /*
+        netpluspay.com requery endpoint to obtain the status of the transaction after successful processing
+    */
+    const reQueryUrl = baseUrl+"transactions/requery/MID637fd2b99bc64/";
+
+    /*
+        Intiate the process flow
+    */
+    
+    const myheaders = {"Content-Type": "application/json", "Accept": "application/json"};
+    
+    makeAuth = () => {
+        const init = {
+            body: JSON.stringify({clientData: checkOutString, type: "PAY"}),
+            method: "POST",
+            headers: myheaders
+        };
+
+        try {
+            fetch(payUrl, init) //this makes POST request to the pay endpoint.
+                .then(async (res) => {
+                    const body = await res.json(); // the return response is obtained from the promise response object.
+                    if (body.code == "S0") { // Check for the transaction response code. Where S0 means 3DS is required
+                       document.getElementById('redirect').innerHTML = body.redirectHtml;
+                       setTimeout(() => {
+                            const threeDF = document.getElementById('threedsChallengeRedirectForm') ?? document.getElementById('threedsFrictionLessRedirectForm');
+                            threeDF.submit();
+                       }, 1000);
+
+                       window.onmessage = (event) => {
+                            fetch(reQueryUrl+`${body.transId}`,{headers: myheaders, method: "GET"})
+                                .then(async(res2) => {
+                                    const data = await res2.text();
+                                    console.log(data);
+                                })
+                                .catch(err => console.log('requery error:\n*********************\n', err));
+                        }
+                    }
+                })
+                .catch(error => console.log('request error:\n*********************\n', error))
+        } catch (error) {
+            console.log('process error:\n**********************\n', error);
+        }
+    }
+    /*
+        Kickstart the process flow here.
+    */
+    document.getElementById("btnStart").addEventListener("click", (event) => {
+        event.preventDefault();
+        makeAuth();
+    })
+</script>
+</html>
