@@ -31,6 +31,6 @@ const postgresConnect = () => {
 }
 
 //const sequelize = process.env.DB_CONNECTION === 'sqlite' ? sqliteDatabase() : hostDatabase();
-const sequelize = sqliteDatabase();
+const sequelize = hostDatabase();
 
 module.exports = sequelize;
