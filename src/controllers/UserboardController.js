@@ -7,7 +7,7 @@ const axios = require('axios');
 
 const login = async (req, res) => {
     if(req.session.loggedin){
-        return res.redirect('/users/dashboard');
+        return res.redirect('/merchants/dashboard');
     }
 
 
