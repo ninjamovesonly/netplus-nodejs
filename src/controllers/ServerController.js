@@ -2,13 +2,7 @@
 const { default: axios } = require('axios');
 const _ = require('lodash');
 const logger = require("../util/log");
-const { Transaction, User, MerchantId } = require("../models");
-
-// "btoa" should be read as "binary to ASCII"
-// btoa converts binary to Base64-encoded ASCII string
-const btoa = (text) => {
-    return Buffer.from(text, 'binary').toString('base64');
-};
+const { Transaction } = require("../models");
 
 const processOrder = async (req, res) => {
     try {
@@ -55,6 +49,12 @@ const processOrder = async (req, res) => {
         };
 
         const payload = Object.values(payload_object).join(':');
+
+        // "btoa" should be read as "binary to ASCII"
+        // btoa converts binary to Base64-encoded ASCII string
+        const btoa = (text) => {
+            return Buffer.from(text).toString('base64');
+        };
 
         const { data } = await axios.post('https://api.netpluspay.com/v2/pay', {
             clientData: btoa(payload),
