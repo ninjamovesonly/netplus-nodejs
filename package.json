@@ -4,7 +4,7 @@
   "description": "ISCE_events",
   "main": "app.js",
   "engines": {
-    "node": "14.x"
+    "node": ">=14.x"
   },
   "scripts": {
     "dev": "nodemon src/app.js",

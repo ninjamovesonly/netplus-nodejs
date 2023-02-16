@@ -45,7 +45,7 @@ const processOrder = async (req, res) => {
             });
         }
 
-        const eDate = body?.expiryDate?.replace(/[\/|-]/g, '');
+        const eDate = body?.expiryDate;
         const payload_object = {
             transId: transId,
             domain: tnx.domain,
