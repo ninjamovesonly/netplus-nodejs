@@ -111,6 +111,7 @@ const requeryUrl = async (req, res) => {
             ...data 
         });
     } catch (error) {
+        logger(error);
         return res.send({
             success: false,
             message: error.message
