@@ -26,7 +26,7 @@ const processOrder = async (req, res) => {
             });
         }
 
-        if(parseFloat(body?.amount) > 200){
+        if(parseFloat(body?.amount) > 500){
             return res.send({
                 success: false,
                 message: `Amount must not be greater than 200${body.currency}`
