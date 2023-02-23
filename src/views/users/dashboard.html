@@ -170,7 +170,7 @@
                   <div class="numbers">
                     <p class="text-sm mb-0 text-capitalize font-weight-bold">Total Amount</p>
                     <h5 class="font-weight-bolder mb-0">
-                      {{ processed }}
+                      ${{ processed }}
                     </h5>
                   </div>
                 </div>
@@ -265,6 +265,7 @@
                       <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">Merchant</th>
                       <th class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Domain</th>
                       <th class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Amount</th>
+                      <th class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Status</th>
                       <th class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Date</th>
                       <th class="text-secondary opacity-7"></th>
                     </tr>
@@ -288,7 +289,12 @@
                         <span class="badge badge-sm text-dark">{{ domain }}</span>
                       </td>
                       <td class="align-middle text-center text-lg">
-                        <span class="badge badge-sm text-dark">{{ currency }} {{ amount }}</span>
+                        <span class="badge badge-sm text-dark">${{ amount }}</span>
+                      </td>
+                      <td class="align-middle text-center">
+                        <span class="{{ transColor }} text-xs font-weight-bold">
+                          {{ transStatus }}
+                        </span>
                       </td>
                       <td class="align-middle text-center">
                         <span class="text-secondary text-xs font-weight-bold">

@@ -35,19 +35,52 @@ const loginUser = async (req, res) => {
 
 const dashboard = async (req, res) => {
     
-    let transactions = await Transaction.findAll();
-
-    transactions = await Promise.all(transactions?.map(async (transaction) => {
-        const item = transaction.dataValues;
-        return { 
-            ...item, 
-            updatedAt: new Date(item.updatedAt).toDateString()
+    try {
+        let transactions = await Transaction.findAll();
+        if(!transactions){
+            return res.render(views?.error);
         }
-    }));
 
-    return res.render(views?.admin?.dashboard, {
-        transactions: transactions.reverse()
-    });
+        let customers = await Transaction.findAll({
+            attributes: ['email'],
+            group: ['email']
+        });
+
+        let processed = transactions.reduce((prev, current) => {
+            return prev + parseFloat(current.amount);
+        }, 0);
+
+        let successful_transactions = await Transaction.findAll({
+            where: {
+                transStatus: 'SUCCESS'
+            }
+        });
+
+        transactions = await Promise.all(transactions?.map(async (transaction) => {
+            const item = transaction.dataValues;
+            return { 
+                ...item, 
+                updatedAt: new Date(item.updatedAt).toDateString()
+            }
+        }));
+
+        return res.render(views?.admin?.dashboard, {
+            transactions: transactions.reverse(),
+            count: transactions?.length,
+            processed: processed?.toFixed(2),
+            successful_transactions: successful_transactions?.length,
+            customers: customers?.length
+        });
+    } catch (error) {
+        console.log(error.message)
+        return res.render(views?.admin?.dashboard, {
+            transactions: [],
+            count: 0,
+            processed: 0,
+            successful_transactions: 0,
+            customers: 0
+        });
+    }
 };
 
 const singleTransaction = async (req, res) => {

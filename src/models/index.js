@@ -60,6 +60,16 @@ const Transaction = sequelize.define("transaction", {
     type: DataTypes.STRING,
     allowNull: false,
   },
+  transStatus: {
+    type: DataTypes.STRING,
+    allowNull: true,
+    defaultValue: 'PENDING'
+  },
+  statusCode: {
+    type: DataTypes.STRING,
+    allowNull: true,
+    defaultValue: '0F'
+  },
   callbackUrl: {
     type: DataTypes.TEXT,
     allowNull: false,
@@ -143,21 +153,23 @@ const MerchantId = sequelize.define("merchantid", {
 
 
 const init = async () => {
-  await Transaction.sync({ force: false, alter: false });
-  await User.sync({ force: false });
-  await Admin.sync({ force: false }).then(() => {
+  await Transaction.sync({ alter: false });
+  await User.sync({ });
+  await Admin.sync({ });
+  /* .then(() => {
     Admin.create({
         id: guid(),
         email: 'admin@admin.com',
         password: 'testsample'
     });
-  });
-  await MerchantId.sync({ force: false }).then(() => {
+  }); */
+  await MerchantId.sync({ });
+  /* .then(() => {
     MerchantId.create({
         id: guid(),
         merchant: 'MID637fd2b99bc64'
     });
-  });
+  }); */
 };
 
 init();

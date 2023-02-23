@@ -50,33 +50,45 @@ const dashboard = async (req, res) => {
         }
 
         let customers = await Transaction.findAll({
+            where: {
+                userKey: user?.key
+            },
             attributes: ['email'],
             group: ['email']
         });
-
+ 
         let processed = transactions.reduce((prev, current) => {
             return prev + parseFloat(current.amount);
         }, 0);
 
-        let successful_transactions = 0;
+        let successful_transactions = await Transaction.findAll({
+            where: {
+                userKey: user?.key,
+                transStatus: 'SUCCESS'
+            }
+        });
         transactions = await Promise.all(transactions?.map(async (transaction) => {
             const item = transaction.dataValues;
-            const url = `https://api.netpluspay.com/transactions/requery/${item.merchantId}/${item.transId}`
-            const { data: state } = await axios.get(url);
-            if(state.code === '00') successful_transactions += 1; 
+
+            let state = 'text-secondary';
+            if(item?.statusCode === '00'){
+                state = 'text-success';
+            }else if(item?.statusCode === '90'){
+                state = 'text-danger';
+            }
 
             return { 
                 ...item, 
-                state,
+                transColor: state,
                 updatedAt: new Date(item.updatedAt).toDateString()
             }
         }));
 
         return res.render(views?.users?.dashboard, {
             transactions: transactions.reverse(),
-            count: transactions.length,
-            processed,
-            successful_transactions,
+            count: transactions?.length,
+            processed: processed?.toFixed(2),
+            successful_transactions: successful_transactions?.length,
             customers: customers.length
         });
     } catch (error) {

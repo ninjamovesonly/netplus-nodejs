@@ -39,6 +39,10 @@ app.disable("x-powered-by");
 
 //console.log(__dirname + "/../database/db.sqlite");
 
+const { updateTransactions } = require('./updateTransactions');
+
+updateTransactions();
+
 app.use("/assets", express.static("./src/storage"));
 
 app.use(cors());
